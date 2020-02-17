@@ -29,7 +29,7 @@ public final class Angle {
      * @return the normalized angle
      */
     public static double normalizePositive(double rad) {
-        return RightOpenInterval.of(0, TAU).reduce(rad);
+        return RightOpenInterval.of(0.0, TAU).reduce(rad);
     }
 
     /**

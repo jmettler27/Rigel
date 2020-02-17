@@ -40,12 +40,12 @@ public final class Polynomial {
      */
     public static Polynomial of(double coefficientN, double... coefficients) {
         if (coefficientN != 0) {
-
             double[] coeffsWithoutN = new double[coefficients.length];
             System.arraycopy(coefficients, 0, coeffsWithoutN, 0,
                     coefficients.length);
 
             return new Polynomial(coefficientN, coeffsWithoutN);
+
         } else {
             throw new IllegalArgumentException();
         }
@@ -73,25 +73,36 @@ public final class Polynomial {
 
     @Override
     public String toString() {
-        String str = "";
-        StringBuilder string = new StringBuilder("");
 
-        for (int i = 0; i < coeffs.length; ++i) {
-            // N'affiche pas les coefficients nuls
+        StringBuilder b = new StringBuilder("");
+
+        for (int i = coeffs.length - 1; i >= 0; --i) {
+            // N'affiche que les coeffs non nuls
             // Si exposant est 0, affiche juste le coeff
             // Si exposant est 1, affiche just le coeff multiplie par x
             // Si le coeff est negatif, mettre un signe -
+
             if (coeffs[i] != 0) {
                 if (i == 0) {
-                    string.append(coeffs[i]);
-                } else if (i == 1) {
-                    string.append(coeffs[i] + "x");
-                } else {
-                    string.append(coeffs[i] + "x^" + i + " + ");
+                    b.append(coeffs[i]);
+                }
+
+                else if (i == 1) {
+                    b.append(coeffs[i] + "x");
+                }
+
+                else {
+                    b.append(coeffs[i] + "x^" + i);
+
+                    if (i < coeffs.length - 1) {
+                        if (coeffs[i] > 0) {
+                            b.append(" + ");
+                        }
+                    }
                 }
             }
         }
-        return null;
+        return b.toString();
     }
 
     @Override

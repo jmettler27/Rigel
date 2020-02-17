@@ -4,13 +4,8 @@ import ch.epfl.rigel.math.ClosedInterval;
 
 public class Test {
 
-    public Test() {
-        // TODO Auto-generated constructor stub
-    }
-
     public static void main(String[] args) {
-        //ClosedInterval inter = new ClosedInterval(3, 5);
-        //System.out.println(inter);
+        ClosedInterval inter = ClosedInterval.of(3.0, 5.0);
+        System.out.println(inter);
     }
-
 }
