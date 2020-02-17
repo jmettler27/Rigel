@@ -33,13 +33,13 @@ public final class ClosedInterval extends Interval {
      * @return the constructed closed interval
      * 
      * @throws IllegalArgumentException
-     *             is the low bound is not strictly smaller than the high bound
+     *             if the low bound is not strictly smaller than the high bound
      */
     public static ClosedInterval of(double low, double high) {
         if (low < high) {
             return new ClosedInterval(low, high);
         } else {
-            throw new IllegalArgumentException("low bound < high bound");
+            throw new IllegalArgumentException("low bound >= high bound");
         }
     }
 

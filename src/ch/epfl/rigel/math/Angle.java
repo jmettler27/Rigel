@@ -2,7 +2,7 @@ package ch.epfl.rigel.math;
 
 /**
  * The methods and constants allowing to work on angles represented by double
- * values
+ * values.
  * 
  * @author Mathias Bouilloud (309979)
  * @author Julien Mettler (309999)
@@ -16,7 +16,7 @@ public final class Angle {
     private final static double HOUR_PER_RAD = 24.0 / TAU; // rad --> hour
 
     /**
-     * Default constructor
+     * Default constructor.
      */
     private Angle() {
     }
@@ -58,14 +58,13 @@ public final class Angle {
      * 
      * @throws IllegalArgumentException
      *             if the interval [0,60[ does not contain the number of minutes
-     *             and/or the number of seconds
+     *             or the number of seconds
      */
     public static double ofDMS(int deg, int min, double sec) {
         RightOpenInterval interval = RightOpenInterval.of(0, 60);
 
         if (interval.contains(min) && interval.contains(sec)) {
-            double angle = deg * (TAU / 360) + 60 * min + 3600 * sec;
-            return angle;
+            return Math.toRadians(deg + min / 60 + sec / 3600);
         } else {
             throw new IllegalArgumentException();
         }

@@ -17,11 +17,12 @@ public final class Polynomial {
      * @param coefficients
      *            The array of coefficients of the polynomial
      */
-    private Polynomial(double... coefficients) {
-        coeffs = new double[coefficients.length];
+    private Polynomial(double coefficientN, double... coefficients) {
+        coeffs = new double[coefficients.length + 1];
 
+        coeffs[0] = coefficientN;
         for (int i = 0; i < coefficients.length; ++i) {
-            coeffs[i] = coefficients[i];
+            coeffs[i + 1] = coefficients[i];
         }
     }
 
@@ -35,12 +36,16 @@ public final class Polynomial {
      * @return a polynomial of degree N with the given coefficients
      * 
      * @throws IllegalArgumentException
-     *             if the N-th coefficient is 0
+     *             if the highest-degree coefficient is 0
      */
     public static Polynomial of(double coefficientN, double... coefficients) {
         if (coefficientN != 0) {
-            return null;
-            // System.arraycopy(src, srcPos, coeffs, destPos, length);
+
+            double[] coeffsWithoutN = new double[coefficients.length];
+            System.arraycopy(coefficients, 0, coeffsWithoutN, 0,
+                    coefficients.length);
+
+            return new Polynomial(coefficientN, coeffsWithoutN);
         } else {
             throw new IllegalArgumentException();
         }
@@ -68,7 +73,24 @@ public final class Polynomial {
 
     @Override
     public String toString() {
+        String str = "";
+        StringBuilder string = new StringBuilder("");
 
+        for (int i = 0; i < coeffs.length; ++i) {
+            // N'affiche pas les coefficients nuls
+            // Si exposant est 0, affiche juste le coeff
+            // Si exposant est 1, affiche just le coeff multiplie par x
+            // Si le coeff est negatif, mettre un signe -
+            if (coeffs[i] != 0) {
+                if (i == 0) {
+                    string.append(coeffs[i]);
+                } else if (i == 1) {
+                    string.append(coeffs[i] + "x");
+                } else {
+                    string.append(coeffs[i] + "x^" + i + " + ");
+                }
+            }
+        }
         return null;
     }
 

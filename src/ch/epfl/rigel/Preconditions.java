@@ -3,7 +3,8 @@ package ch.epfl.rigel;
 import ch.epfl.rigel.math.Interval;
 
 /**
- * The conditions that must be satisfied before a method is called.
+ * The conditions that must be satisfied by the arguments of the method before
+ * the latter is called.
  * 
  * @author Mathias Bouilloud (309979)
  * @author Julien Mettler (309999)
@@ -14,16 +15,17 @@ public final class Preconditions {
     /**
      * Default constructor.
      */
-    public Preconditions() {
+    private Preconditions() {
     }
 
     /**
+     * Checks if the condition (argument) is satisfied.
      * 
      * @param isTrue
-     *            the argument
+     *            The condition
      * 
      * @throws IllegalArgumentException
-     *             if the argument is false
+     *             if the condition is false
      */
     public static void checkArgument(boolean isTrue) {
         if (!isTrue) {
