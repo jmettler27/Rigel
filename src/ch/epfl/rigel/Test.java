@@ -6,7 +6,7 @@ import ch.epfl.rigel.math.Polynomial;
 public class Test {
 
     public static void main(String[] args) {
-        Polynomial p = Polynomial.of(5,-4,-1);
+        Polynomial p = Polynomial.of(1,0,0);
         System.out.print(p);
     }
 }
