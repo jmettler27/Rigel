@@ -54,7 +54,7 @@ public final class ClosedInterval extends Interval {
      *             if the size is not strictly positive
      */
     public static ClosedInterval symmetric(double size) {
-        if (size > 0) {
+        if (size > 0.0) {
             return new ClosedInterval(-size / 2.0, size / 2.0);
         } else {
             throw new IllegalArgumentException("size <= 0");

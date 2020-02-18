@@ -18,6 +18,7 @@ public final class Polynomial {
      *            The array of coefficients of the polynomial
      */
     private Polynomial(double coefficientN, double... coefficients) {
+
         coeffs = new double[coefficients.length + 1];
 
         coeffs[0] = coefficientN;
@@ -59,13 +60,56 @@ public final class Polynomial {
      * @return the value of the polynomial function for the given argument
      */
     public double at(double x) {
-        double v = coeffs[coeffs.length - 1]; // adds the constant (of degree 0)
 
-        for (int i = 0; i < coeffs.length - 2; i += 2) {
-            v += (coeffs[i] * x + coeffs[i + 1]) * x;
+        if (coeffs.length == 0) {
+            return 0.0;
         }
 
-        return v;
+        else {
+            // lowest-degree term (constant)
+            double c0 = coeffs[coeffs.length - 1];
+
+            // Polynomial of degree 0 (polynomial of degree 0)
+            // ==> f(x) = v for any x
+            if (coeffs.length == 1) {
+                return c0;
+            }
+
+            else {
+
+                // The value of f(x) to be derived
+                double v = c0;
+
+                // Polynomial of degree 1
+                if (coeffs.length == 2) {
+                    v += coeffs[0] * x;
+                }
+
+                // Polynomial of degree at least 2 (Length >= 3)
+                else {
+
+                    double s = ((coeffs[0] * x) + coeffs[1]) * x;
+
+                    if (coeffs.length == 3) {
+                        v += s;
+                        return v;
+                    }
+
+                    else {
+                        // degree at least 3 (Length >= 4
+                        for (int i = 2; i < coeffs.length - 1; ++i) {
+                            s = (s + coeffs[i]) * x;
+                            // v += (v * x + coeffs[i]);
+                        }
+                        v += s;
+                    }
+
+                }
+                return v;
+            }
+
+        }
+
     }
 
     @Override
@@ -127,8 +171,9 @@ public final class Polynomial {
     }
 
     /**
-     * Verifies if the i-th coefficient is the first non-zero displayed
-     * coefficient. If it is the case, the sign (+) is not displayed.
+     * Verifies if the i-th (strictly positive) coefficient is the first
+     * non-zero displayed coefficient. If it is the case, the sign (+) is not
+     * displayed.
      * 
      * @param i
      *            The position of the i-th coefficient
