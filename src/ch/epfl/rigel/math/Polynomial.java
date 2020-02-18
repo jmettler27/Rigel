@@ -59,16 +59,13 @@ public final class Polynomial {
      * @return the value of the polynomial function for the given argument
      */
     public double at(double x) {
-        return 0;
-    }
+        double v = coeffs[coeffs.length - 1]; // adds the constant (of degree 0)
 
-    /**
-     * Returns this polynomial function in the Horner form.
-     * 
-     * @return this polynomial function in the Horner form
-     */
-    private Polynomial horner() {
-        return null;
+        for (int i = 0; i < coeffs.length - 2; i += 2) {
+            v += (coeffs[i] * x + coeffs[i + 1]) * x;
+        }
+
+        return v;
     }
 
     @Override
@@ -83,6 +80,7 @@ public final class Polynomial {
             // Si le coeff est negatif, mettre un signe -
 
             if (coeffs[i] != 0) {
+
                 if (Math.abs(coeffs[i]) == 1) {
                     if (coeffs[i] == 1) {
                         if (i == coeffs.length - 1) {
@@ -123,9 +121,7 @@ public final class Polynomial {
                         }
                     }
                 }
-
             }
-
         }
         return b.toString();
     }
