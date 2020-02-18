@@ -82,27 +82,60 @@ public final class Polynomial {
             // Si exposant est 1, affiche just le coeff multiplie par x
             // Si le coeff est negatif, mettre un signe -
 
-            if (coeffs[i] != 0) {
-                if (i == 0) {
-                    b.append(coeffs[i]);
-                }
-
-                else if (i == 1) {
-                    b.append(coeffs[i] + "x");
-                }
-
-                else {
-                    b.append(coeffs[i] + "x^" + i);
-
-                    if (i < coeffs.length - 1) {
-                        if (coeffs[i] > 0) {
-                            b.append(" + ");
+            if(coeffs[i] != 0){
+                if(Math.abs(coeffs[i]) == 1){
+                    if(coeffs[i] == 1){
+                        if (i == coeffs.length - 1) {
+                            b.append(coeffs[i]);
+                        } else if (i == coeffs.length - 2) {
+                            b.append(displaySign(i) + "x");
+                        } else {
+                            b.append(displaySign(i) + "x^" + (coeffs.length - 1 - i));
+                        }
+                    }else{
+                        if (i == coeffs.length - 1) {
+                            b.append(coeffs[i]);
+                        } else if (i == coeffs.length - 2) {
+                            b.append("-x");
+                        } else {
+                            b.append("-x^" + (coeffs.length - 1 - i));
+                        }
+                    }
+                }else {
+                    if(coeffs[i] > 0){
+                        if (i == coeffs.length - 1) {
+                            b.append(coeffs[i]);
+                        } else if (i == coeffs.length - 2) {
+                            b.append(displaySign(i) + coeffs[i] + "x");
+                        } else {
+                            b.append(displaySign(i) + coeffs[i] + "x^" + (coeffs.length - 1 - i) + " ");
+                        }
+                    }
+                    else{
+                        if (i == coeffs.length - 1) {
+                            b.append(coeffs[i]);
+                        } else if (i == coeffs.length - 2) {
+                            b.append(coeffs[i] + "x");
+                        } else {
+                            b.append(coeffs[i] + "x^" + (coeffs.length - 1 - i) + " ");
                         }
                     }
                 }
+
             }
+
         }
         return b.toString();
+    }
+
+    public String displaySign(int i){
+        boolean verif = false;
+        for(int j = i + 1; j < coeffs.length; j++){
+            if(coeffs[j] != 0){
+                verif = true;
+            }
+        }
+       return (verif ? "+" : "");
     }
 
     @Override
