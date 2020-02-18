@@ -53,7 +53,8 @@ public final class Polynomial {
     }
 
     /**
-     * Returns the value of this polynomial function for the given argument.
+     * Returns the value of this polynomial function for the given argument :
+     * derives f(x).
      * 
      * @param x
      *            The given argument
@@ -61,15 +62,16 @@ public final class Polynomial {
      */
     public double at(double x) {
 
+        // Polynomial with all coefficients equal to 0
         if (coeffs.length == 0) {
             return 0.0;
         }
 
         else {
-            // lowest-degree term (constant)
+            // The lowest-degree term (constant)
             double c0 = coeffs[coeffs.length - 1];
 
-            // Polynomial of degree 0 (polynomial of degree 0)
+            // Polynomial of degree 0 (constant polynomial)
             // ==> f(x) = v for any x
             if (coeffs.length == 1) {
                 return c0;
@@ -80,36 +82,24 @@ public final class Polynomial {
                 // The value of f(x) to be derived
                 double v = c0;
 
-                // Polynomial of degree 1
+                // The main part (without the constant c0) of f(x)
+                double c = coeffs[0] * x;
+
+                // Polynomial of degree 1 (exactly two coefficients)
                 if (coeffs.length == 2) {
-                    v += coeffs[0] * x;
+                    v += c;
                 }
 
-                // Polynomial of degree at least 2 (Length >= 3)
+                // Polynomial of degree at least 2 (at least three coefficients)
                 else {
-
-                    double s = ((coeffs[0] * x) + coeffs[1]) * x;
-
-                    if (coeffs.length == 3) {
-                        v += s;
-                        return v;
+                    for (int i = 1; i < coeffs.length - 1; ++i) {
+                        c = (c + coeffs[i]) * x;
                     }
-
-                    else {
-                        // degree at least 3 (Length >= 4
-                        for (int i = 2; i < coeffs.length - 1; ++i) {
-                            s = (s + coeffs[i]) * x;
-                            // v += (v * x + coeffs[i]);
-                        }
-                        v += s;
-                    }
-
+                    v += c;
                 }
                 return v;
             }
-
         }
-
     }
 
     @Override
@@ -194,7 +184,8 @@ public final class Polynomial {
         throw new UnsupportedOperationException();
     }
 
-    public final boolean equals() {
+    @Override
+    public final boolean equals(Object obj) {
         throw new UnsupportedOperationException();
     }
 
