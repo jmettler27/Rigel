@@ -107,7 +107,33 @@ public final class Polynomial {
 
         StringBuilder b = new StringBuilder("");
 
-        for (int i = coeffs.length - 1; i >= 0; --i) {
+
+        if(coeffs.length == 1){
+            b.append(coeffs[0]);
+        }else if(coeffs.length == 2){
+            if(Math.abs(coeffs[0]) != 1 ){
+                b.append(coeffs[0] + "x");
+            }
+            else if(coeffs[0] == 1){
+                b.append("x");
+            }
+            else{
+                b.append("-x");
+            }
+        }
+        else{
+            if(Math.abs(coeffs[0]) != 1 ){
+                b.append(coeffs[0] + "x^"+ (coeffs.length - 1));
+            }
+            else if(coeffs[0] == 1){
+                b.append("x^"+ (coeffs.length - 1));
+            }
+            else{
+                b.append("-x^"+ (coeffs.length - 1));
+            }
+        }
+
+        for (int i = 1 ; i < coeffs.length; ++i) {
             // N'affiche que les coeffs non nuls
             // Si exposant est 0, affiche juste le coeff
             // Si exposant est 1, affiche just le coeff multiplie par x
@@ -118,16 +144,16 @@ public final class Polynomial {
                 if (Math.abs(coeffs[i]) == 1) {
                     if (coeffs[i] == 1) {
                         if (i == coeffs.length - 1) {
-                            b.append(coeffs[i]);
+                            b.append("+1");
                         } else if (i == coeffs.length - 2) {
-                            b.append(displaySign(i) + "x");
+                            b.append("+x");
                         } else {
-                            b.append(displaySign(i) + "x^"
+                            b.append("+x^"
                                     + (coeffs.length - 1 - i));
                         }
                     } else {
                         if (i == coeffs.length - 1) {
-                            b.append(coeffs[i]);
+                            b.append("-1");
                         } else if (i == coeffs.length - 2) {
                             b.append("-x");
                         } else {
@@ -137,12 +163,12 @@ public final class Polynomial {
                 } else {
                     if (coeffs[i] > 0) {
                         if (i == coeffs.length - 1) {
-                            b.append(coeffs[i]);
+                            b.append("+" + coeffs[i]);
                         } else if (i == coeffs.length - 2) {
-                            b.append(displaySign(i) + coeffs[i] + "x");
+                            b.append("+" +  coeffs[i] + "x");
                         } else {
-                            b.append(displaySign(i) + coeffs[i] + "x^"
-                                    + (coeffs.length - 1 - i) + " ");
+                            b.append("+" + coeffs[i] + "x^"
+                                    + (coeffs.length - 1 - i));
                         }
                     } else {
                         if (i == coeffs.length - 1) {
@@ -150,8 +176,7 @@ public final class Polynomial {
                         } else if (i == coeffs.length - 2) {
                             b.append(coeffs[i] + "x");
                         } else {
-                            b.append(coeffs[i] + "x^" + (coeffs.length - 1 - i)
-                                    + " ");
+                            b.append(coeffs[i] + "x^" + (coeffs.length - 1 - i));
                         }
                     }
                 }
