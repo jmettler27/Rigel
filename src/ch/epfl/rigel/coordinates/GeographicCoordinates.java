@@ -3,6 +3,7 @@ package ch.epfl.rigel.coordinates;
 import java.util.Locale;
 
 import ch.epfl.rigel.math.Angle;
+import ch.epfl.rigel.math.ClosedInterval;
 import ch.epfl.rigel.math.RightOpenInterval;
 
 /**
@@ -19,7 +20,7 @@ public final class GeographicCoordinates extends SphericalCoordinates {
             .of(-180, 180);
 
     // The valid right open interval in which the latitude has to be contained
-    public final static RightOpenInterval LAT_INTERVAL_DEG = RightOpenInterval
+    public final static ClosedInterval LAT_INTERVAL_DEG = ClosedInterval
             .of(-90, 90);
 
     /**
@@ -125,8 +126,8 @@ public final class GeographicCoordinates extends SphericalCoordinates {
 
     @Override
     public String toString() {
-        return String.format(Locale.ROOT, "(lon=%.4f°, lat=%.4f°)", lon(),
-                lat());
+        return String.format(Locale.ROOT, "(lon=%.4f°, lat=%.4f°)", lonDeg(),
+                latDeg());
     }
 
 }
