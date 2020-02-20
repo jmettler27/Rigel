@@ -29,9 +29,9 @@ public final class EclipticCoordinates extends SphericalCoordinates {
      * Returns the ecliptic coordinates (in radians) with the given longitude
      * and latitude (in radians).
      * 
-     * @param az
+     * @param lon
      *            The longitude, in radians
-     * @param alt
+     * @param lat
      *            The latitude, in radians
      * @return the ecliptic coordinates (longitude and latitude) in radians
      */

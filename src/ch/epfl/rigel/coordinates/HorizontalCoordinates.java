@@ -142,8 +142,24 @@ public final class HorizontalCoordinates extends SphericalCoordinates {
      * @return the String representation of the octant
      */
     public String azOctantName(String n, String e, String s, String w) {
-        // TODO
-        return null;
+
+        StringBuilder octantName = new StringBuilder("");
+
+        // North and North-Est coordinates (strings which begin with "N")
+        if (RightOpenInterval.of(315, 360).contains(azDeg())
+                || RightOpenInterval.of(0, 45).contains(azDeg())) {
+            octantName.append('N');
+
+            if (RightOpenInterval.of(0, 45).contains(azDeg())) {
+                octantName.append('E');
+            }
+
+            else {
+                octantName.append('O');
+            }
+
+        }
+        return octantName.toString();
     }
 
     /**
