@@ -15,7 +15,7 @@ class RightOpenIntervalTest {
         var rng = TestRandomizer.newRandom();
         for (int i = 0; i < TestRandomizer.RANDOM_ITERATIONS; i++) {
             var low = rng.nextDouble();
-            var size = rng.nextDouble(Double.MIN_VALUE,500);
+            var size = rng.nextDouble(Double.MIN_VALUE, 500);
             var interval = RightOpenInterval.of(low, low + size);
             assertEquals(low, interval.low(), 1e-6);
             assertEquals(low + size, interval.high(), 1e-6);
@@ -50,7 +50,7 @@ class RightOpenIntervalTest {
     void symmetricWorksWithValidValues() {
         var rng = TestRandomizer.newRandom();
         for (int i = 0; i < TestRandomizer.RANDOM_ITERATIONS; i++) {
-            var size = rng.nextDouble(Double.MIN_VALUE,500);
+            var size = rng.nextDouble(Double.MIN_VALUE, 500);
             var interval = RightOpenInterval.symmetric(size);
             assertEquals(-size / 2d, interval.low(), 1e-6);
             assertEquals(size / 2d, interval.high(), 1e-6);
@@ -62,7 +62,7 @@ class RightOpenIntervalTest {
     void symmetricFailsWithNegativeSize() {
         var rng = TestRandomizer.newRandom();
         for (int i = 0; i < TestRandomizer.RANDOM_ITERATIONS; i++) {
-            var size = -rng.nextDouble(Double.MIN_VALUE,10);
+            var size = -rng.nextDouble(Double.MIN_VALUE, 10);
             assertThrows(IllegalArgumentException.class, () -> {
                 RightOpenInterval.symmetric(size);
             });

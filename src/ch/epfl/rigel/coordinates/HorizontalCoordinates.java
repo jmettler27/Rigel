@@ -39,13 +39,16 @@ public final class HorizontalCoordinates extends SphericalCoordinates {
     public final static double ZENITH_ALTITUDE_DEG = 90;
 
     // The north octant
-    public final static RightOpenInterval NORTH_INTERVAL= RightOpenInterval.symmetric(45.0);
+    public final static RightOpenInterval NORTH_INTERVAL = RightOpenInterval
+            .symmetric(45.0);
 
     /**
      * Constructs horizontal coordinates with the given azimuth and altitude.
      *
-     * @param az  The azimuth
-     * @param alt The altitude
+     * @param az
+     *            The azimuth
+     * @param alt
+     *            The altitude
      */
     public HorizontalCoordinates(double az, double alt) {
         super(az, alt);
@@ -55,11 +58,14 @@ public final class HorizontalCoordinates extends SphericalCoordinates {
      * Returns the horizontal coordinates (in radians) with the given azimuth
      * and altitude (in degrees).
      *
-     * @param azDeg  The azimuth, in degrees
-     * @param altDeg The altitude, in degrees
+     * @param azDeg
+     *            The azimuth, in degrees
+     * @param altDeg
+     *            The altitude, in degrees
      * @return the horizontal coordinates (azimuth and altitude) in radians
-     * @throws IllegalArgumentException if at least one of the coordinates is not contained in its
-     *                                  valid interval
+     * @throws IllegalArgumentException
+     *             if at least one of the coordinates is not contained in its
+     *             valid interval
      */
     public static HorizontalCoordinates ofDeg(double azDeg, double altDeg) {
 
@@ -79,11 +85,14 @@ public final class HorizontalCoordinates extends SphericalCoordinates {
      * Returns the horizontal coordinates (in radians) with the given azimuth
      * and altitude (in radians).
      *
-     * @param az  The azimuth, in radians
-     * @param alt The altitude, in radians
+     * @param az
+     *            The azimuth, in radians
+     * @param alt
+     *            The altitude, in radians
      * @return the horizontal coordinates (azimuth and altitude) in radians
-     * @throws IllegalArgumentException if at least one of the coordinates is not contained in its
-     *                                  valid interval
+     * @throws IllegalArgumentException
+     *             if at least one of the coordinates is not contained in its
+     *             valid interval
      */
     public static HorizontalCoordinates of(double az, double alt) {
 
@@ -119,10 +128,14 @@ public final class HorizontalCoordinates extends SphericalCoordinates {
      * Displays the octant in which the azimuth of the receiver is located, with
      * the four cardinal points (north, east, south and west).
      *
-     * @param n The north cardinal point
-     * @param e The east cardinal point
-     * @param s The south cardinal point
-     * @param w The west cardinal point
+     * @param n
+     *            The north cardinal point
+     * @param e
+     *            The east cardinal point
+     * @param s
+     *            The south cardinal point
+     * @param w
+     *            The west cardinal point
      * @return the String representation of the octant
      */
     public String azOctantName(String n, String e, String s, String w) {
@@ -191,7 +204,8 @@ public final class HorizontalCoordinates extends SphericalCoordinates {
      * Returns the angular distance between the receiver (this) and the given
      * point (that).
      *
-     * @param that The given point
+     * @param that
+     *            The given point
      * @return the angular distance between the receiver and the given point
      */
     public double angularDistanceTo(HorizontalCoordinates that) {
@@ -218,9 +232,11 @@ public final class HorizontalCoordinates extends SphericalCoordinates {
      * Returns a right open interval of size 45.0 centered in the given point
      * (center);
      *
-     * @param center The given center of the right open interval
+     * @param center
+     *            The given center of the right open interval
      * @return a right open interval centered in the given point
-     * @throws IllegalArgumentException if the interval is not valid
+     * @throws IllegalArgumentException
+     *             if the interval is not valid
      */
     private RightOpenInterval centeredInterval(double center) {
         final double HALVED_SIZE = 45.0 / 2.0;

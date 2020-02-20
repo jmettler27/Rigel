@@ -1,3 +1,5 @@
+//Rigel stage 2
+
 package ch.epfl.rigel.coordinates;
 
 import org.junit.jupiter.api.Test;
@@ -28,20 +30,20 @@ class GeographicCoordinatesTest {
 
     @Test
     void testToString() {
-        GeographicCoordinates g = GeographicCoordinates.ofDeg(50,50);
-        assertEquals("(lon=50.0000°, lat=50.0000°)",g.toString());
+        GeographicCoordinates g = GeographicCoordinates.ofDeg(50, 50);
+        assertEquals("(lon=50.0000°, lat=50.0000°)", g.toString());
     }
 
     @Test
-    void constructionTestThrows(){
+    void constructionTestThrows() {
         assertThrows(IllegalArgumentException.class, () -> {
-            var g = GeographicCoordinates.ofDeg(180,90);
+            var g = GeographicCoordinates.ofDeg(180, 90);
         });
     }
 
     @Test
-    void getterWorks(){
-        GeographicCoordinates g = GeographicCoordinates.ofDeg(50,89);
+    void getterWorks() {
+        GeographicCoordinates g = GeographicCoordinates.ofDeg(50, 89);
         assertEquals(89, g.latDeg());
     }
 }
