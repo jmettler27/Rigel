@@ -11,7 +11,7 @@ class HorizontalCoordinatesTest {
     @Test
     void constructionTestThrows() {
         assertThrows(IllegalArgumentException.class, () -> {
-            var g = HorizontalCoordinates.of(-5, 90);
+            HorizontalCoordinates.of(-5, 90);
         });
     }
 

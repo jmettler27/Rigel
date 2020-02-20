@@ -37,7 +37,7 @@ class GeographicCoordinatesTest {
     @Test
     void constructionTestThrows() {
         assertThrows(IllegalArgumentException.class, () -> {
-            var g = GeographicCoordinates.ofDeg(180, 90);
+            GeographicCoordinates.ofDeg(180, 90);
         });
     }
 

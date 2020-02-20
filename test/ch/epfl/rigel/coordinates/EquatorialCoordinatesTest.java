@@ -18,7 +18,7 @@ class EquatorialCoordinatesTest {
     @Test
     void constructionTestThrows() {
         assertThrows(IllegalArgumentException.class, () -> {
-            var g = EquatorialCoordinates.of(0.5, 3);
+            EquatorialCoordinates.of(0.5, 3);
         });
     }
 }
