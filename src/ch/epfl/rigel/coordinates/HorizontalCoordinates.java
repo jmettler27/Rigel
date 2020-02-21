@@ -238,7 +238,7 @@ public final class HorizontalCoordinates extends SphericalCoordinates {
      * @throws IllegalArgumentException
      *             if the interval is not valid
      */
-    private RightOpenInterval centeredInterval(double center) {
+    public RightOpenInterval centeredInterval(double center) {
         final double HALVED_SIZE = 45.0 / 2.0;
 
         if (AZ_INTERVAL_DEG.contains(center - HALVED_SIZE)
