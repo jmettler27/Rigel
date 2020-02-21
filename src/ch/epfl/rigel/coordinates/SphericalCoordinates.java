@@ -37,7 +37,7 @@ abstract class SphericalCoordinates {
     }
 
     /**
-     * Return the longitude, in degrees.
+     * Returns the longitude, in degrees.
      * 
      * @return the longitude, in degrees
      */

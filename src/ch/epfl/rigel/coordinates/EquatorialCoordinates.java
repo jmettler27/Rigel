@@ -87,7 +87,7 @@ public final class EquatorialCoordinates extends SphericalCoordinates {
     }
 
     /**
-     * Return the right ascension, in degrees.
+     * Returns the right ascension, in degrees.
      * 
      * @return the right ascension, in degrees
      */
@@ -96,7 +96,7 @@ public final class EquatorialCoordinates extends SphericalCoordinates {
     }
 
     /**
-     * Return the right ascension, in hours.
+     * Returns the right ascension, in hours.
      * 
      * @return the right ascension, in hours
      */

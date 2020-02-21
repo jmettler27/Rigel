@@ -17,7 +17,6 @@ class EquatorialCoordinatesTest {
         double[] invalidDecDeg = { -90.000000001, 90.0000000001 };
 
         assertThrows(IllegalArgumentException.class, () -> {
-
             for (int i = 0; i < invalidRaDeg.length; ++i) {
                 for (int j = 0; j < invalidDecDeg.length; ++j) {
                     EquatorialCoordinates.of(invalidRaDeg[i], invalidDecDeg[j]);

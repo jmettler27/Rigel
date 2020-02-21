@@ -116,7 +116,7 @@ public final class HorizontalCoordinates extends SphericalCoordinates {
     }
 
     /**
-     * Return the azimuth, in degrees.
+     * Returns the azimuth, in degrees.
      *
      * @return the azimuth, in degrees
      */

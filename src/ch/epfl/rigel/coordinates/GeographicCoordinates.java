@@ -20,8 +20,8 @@ public final class GeographicCoordinates extends SphericalCoordinates {
             .of(-180, 180);
 
     // The valid right open interval in which the latitude has to be contained
-    public final static ClosedInterval LAT_INTERVAL_DEG = ClosedInterval
-            .of(-90, 90);
+    public final static ClosedInterval LAT_INTERVAL_DEG = ClosedInterval.of(-90,
+            90);
 
     /**
      * Constructs geographic coordinates with the given longitude and latitude.
@@ -49,7 +49,6 @@ public final class GeographicCoordinates extends SphericalCoordinates {
      * @throws IllegalArgumentException
      *             if at least one of the coordinates is not contained in its
      *             valid right open interval
-     * 
      */
     public static GeographicCoordinates ofDeg(double longDeg, double latDeg) {
 
@@ -65,7 +64,7 @@ public final class GeographicCoordinates extends SphericalCoordinates {
     }
 
     /**
-     * Checks is the given longitude (in degrees) is contained in the valid
+     * Checks if the given longitude (in degrees) is contained in the valid
      * right open interval.
      * 
      * @param lonDeg
@@ -77,7 +76,7 @@ public final class GeographicCoordinates extends SphericalCoordinates {
     }
 
     /**
-     * Checks is the given latitude (in degrees) is contained in the valid right
+     * Checks if the given latitude (in degrees) is contained in the valid right
      * open interval.
      * 
      * @param latDeg
@@ -98,7 +97,7 @@ public final class GeographicCoordinates extends SphericalCoordinates {
     }
 
     /**
-     * Return the longitude, in degrees.
+     * Returns the longitude, in degrees.
      * 
      * @return the longitude, in degrees
      */
