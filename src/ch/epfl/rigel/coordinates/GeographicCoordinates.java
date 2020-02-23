@@ -19,7 +19,7 @@ public final class GeographicCoordinates extends SphericalCoordinates {
     public final static RightOpenInterval LON_INTERVAL_DEG = RightOpenInterval
             .of(-180, 180);
 
-    // The valid right open interval in which the latitude has to be contained
+    // The valid closed interval in which the latitude has to be contained
     public final static ClosedInterval LAT_INTERVAL_DEG = ClosedInterval.of(-90,
             90);
 
@@ -76,8 +76,8 @@ public final class GeographicCoordinates extends SphericalCoordinates {
     }
 
     /**
-     * Checks if the given latitude (in degrees) is contained in the valid right
-     * open interval.
+     * Checks if the given latitude (in degrees) is contained in the valid
+     * closed interval.
      * 
      * @param latDeg
      *            The checked latitude

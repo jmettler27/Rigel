@@ -212,14 +212,14 @@ public final class HorizontalCoordinates extends SphericalCoordinates {
      */
     public double angularDistanceTo(HorizontalCoordinates that) {
 
-        double lambda1 = this.az();
-        double phi1 = this.alt();
+        double az1 = this.az();
+        double alt1 = this.alt();
 
-        double lambda2 = that.az();
-        double phi2 = that.alt();
+        double az2 = that.az();
+        double alt2 = that.alt();
 
-        return acos(sin(phi1) * sin(phi2)
-                + cos(phi1) * cos(phi2) * cos(lambda1 - lambda2));
+        return acos(
+                sin(alt1) * sin(alt2) + cos(alt1) * cos(alt2) * cos(az1 - az2));
     }
 
     @Override
@@ -231,16 +231,16 @@ public final class HorizontalCoordinates extends SphericalCoordinates {
     /**
      * Additional method
      *
-     * Returns a right open interval of size 45.0 centered in the given point
-     * (center);
+     * Returns a right open interval containing azimuth values, of size 45.0 and
+     * centered in the given azimuth (center);
      *
      * @param center
      *            The given center of the right open interval
-     * @return a right open interval centered in the given point
+     * @return a right open interval centered in the given azimuth
      * @throws IllegalArgumentException
      *             if the interval is not valid
      */
-    public RightOpenInterval centeredInterval(double center) {
+    private RightOpenInterval centeredInterval(double center) {
         final double HALVED_SIZE = 45.0 / 2.0;
 
         if (AZ_INTERVAL_DEG.contains(center - HALVED_SIZE)

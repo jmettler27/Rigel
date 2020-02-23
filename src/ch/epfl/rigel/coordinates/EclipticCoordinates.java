@@ -2,8 +2,6 @@ package ch.epfl.rigel.coordinates;
 
 import java.util.Locale;
 
-import ch.epfl.rigel.math.Angle;
-
 /**
  * Ecliptic coordinates.
  * 
@@ -54,7 +52,7 @@ public final class EclipticCoordinates extends SphericalCoordinates {
      * @return the longitude, in degrees
      */
     public double lonDeg() {
-        return Angle.toDeg(lon());
+        return super.lonDeg();
     }
 
     /**
@@ -72,7 +70,7 @@ public final class EclipticCoordinates extends SphericalCoordinates {
      * @return the latitude, in degrees
      */
     public double latDeg() {
-        return Angle.toDeg(lat());
+        return super.latDeg();
     }
 
     @Override

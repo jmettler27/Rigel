@@ -86,12 +86,11 @@ class HorizontalCoordinatesTest {
 
     }
 
-    @Test
-    void centeredIntervalThrows() {
-        HorizontalCoordinates h = HorizontalCoordinates.ofDeg(350, 7.2);
-        assertThrows(IllegalArgumentException.class, () -> {
-            h.centeredInterval(-55);
-        });
-    }
+    /*
+     * @Test void centeredIntervalThrows() { HorizontalCoordinates h =
+     * HorizontalCoordinates.ofDeg(350, 7.2);
+     * assertThrows(IllegalArgumentException.class, () -> {
+     * h.centeredInterval(-55); }); }
+     */
 
 }
