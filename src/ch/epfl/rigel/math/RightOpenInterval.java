@@ -48,7 +48,7 @@ public final class RightOpenInterval extends Interval {
      * 
      * @param size
      *            The size of the interval
-     * @return the constructed right open interval
+     * @return the constructed right open interval centered in 0
      * 
      * @throws IllegalArgumentException
      *             if the size is not strictly positive
@@ -67,7 +67,7 @@ public final class RightOpenInterval extends Interval {
     }
 
     /**
-     * Brings the angle v to the standard interval [low(); high()[.
+     * Brings the angle v to the standard interval [low(), high()[.
      * 
      * @param v
      *            The value to be brought to the interval

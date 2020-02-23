@@ -38,7 +38,8 @@ public final class HorizontalCoordinates extends SphericalCoordinates {
     // vertically above the observer
     public final static double ZENITH_ALTITUDE_DEG = 90;
 
-    // The north octant
+    // The north octant, represented by a right open interval of size 45.0 and
+    // centered in 0
     public final static RightOpenInterval NORTH_INTERVAL = RightOpenInterval
             .symmetric(45.0);
 
@@ -206,7 +207,8 @@ public final class HorizontalCoordinates extends SphericalCoordinates {
      *
      * @param that
      *            The given point
-     * @return the angular distance between the receiver and the given point
+     * @return the angular distance (in radians) between the receiver and the
+     *         given point
      */
     public double angularDistanceTo(HorizontalCoordinates that) {
 
