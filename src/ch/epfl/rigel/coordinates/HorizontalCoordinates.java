@@ -212,9 +212,11 @@ public final class HorizontalCoordinates extends SphericalCoordinates {
      */
     public double angularDistanceTo(HorizontalCoordinates that) {
 
+        // The receiver's horizontal coordinates
         double az1 = this.az();
         double alt1 = this.alt();
 
+        // The given point's horizontal coordinates
         double az2 = that.az();
         double alt2 = that.alt();
 
