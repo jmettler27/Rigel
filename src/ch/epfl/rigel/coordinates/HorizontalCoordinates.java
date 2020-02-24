@@ -10,7 +10,6 @@ import ch.epfl.rigel.math.Angle;
 import ch.epfl.rigel.math.ClosedInterval;
 import ch.epfl.rigel.math.RightOpenInterval;
 
-
 /**
  * Horizontal coordinates.
  *
@@ -19,20 +18,19 @@ import ch.epfl.rigel.math.RightOpenInterval;
  */
 public final class HorizontalCoordinates extends SphericalCoordinates {
 
-   
-    // The valid right open interval (in degrees) for the azimuth
+    // The valid right open interval [0°, 360°[ (in degrees) for the azimuth
     public final static RightOpenInterval AZ_INTERVAL_DEG = RightOpenInterval
             .of(0, 360);
 
-    // The valid right open interval (in radians) for the azimuth
+    // The valid right open interval [0, 2*PI[ (in radians) for the azimuth
     public final static RightOpenInterval AZ_INTERVAL_RAD = RightOpenInterval
             .of(0, Angle.ofDeg(360));
 
-    // The valid closed interval (in degrees) for the altitude
+    // The valid closed interval [-90°, 90°] (in degrees) for the altitude
     public final static ClosedInterval ALT_INTERVAL_DEG = ClosedInterval.of(-90,
             90);
 
-    // The valid closed interval (in radians) for the altitude
+    // The valid closed interval [-PI/2, PI/2] (in radians) for the altitude
     public final static ClosedInterval ALT_INTERVAL_RAD = ClosedInterval
             .of(Angle.ofDeg(-90), Angle.ofDeg(90));
 

@@ -1,3 +1,5 @@
+// Rigel stage 3
+
 package ch.epfl.rigel.coordinates;
 
 import org.junit.jupiter.api.Test;
@@ -8,5 +10,6 @@ class EclipticToEquatorialConversionTest {
 
     @Test
     void apply() {
+
     }
 }

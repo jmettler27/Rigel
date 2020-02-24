@@ -8,7 +8,8 @@ import java.util.function.Function;
 import static java.lang.Math.*;
 
 /**
- * Conversion from equatorial to horizontal coordinates.
+ * A change of coordinate system from equatorial to horizontal coordinates at a
+ * given epoch and location.
  * 
  * @author Mathias Bouilloud (309979)
  * @author Julien Mettler (309999)
@@ -17,34 +18,46 @@ import static java.lang.Math.*;
 public final class EquatorialToHorizontalConversion
         implements Function<EquatorialCoordinates, HorizontalCoordinates> {
 
-    private ZonedDateTime when; //
-    private GeographicCoordinates where;
-    private double phi;
+    private final ZonedDateTime when; // The given epoch
+    private final GeographicCoordinates where; // The given location
+
+    private final double phi; // The observer's latitude
 
     /**
-     * Constructs a system of coordinates
+     * Constructs a change of coordinate system between equatorial and
+     * horizontal coordinates for the given date-time pair and location.
      * 
      * @param when
+     *            The given date-time pair
      * @param where
+     *            The given location
      */
     public EquatorialToHorizontalConversion(ZonedDateTime when,
             GeographicCoordinates where) {
         this.when = when;
         this.where = where;
+        
         phi = where.lat();
 
     }
 
     @Override
     public HorizontalCoordinates apply(EquatorialCoordinates equ) {
-        double H = SiderealTime.local(when, where) - equ.ra(); // angle horaire
+        double alpha = equ.ra();
+        double delta = equ.dec();
 
-        double numerator = sin(equ.dec()) - sin(phi) * sin(equ.ra());
-        double denominator = cos(phi) * cos(equ.ra());
+        // The hour angle (sidereal time - right ascension). Is equal to 0 if
+        // the astronomical object lies due south
+        double H = SiderealTime.local(when, where) - alpha; // hour angle
+
+        double numerator = sin(delta) - sin(phi) * sin(alpha);
+        double denominator = cos(phi) * cos(alpha);
+
+        // The first horizontal coordinate, the azimuth
         double A = acos(numerator / denominator);
 
-        double h = asin(
-                sin(equ.dec() * sin(phi) + cos(equ.dec() * cos(phi) * cos(H))));
+        // The second horizontal coordinate, the altitude
+        double h = asin(sin(delta * sin(phi) + cos(delta * cos(phi) * cos(H))));
 
         return HorizontalCoordinates.of(A, h);
     }
