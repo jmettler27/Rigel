@@ -7,8 +7,6 @@ import ch.epfl.rigel.math.RightOpenInterval;
 
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalField;
 
 public final class SiderealTime {
 
@@ -41,7 +39,6 @@ public final class SiderealTime {
     }
 
     /**
-     *
      * @param when
      * @param where
      * @return
