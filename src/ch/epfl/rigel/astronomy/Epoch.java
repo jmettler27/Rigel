@@ -12,8 +12,8 @@ import java.time.temporal.ChronoUnit;
  */
 public enum Epoch {
 
-    J2000(2000, Month.JANUARY, 1, 12, 0, ZoneOffset.UTC),
-    J2010(2009, Month.DECEMBER, 31, 0, 0, ZoneOffset.UTC);
+    J2000(2000, Month.JANUARY, 1, 12, 0, ZoneOffset.UTC), J2010(2009,
+            Month.DECEMBER, 31, 0, 0, ZoneOffset.UTC);
 
     private ZonedDateTime zonedDateTime;
 
@@ -26,8 +26,11 @@ public enum Epoch {
      * @param minute
      * @param zoneOffset
      */
-    Epoch(int year, Month month, int dayOfMonth, int hour, int minute, ZoneOffset zoneOffset) {
-        this.zonedDateTime = ZonedDateTime.of(LocalDate.of(year, month, dayOfMonth), LocalTime.of(hour, minute), zoneOffset);
+    Epoch(int year, Month month, int dayOfMonth, int hour, int minute,
+            ZoneOffset zoneOffset) {
+        this.zonedDateTime = ZonedDateTime.of(
+                LocalDate.of(year, month, dayOfMonth),
+                LocalTime.of(hour, minute), zoneOffset);
     }
 
     /**
@@ -52,6 +55,5 @@ public enum Epoch {
 
         return (nbDays / 36525.0);
     }
-
 
 }

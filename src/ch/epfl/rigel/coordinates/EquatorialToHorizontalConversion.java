@@ -1,9 +1,6 @@
 package ch.epfl.rigel.coordinates;
 
-import ch.epfl.rigel.astronomy.Epoch;
 import ch.epfl.rigel.astronomy.SiderealTime;
-import ch.epfl.rigel.math.Angle;
-import ch.epfl.rigel.math.Polynomial;
 
 import java.time.ZonedDateTime;
 import java.util.function.Function;
@@ -11,18 +8,27 @@ import java.util.function.Function;
 import static java.lang.Math.*;
 
 /**
- *
+ * Conversion from equatorial to horizontal coordinates.
+ * 
+ * @author Mathias Bouilloud (309979)
+ * @author Julien Mettler (309999)
+ * 
  */
-public final class EquatorialToHorizontalConversion implements Function<EquatorialCoordinates, HorizontalCoordinates> {
+public final class EquatorialToHorizontalConversion
+        implements Function<EquatorialCoordinates, HorizontalCoordinates> {
+
     private ZonedDateTime when; //
     private GeographicCoordinates where;
     private double phi;
 
     /**
+     * Constructs a system of coordinates
+     * 
      * @param when
      * @param where
      */
-    public EquatorialToHorizontalConversion(ZonedDateTime when, GeographicCoordinates where) {
+    public EquatorialToHorizontalConversion(ZonedDateTime when,
+            GeographicCoordinates where) {
         this.when = when;
         this.where = where;
         phi = where.lat();
@@ -37,7 +43,8 @@ public final class EquatorialToHorizontalConversion implements Function<Equatori
         double denominator = cos(phi) * cos(equ.ra());
         double A = acos(numerator / denominator);
 
-        double h = asin(sin(equ.dec() * sin(phi) + cos(equ.dec() * cos(phi) * cos(H))));
+        double h = asin(
+                sin(equ.dec() * sin(phi) + cos(equ.dec() * cos(phi) * cos(H))));
 
         return HorizontalCoordinates.of(A, h);
     }
