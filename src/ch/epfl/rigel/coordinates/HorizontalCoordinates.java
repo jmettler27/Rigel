@@ -10,6 +10,7 @@ import ch.epfl.rigel.math.Angle;
 import ch.epfl.rigel.math.ClosedInterval;
 import ch.epfl.rigel.math.RightOpenInterval;
 
+
 /**
  * Horizontal coordinates.
  *
@@ -18,6 +19,7 @@ import ch.epfl.rigel.math.RightOpenInterval;
  */
 public final class HorizontalCoordinates extends SphericalCoordinates {
 
+   
     // The valid right open interval (in degrees) for the azimuth
     public final static RightOpenInterval AZ_INTERVAL_DEG = RightOpenInterval
             .of(0, 360);

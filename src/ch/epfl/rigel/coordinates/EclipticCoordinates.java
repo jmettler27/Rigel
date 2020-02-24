@@ -2,6 +2,10 @@ package ch.epfl.rigel.coordinates;
 
 import java.util.Locale;
 
+import ch.epfl.rigel.math.Angle;
+import ch.epfl.rigel.math.ClosedInterval;
+import ch.epfl.rigel.math.RightOpenInterval;
+
 /**
  * Ecliptic coordinates.
  * 
@@ -10,6 +14,26 @@ import java.util.Locale;
  * 
  */
 public final class EclipticCoordinates extends SphericalCoordinates {
+
+    // The valid right open interval (in degrees) for the right ascension
+    public final static RightOpenInterval LON_INTERVAL_DEG = RightOpenInterval
+            .of(0, 360);
+
+    // The valid right open interval (in hours) for the right ascension
+    public final static RightOpenInterval LON_INTERVAL_HR = RightOpenInterval
+            .of(0, Angle.toHr(Angle.TAU));
+
+    // The valid right open interval (in radians) for the right ascension
+    public final static RightOpenInterval LON_INTERVAL_RAD = RightOpenInterval
+            .of(0, Angle.TAU);
+
+    // The valid closed interval (in degrees) for the declination
+    public final static ClosedInterval LAT_INTERVAL_DEG = ClosedInterval.of(-90,
+            90);
+
+    // The valid closed interval (in radians) for the declination
+    public final static ClosedInterval LAT_INTERVAL_RAD = ClosedInterval
+            .of(Angle.ofDeg(-90), Angle.ofDeg(90));
 
     /**
      * Constructs ecliptic coordinates with the given longitude and latitude.
@@ -34,7 +58,15 @@ public final class EclipticCoordinates extends SphericalCoordinates {
      * @return the ecliptic coordinates (longitude and latitude) in radians
      */
     public static EclipticCoordinates of(double lon, double lat) {
-        return new EclipticCoordinates(lon, lat);
+
+        if (LON_INTERVAL_RAD.contains(lon) && LAT_INTERVAL_RAD.contains(lat)) {
+            return new EclipticCoordinates(lon, lat);
+        } else {
+            throw new IllegalArgumentException(
+                    "The longitude must be contained in " + LON_INTERVAL_RAD
+                            + " and the latitude must be contained in "
+                            + LAT_INTERVAL_RAD + ".");
+        }
     }
 
     /**
