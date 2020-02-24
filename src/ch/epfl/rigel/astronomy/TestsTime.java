@@ -1,6 +1,7 @@
 package ch.epfl.rigel.astronomy;
 
 import java.time.*;
+import java.time.temporal.ChronoUnit;
 
 /**
  * .
@@ -10,16 +11,15 @@ import java.time.*;
  */
 public class TestsTime {
 
-    public TestsTime() {
-        // TODO Auto-generated constructor stub
-    }
-
     public static void main(String[] args) {
         ZonedDateTime d = ZonedDateTime.of(
                 LocalDate.of(2000, Month.JANUARY, 3),
-                LocalTime.of(18, 0),
+                LocalTime.of(18, 55),
                 ZoneOffset.UTC);
         System.out.println(Epoch.J2000.daysUntil(d));
+
+        double t = d.truncatedTo(ChronoUnit.HOURS).getHour();
+        System.out.println(t);
 
     }
 
