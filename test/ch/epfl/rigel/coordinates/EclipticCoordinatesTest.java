@@ -1,4 +1,4 @@
-//Rigel stage 2
+// Rigel stage 2
 
 package ch.epfl.rigel.coordinates;
 
@@ -10,6 +10,23 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class EclipticCoordinatesTest {
 
+    
+    @Test
+    void ofThrowsWithInvalidLongitude() {
+        
+    }
+    @Test
+    void lonReturnsCorrectValue() {
+        EclipticCoordinates e = EclipticCoordinates.of(-0.5, 0.5);
+        assertEquals(-0.5, e.lon());
+    }
+
+    @Test
+    void latReturnsCorrectValue() {
+        EclipticCoordinates e = EclipticCoordinates.of(0, 25);
+        assertEquals(25, e.lat());
+    }
+
     @Test
     void testToString() {
 
@@ -17,17 +34,5 @@ class EclipticCoordinatesTest {
                 Angle.ofDeg(18.0000));
 
         assertEquals("(λ=22.5000°, β=18.0000°)", e.toString());
-    }
-
-    @Test
-    void lonTest() {
-        EclipticCoordinates e = EclipticCoordinates.of(-0.5, 0.5);
-        assertEquals(-0.5, e.lon());
-    }
-
-    @Test
-    void latTest() {
-        EclipticCoordinates e = EclipticCoordinates.of(0, 25);
-        assertEquals(25, e.lat());
     }
 }

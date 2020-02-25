@@ -15,7 +15,7 @@ import ch.epfl.rigel.math.RightOpenInterval;
  */
 public final class GeographicCoordinates extends SphericalCoordinates {
 
-    // The valid right open interval [-180°, 180°] (in degrees) for the
+    // The valid right open interval [-180°, 180°[ (in degrees) for the
     // longitude
     public final static RightOpenInterval LON_INTERVAL_DEG = RightOpenInterval
             .of(-180, 180);

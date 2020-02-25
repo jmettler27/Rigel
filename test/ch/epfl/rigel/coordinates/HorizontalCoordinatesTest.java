@@ -1,4 +1,4 @@
-//Rigel stage 2
+// Rigel stage 2
 
 package ch.epfl.rigel.coordinates;
 
@@ -11,59 +11,155 @@ import static org.junit.jupiter.api.Assertions.*;
 class HorizontalCoordinatesTest {
 
     @Test
-    void ofDegThrows1() {
-        double[] invalidAzDeg = { -0.000000001, 0, 360.000000001 };
+    void ofDegThrowsWhenInvalidAzimuth() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            HorizontalCoordinates.ofDeg(-0.000000001, 0.0);
+        });
 
         assertThrows(IllegalArgumentException.class, () -> {
-            for (int i = 0; i < invalidAzDeg.length; ++i) {
-                HorizontalCoordinates.of(Angle.ofDeg(invalidAzDeg[i]), 0);
-            }
+            HorizontalCoordinates.ofDeg(360.000000001, 0.0);
         });
     }
 
     @Test
-    void ofDegThrows2() {
-        double[] invalidAltDeg = { -90.000000001, 0, 90.000000001 };
+    void ofDegThrowsWhenInvalidAltitude() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            HorizontalCoordinates.ofDeg(0.0, -90.000000001);
+        });
 
         assertThrows(IllegalArgumentException.class, () -> {
-            for (int i = 0; i < invalidAltDeg.length; ++i) {
-                HorizontalCoordinates.of(Angle.ofDeg(invalidAltDeg[i]), 0);
-            }
+            HorizontalCoordinates.ofDeg(0.0, 90.000000001);
+        });
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            HorizontalCoordinates.ofDeg(0.0, -456.8769);
         });
     }
 
     @Test
-    void azTest() {
+    void azReturnsCorrectValue() {
         HorizontalCoordinates h = HorizontalCoordinates.of(Math.PI, 0);
         assertEquals(Math.PI, h.az());
     }
 
     @Test
-    void azDegTest() {
+    void azDegReturnsCorrectValue() {
         HorizontalCoordinates h = HorizontalCoordinates.ofDeg(315, 25);
         assertEquals(315, h.azDeg());
     }
 
     @Test
-    void altDegTest() {
-        HorizontalCoordinates h = HorizontalCoordinates.ofDeg(315, 25);
-        assertEquals(25, h.altDeg());
-    }
-
-    @Test
-    void altTest() {
+    void altReturnsCorrectValue() {
         HorizontalCoordinates h = HorizontalCoordinates.of(0, 1);
         assertEquals(1, h.alt());
     }
 
     @Test
-    void azOctantName() {
-        assertEquals("N", HorizontalCoordinates.ofDeg(0, 55).azOctantName("N",
+    void altDegReturnsCorrectValue() {
+        HorizontalCoordinates h = HorizontalCoordinates.ofDeg(315, 25);
+        assertEquals(25, h.altDeg());
+    }
+
+    @Test
+    void azOctantWorksOnBasicAzimuths() {
+        assertEquals("N", HorizontalCoordinates.ofDeg(0.0, 0).azOctantName("N",
+                "E", "S", "O"));
+
+        assertEquals("N", HorizontalCoordinates.ofDeg(5.234567, 0)
+                .azOctantName("N", "E", "S", "O"));
+
+        assertEquals("NO", HorizontalCoordinates.ofDeg(315, 0).azOctantName("N",
+                "E", "S", "O"));
+
+        assertEquals("O", HorizontalCoordinates.ofDeg(270, 0).azOctantName("N",
+                "E", "S", "O"));
+
+        assertEquals("SO", HorizontalCoordinates.ofDeg(225, 0).azOctantName("N",
+                "E", "S", "O"));
+
+        assertEquals("S", HorizontalCoordinates.ofDeg(180, 0).azOctantName("N",
+                "E", "S", "O"));
+
+        assertEquals("SE", HorizontalCoordinates.ofDeg(135, 0).azOctantName("N",
+                "E", "S", "O"));
+
+        assertEquals("E", HorizontalCoordinates.ofDeg(90, 0).azOctantName("N",
+                "E", "S", "O"));
+
+        assertEquals("NE", HorizontalCoordinates.ofDeg(45, 0).azOctantName("N",
                 "E", "S", "O"));
     }
 
     @Test
-    void angularDistanceToTest() {
+    void azOctantWorksOnVeryCloseAzimuths() {
+
+        // North / north-east limit (north side)
+        assertEquals("N", HorizontalCoordinates.ofDeg(22.4999999, 0)
+                .azOctantName("N", "E", "S", "O"));
+
+        // North / north-east limit (north-east side)
+        assertEquals("NE", HorizontalCoordinates.ofDeg(45.0 / 2.0, 0)
+                .azOctantName("N", "E", "S", "O"));
+
+        // North-east / east limit (north-east side)
+        assertEquals("NE", HorizontalCoordinates.ofDeg(45.0 + 22.4999, 0)
+                .azOctantName("N", "E", "S", "O"));
+
+        // North-east / east limit (east side)
+        assertEquals("E", HorizontalCoordinates.ofDeg(45.0 + 45.0 / 2.0, 0)
+                .azOctantName("N", "E", "S", "O"));
+
+        // East / south-east limit (east side)
+        assertEquals("E", HorizontalCoordinates.ofDeg(90 + 22.4999, 0)
+                .azOctantName("N", "E", "S", "O"));
+
+        // East / south-east limit (south-east side)
+        assertEquals("SE", HorizontalCoordinates.ofDeg(90 + 45.0 / 2.0, 0)
+                .azOctantName("N", "E", "S", "O"));
+
+        // South-east / south limit (south-east side)
+        assertEquals("SE", HorizontalCoordinates.ofDeg(135.0 + 22.4999, 0)
+                .azOctantName("N", "E", "S", "O"));
+
+        // South-east / south limit (south side)
+        assertEquals("S", HorizontalCoordinates.ofDeg(135.0 + 45.0 / 2.0, 0)
+                .azOctantName("N", "E", "S", "O"));
+
+        // South / south-west limit (south side)
+        assertEquals("S", HorizontalCoordinates.ofDeg(180.0 + 22.4999, 0)
+                .azOctantName("N", "E", "S", "O"));
+
+        // South / south-west limit (south-west side)
+        assertEquals("SO", HorizontalCoordinates.ofDeg(180.0 + 45.0 / 2.0, 0)
+                .azOctantName("N", "E", "S", "O"));
+
+        // South-west / west limit (south-west side)
+        assertEquals("SO", HorizontalCoordinates.ofDeg(225.0 + 22.4999, 0)
+                .azOctantName("N", "E", "S", "O"));
+
+        // South-west / west limit (west side)
+        assertEquals("O", HorizontalCoordinates.ofDeg(225.0 + 45.0 / 2.0, 0)
+                .azOctantName("N", "E", "S", "O"));
+
+        // West / north-west limit (west side)
+        assertEquals("O", HorizontalCoordinates.ofDeg(270.0 + 22.4999, 0)
+                .azOctantName("N", "E", "S", "O"));
+
+        // West / north-west limit (north-west side)
+        assertEquals("NO", HorizontalCoordinates.ofDeg(270.0 + 45.0 / 2.0, 0)
+                .azOctantName("N", "E", "S", "O"));
+
+        // North-west / north limit (north-west side)
+        assertEquals("NO", HorizontalCoordinates.ofDeg(315.0 + 22.4999999, 0)
+                .azOctantName("N", "E", "S", "O"));
+
+        // North-west / north limit (north side)
+        assertEquals("N", HorizontalCoordinates.ofDeg(315.0 + 45.0 / 2.0, 0)
+                .azOctantName("N", "E", "S", "O"));
+    }
+
+    @Test
+    void angularDistanceToWorksWithTenThousandthTolerance() {
         HorizontalCoordinates EPFLCoords = HorizontalCoordinates.ofDeg(6.5682,
                 46.5183);
 
@@ -85,12 +181,4 @@ class HorizontalCoordinatesTest {
         assertEquals("(az=25.4500°, alt=5.2436°)", c2.toString());
 
     }
-
-    /*
-     * @Test void centeredIntervalThrows() { HorizontalCoordinates h =
-     * HorizontalCoordinates.ofDeg(350, 7.2);
-     * assertThrows(IllegalArgumentException.class, () -> {
-     * h.centeredInterval(-55); }); }
-     */
-
 }

@@ -1,4 +1,4 @@
-//Rigel stage 2
+// Rigel stage 2
 
 package ch.epfl.rigel.coordinates;
 
@@ -11,17 +11,24 @@ import static org.junit.jupiter.api.Assertions.*;
 class EquatorialCoordinatesTest {
 
     @Test
-    void ofThrows() {
-        double[] invalidRaDeg = { -0.000000001, 360.00000001 };
-
-        double[] invalidDecDeg = { -90.000000001, 90.0000000001 };
+    void ofThrowsWithInvalidRightAscension() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            EquatorialCoordinates.of(-0.000000001, 45.0);
+        });
 
         assertThrows(IllegalArgumentException.class, () -> {
-            for (int i = 0; i < invalidRaDeg.length; ++i) {
-                for (int j = 0; j < invalidDecDeg.length; ++j) {
-                    EquatorialCoordinates.of(invalidRaDeg[i], invalidDecDeg[j]);
-                }
-            }
+            EquatorialCoordinates.of(360.00000001, 45.0);
+        });
+    }
+
+    @Test
+    void ofThrowsWithInvalidDeclination() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            EquatorialCoordinates.of(45.0, -90.000000001);
+        });
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            EquatorialCoordinates.of(45.0, 90.0000000001);
         });
     }
 
@@ -35,11 +42,12 @@ class EquatorialCoordinatesTest {
                 Angle.TAU / 24.0, -Angle.TAU / 8.0, Angle.TAU / 8.0,
                 Angle.TAU / 12.0, Angle.ofDeg(55.0) };
 
-        String[] hr = { "(ra=0.0000h, dec=-90.0000°)",
-                "(ra=1.0000h, dec=90.0000°)", "(ra=2.0000h, dec=-15.0000°)",
-                "(ra=3.0000h, dec=15.0000°)", "(ra=4.0000h, dec=-45.0000°)",
-                "(ra=6.0000h, dec=45.0000°)", "(ra=8.0000h, dec=30.0000°)",
-                "(ra=12.0000h, dec=55.0000°)" };
+        String[] hr = {
+
+                "(ra=0.0000h, dec=-90.0000°)", "(ra=1.0000h, dec=90.0000°)",
+                "(ra=2.0000h, dec=-15.0000°)", "(ra=3.0000h, dec=15.0000°)",
+                "(ra=4.0000h, dec=-45.0000°)", "(ra=6.0000h, dec=45.0000°)",
+                "(ra=8.0000h, dec=30.0000°)", "(ra=12.0000h, dec=55.0000°)" };
 
         for (int i = 0; i < ra.length; ++i) {
             EquatorialCoordinates e = EquatorialCoordinates.of(ra[i], dec[i]);

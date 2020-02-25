@@ -38,11 +38,6 @@ public final class HorizontalCoordinates extends SphericalCoordinates {
     // vertically above the observer
     public final static double ZENITH_ALTITUDE_DEG = 90;
 
-    // The north octant, represented by a right open interval of size 45.0 and
-    // centered in 0
-    public final static RightOpenInterval NORTH_INTERVAL = RightOpenInterval
-            .symmetric(45.0);
-
     /**
      * Constructs horizontal coordinates with the given azimuth and altitude.
      *
@@ -141,8 +136,13 @@ public final class HorizontalCoordinates extends SphericalCoordinates {
      */
     public String azOctantName(String n, String e, String s, String w) {
 
+        final RightOpenInterval NORTH_INTERVAL_LEFT = RightOpenInterval
+                .of(360 - 45.0 / 2.0, 360.0);
+        final RightOpenInterval NORTH_INTERVAL_RIGHT = RightOpenInterval.of(0,
+                45.0 / 2.0);
         // North
-        if (NORTH_INTERVAL.contains(azDeg())) {
+        if (NORTH_INTERVAL_LEFT.contains(azDeg())
+                || NORTH_INTERVAL_RIGHT.contains(azDeg())) {
             return n;
         }
 
