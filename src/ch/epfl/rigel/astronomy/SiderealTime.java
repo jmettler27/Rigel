@@ -90,8 +90,6 @@ public final class SiderealTime {
 
         // The normalized local sidereal time
         double normalized_Sl = RightOpenInterval.of(0, Math.PI).reduce(Sl);
-        System.out.println(Angle.toHr(normalized_Sl));
-
 
         return normalized_Sl;
     }

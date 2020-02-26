@@ -1,6 +1,7 @@
 package ch.epfl.rigel.coordinates;
 
 import ch.epfl.rigel.astronomy.SiderealTime;
+import ch.epfl.rigel.math.Angle;
 
 import java.time.ZonedDateTime;
 import java.util.function.Function;
@@ -50,14 +51,18 @@ public final class EquatorialToHorizontalConversion
         // the astronomical object lies due south
         double H = SiderealTime.local(when, where) - alpha; // hour angle
 
-        double numerator = sin(delta) - sin(phi) * sin(alpha);
-        double denominator = cos(phi) * cos(alpha);
+
+        double temph = sin(delta) * sin(phi) + cos(delta) * cos(phi) * cos(H);
+        double h = asin(temph);
+
+        double numerator = sin(delta) - sin(phi) * sin(h);
+        double denominator = cos(phi) * cos(h);
 
         // The first horizontal coordinate, the azimuth
         double A = acos(numerator / denominator);
 
+
         // The second horizontal coordinate, the altitude
-        double h = asin(sin(delta * sin(phi) + cos(delta * cos(phi) * cos(H))));
 
         return HorizontalCoordinates.of(A, h);
     }
