@@ -28,9 +28,9 @@ public final class EclipticToEquatorialConversion
 
     /**
      * Constructs a change of coordinate system between ecliptic and equatorial
-     * coordinates for the given date-time pair.
+     * coordinates for the given date/time pair.
      *
-     * @param when The given date-time pair
+     * @param when The given date/time pair
      */
     public EclipticToEquatorialConversion(ZonedDateTime when) {
 

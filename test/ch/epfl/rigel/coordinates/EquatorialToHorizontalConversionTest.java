@@ -13,17 +13,21 @@ class EquatorialToHorizontalConversionTest {
 
     @Test
     void apply() {
-        ZonedDateTime when = ZonedDateTime.of(LocalDate.of(1980, Month.APRIL, 22),
-                LocalTime.of(18, 36, 51), ZoneOffset.UTC);
 
-        GeographicCoordinates where = GeographicCoordinates.ofDeg(50,52);
+        ZonedDateTime when = ZonedDateTime.of(
+                LocalDate.of(1980, Month.APRIL, 22), LocalTime.of(18, 36, 51),
+                ZoneOffset.UTC);
 
-        EquatorialCoordinates equ = EquatorialCoordinates.of(Angle.ofHr(18.53), Angle.ofDMS(23,13,10));
+        GeographicCoordinates where = GeographicCoordinates.ofDeg(50, 52);
 
-        EquatorialToHorizontalConversion equToHor = new EquatorialToHorizontalConversion(when,where);
+        EquatorialCoordinates equ = EquatorialCoordinates.of(Angle.ofHr(18.53),
+                Angle.ofDMS(23, 13, 10));
+
+        EquatorialToHorizontalConversion equToHor = new EquatorialToHorizontalConversion(
+                when, where);
 
         HorizontalCoordinates hor = equToHor.apply(equ);
 
-        //assertEquals(Angle.ofHr(9.581478), equ.ra(), 1e-2);
+        // assertEquals(Angle.ofHr(9.581478), equ.ra(), 1e-2);
     }
 }
