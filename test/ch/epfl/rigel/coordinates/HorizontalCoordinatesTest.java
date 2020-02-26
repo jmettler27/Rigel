@@ -38,8 +38,8 @@ class HorizontalCoordinatesTest {
 
     @Test
     void azReturnsCorrectValue() {
-        HorizontalCoordinates h = HorizontalCoordinates.of(Math.PI, 0);
-        assertEquals(Math.PI, h.az());
+        HorizontalCoordinates h = HorizontalCoordinates.of(0.3453, 0);
+        assertEquals(0.3453, h.az());
     }
 
     @Test
@@ -91,7 +91,7 @@ class HorizontalCoordinatesTest {
     }
 
     @Test
-    void azOctantWorksOnVeryCloseAzimuths() {
+    void azOctantWorksOnLimitCases() {
 
         // North / north-east limit (north side)
         assertEquals("N", HorizontalCoordinates.ofDeg(22.4999999, 0)

@@ -17,14 +17,14 @@ class EclipticCoordinatesTest {
     }
     @Test
     void lonReturnsCorrectValue() {
-        EclipticCoordinates e = EclipticCoordinates.of(-0.5, 0.5);
-        assertEquals(-0.5, e.lon());
+        EclipticCoordinates e = EclipticCoordinates.of(0.5, 0.5);
+        assertEquals(0.5, e.lon());
     }
 
     @Test
     void latReturnsCorrectValue() {
-        EclipticCoordinates e = EclipticCoordinates.of(0, 25);
-        assertEquals(25, e.lat());
+        EclipticCoordinates e = EclipticCoordinates.of(0, Angle.ofDeg(4.5));
+        assertEquals(Angle.ofDeg(4.5), e.lat());
     }
 
     @Test
