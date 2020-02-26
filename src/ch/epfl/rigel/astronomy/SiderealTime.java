@@ -5,6 +5,8 @@ import ch.epfl.rigel.math.Angle;
 import ch.epfl.rigel.math.Polynomial;
 import ch.epfl.rigel.math.RightOpenInterval;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
@@ -29,14 +31,16 @@ public final class SiderealTime {
      * Returns the Greenwich sidereal time (the one at longitude 0°) in the
      * interval [0, π[, for a given date-time pair
      *
-     * @param when
-     *            The given date/time pair (a moment)
+     * @param when The given date/time pair (a moment)
      * @return the Greenwich sidereal time (in radians)
      */
     public static double greenwich(ZonedDateTime when) {
 
         // The moment expressed in the UTC time-zone
         ZonedDateTime whenUTC = when.withZoneSameInstant(ZoneOffset.UTC);
+
+        ZonedDateTime dayStart = ZonedDateTime.of(LocalDate.of(whenUTC.getYear(), whenUTC.getMonth(), whenUTC.getDayOfMonth()),
+                LocalTime.of(0, 0, 0, 0), ZoneOffset.UTC);
 
         // The number of Julian centuries between the epoch J2000 and the
         // beginning of the day containing the instant (i.e. 0h that day)
@@ -45,7 +49,9 @@ public final class SiderealTime {
 
         // The number of hours between the beginning of the day containing the
         // instant and the instant itself.
-        double t = whenUTC.getHour() + (whenUTC.getMinute() / 60.0);
+        double nbMillis = dayStart.until(whenUTC, ChronoUnit.MILLIS);
+
+        double t = (nbMillis / 1000.0) / 3600.0;
 
         double S0 = Polynomial.of(0.000025862, 2400.051336, 6.697374558).at(T);
         double S1 = Polynomial.of(1.002737909, 0).at(t);
@@ -67,25 +73,25 @@ public final class SiderealTime {
     /**
      * Returns the local sidereal time (in radians) for a given date-time pair
      * and specific to the given location.
-     * 
-     * @param when
-     *            The given date-time pair
-     * @param where
-     *            The given location's geographic coordinates
+     *
+     * @param when  The given date-time pair
+     * @param where The given location's geographic coordinates
      * @return the local sidereal time (in radians) for the given data-time pair
-     *         and specific to the given location
+     * and specific to the given location
      */
     public static double local(ZonedDateTime when,
-            GeographicCoordinates where) {
+                               GeographicCoordinates where) {
 
         // The sidereal time specific to Greenwich
-        double sideralGreenwich = greenwich(when);
+        double siderealGreenwich = greenwich(when);
 
         // The local sidereal time specific to the given location where
-        double Sl = sideralGreenwich + where.lon();
+        double Sl = siderealGreenwich + where.lon();
 
         // The normalized local sidereal time
         double normalized_Sl = RightOpenInterval.of(0, Math.PI).reduce(Sl);
+        System.out.println(Angle.toHr(normalized_Sl));
+
 
         return normalized_Sl;
     }

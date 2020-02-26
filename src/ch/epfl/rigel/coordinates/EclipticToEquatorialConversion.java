@@ -14,15 +14,12 @@ import static java.lang.Math.*;
 /**
  * A change of coordinate system from ecliptic to equatorial coordinates at a
  * given epoch.
- * 
+ *
  * @author Mathias Bouilloud (309979)
  * @author Julien Mettler (309999)
- * 
  */
 public final class EclipticToEquatorialConversion
         implements Function<EclipticCoordinates, EquatorialCoordinates> {
-
-    // private final ZonedDateTime when; // The given epoch
 
     // The obliquity of the ecliptic, i.e. the angle of inclination of the
     // Earth's axis of rotation relative to the ecliptic.
@@ -32,13 +29,10 @@ public final class EclipticToEquatorialConversion
     /**
      * Constructs a change of coordinate system between ecliptic and equatorial
      * coordinates for the given date-time pair.
-     * 
-     * @param when
-     *            The given date-time pair
+     *
+     * @param when The given date-time pair
      */
     public EclipticToEquatorialConversion(ZonedDateTime when) {
-
-        // this.when = when;
 
         // The number of Julian centuries elapsed since January 1st, 2000 at
         // 12h00 UTC.
@@ -46,10 +40,9 @@ public final class EclipticToEquatorialConversion
 
         // The coefficients of the obliquity's polynomial
         double coeff0 = Angle.ofDMS(0, 0, 0.00181);
-        double coeff1 = Angle.ofDMS(0, 0, -0.0006);
-        double coeff2 = Angle.ofDMS(0, 0, -46.815);
+        double coeff1 = -Angle.ofDMS(0, 0, 0.0006);
+        double coeff2 = -Angle.ofDMS(0, 0, 46.815);
         double coeff3 = Angle.ofDMS(23, 26, 21.45);
-
         obliquity = Polynomial.of(coeff0, coeff1, coeff2, coeff3).at(T);
     }
 
@@ -67,9 +60,11 @@ public final class EclipticToEquatorialConversion
         // The first equatorial coordinate (the right ascension)
         double alpha = atan2(num, denom);
 
+        double tempDelta = sin(beta) * cos(obliquity)
+                + cos(beta) * sin(obliquity) * sin(lambda);
+
         // The second equatorial coordinate (the declination)
-        double delta = asin(sin(beta) * cos(beta)
-                + cos(beta) * sin(obliquity) * sin(lambda));
+        double delta = asin(tempDelta);
 
         // The equatorial coords corresponding to the given ecliptic coords
         return EquatorialCoordinates.of(alpha, delta);
