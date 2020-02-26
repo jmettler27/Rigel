@@ -57,7 +57,7 @@ public final class EquatorialToHorizontalConversion
         double denominator = sin(delta) - sin(phi) * sin(h);
 
         // The first horizontal coordinate, the azimuth
-        double A = atan(numerator / denominator);
+        double A = atan2(numerator, denominator);
 
         return HorizontalCoordinates.of(A, h);
     }
