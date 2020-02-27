@@ -88,6 +88,9 @@ class HorizontalCoordinatesTest {
 
         assertEquals("NE", HorizontalCoordinates.ofDeg(45, 0).azOctantName("N",
                 "E", "S", "O"));
+        
+        assertEquals("NO", HorizontalCoordinates.ofDeg(335, 0)
+           .azOctantName("N", "E", "S", "O"));
     }
 
     @Test
@@ -172,6 +175,9 @@ class HorizontalCoordinatesTest {
 
     @Test
     void testToString() {
+        HorizontalCoordinates c = HorizontalCoordinates.ofDeg(350, 7.2);
+        assertEquals("(az=350.0000°, alt=7.2000°)", c.toString());
+
         HorizontalCoordinates c1 = HorizontalCoordinates.ofDeg(25.45,
                 5.2436789);
         assertEquals("(az=25.4500°, alt=5.2437°)", c1.toString());

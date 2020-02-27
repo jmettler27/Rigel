@@ -1,6 +1,8 @@
 package ch.epfl.rigel.coordinates;
 
 import ch.epfl.rigel.astronomy.SiderealTime;
+import ch.epfl.rigel.math.Angle;
+import ch.epfl.rigel.math.RightOpenInterval;
 
 import java.time.ZonedDateTime;
 import java.util.function.Function;
@@ -26,13 +28,11 @@ public final class EquatorialToHorizontalConversion
      * Constructs a change of coordinate system between equatorial and
      * horizontal coordinates for the given date/time pair and location.
      *
-     * @param when
-     *            The given date/time pair
-     * @param where
-     *            The given location
+     * @param when  The given date/time pair
+     * @param where The given location
      */
     public EquatorialToHorizontalConversion(ZonedDateTime when,
-            GeographicCoordinates where) {
+                                            GeographicCoordinates where) {
         this.when = when;
         this.where = where;
         phi = where.lat(); // The given location's latitude
@@ -51,15 +51,20 @@ public final class EquatorialToHorizontalConversion
                 + cos(delta) * cos(phi) * cos(H);
 
         // The second horizontal coordinate, the altitude
+        // Note : The method asin returns an angle in the range [-PI/2, PI/2], which is the valid alt's range
         double h = asin(tempAltitude);
 
         double numerator = -cos(delta) * cos(phi) * sin(H);
         double denominator = sin(delta) - sin(phi) * sin(h);
 
         // The first horizontal coordinate, the azimuth
+        // Note : The method atan2 returns an angle in the range [-PI, PI], while the az must be contained in [0, 2*PI[
         double A = atan2(numerator, denominator);
 
-        return HorizontalCoordinates.of(A, h);
+        // Normalizes the azimuth in its valid interval [0, 2*PI[
+        double normalized_Azimuth = Angle.normalizePositive(A);
+
+        return HorizontalCoordinates.of(normalized_Azimuth, h);
     }
 
     @Override

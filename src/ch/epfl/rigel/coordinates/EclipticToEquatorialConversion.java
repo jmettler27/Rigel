@@ -39,9 +39,9 @@ public final class EclipticToEquatorialConversion
         double T = Epoch.J2000.julianCenturiesUntil(when);
 
         // The coefficients of the obliquity's polynomial
-        double coeff0 = Angle.ofDMS(0, 0, 0.00181);
-        double coeff1 = -Angle.ofDMS(0, 0, 0.0006);
-        double coeff2 = -Angle.ofDMS(0, 0, 46.815);
+        double coeff0 = Angle.ofArcsec(0.00181);
+        double coeff1 = -Angle.ofArcsec(0.0006);
+        double coeff2 = -Angle.ofArcsec(46.815);
         double coeff3 = Angle.ofDMS(23, 26, 21.45);
         obliquity = Polynomial.of(coeff0, coeff1, coeff2, coeff3).at(T);
     }
@@ -57,17 +57,22 @@ public final class EclipticToEquatorialConversion
         // The denominator
         double denom = cos(lambda);
 
-        // The first equatorial coordinate (the right ascension)
+        // The first equatorial coordinate, the right ascension
+        // Note : The method atan2 returns an angle in [-PI, PI], while the right ascension must be contained in [0, 2*PI[
         double alpha = atan2(num, denom);
+
+        // Normalizes the right ascension in its valid interval [0, 2*PI[
+        double normalized_Alpha = Angle.normalizePositive(alpha);
 
         double tempDelta = sin(beta) * cos(obliquity)
                 + cos(beta) * sin(obliquity) * sin(lambda);
 
-        // The second equatorial coordinate (the declination)
+        // The second equatorial coordinate, the declination
+        // Note : The method asin returns an angle in the range [-PI/2, PI/2], which is the valid declination's range
         double delta = asin(tempDelta);
 
         // The equatorial coords corresponding to the given ecliptic coords
-        return EquatorialCoordinates.of(alpha, delta);
+        return EquatorialCoordinates.of(normalized_Alpha, delta);
     }
 
     @Override

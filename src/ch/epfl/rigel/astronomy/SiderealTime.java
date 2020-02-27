@@ -78,9 +78,8 @@ public final class SiderealTime {
 
         // The Greenwich sidereal time (in radians) normalized to [0, 12h[ = [0,
         // PI[
-        double normalizedSg_Rad = RightOpenInterval.of(0.0, Math.PI)
-                .reduce(Sg_rad);
-        System.out.println("normalizedSg_Rad = " + Angle.toHr(normalizedSg_Rad));
+        double normalizedSg_Rad = Angle.normalizePositive(Sg_rad);
+        System.out.println("normalizedSg_Rad = " + normalizedSg_Rad);
 
         return normalizedSg_Rad;
     }
@@ -106,7 +105,7 @@ public final class SiderealTime {
         double Sl = siderealGreenwich + where.lon();
 
         // The normalized local sidereal time
-        double normalized_Sl = RightOpenInterval.of(0, Math.PI).reduce(Sl);
+        double normalized_Sl = Angle.normalizePositive(Sl);
 
         System.out.println(Angle.toHr(normalized_Sl));
         return normalized_Sl;

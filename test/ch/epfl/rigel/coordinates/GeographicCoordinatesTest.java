@@ -5,7 +5,6 @@ package ch.epfl.rigel.coordinates;
 import org.junit.jupiter.api.Test;
 
 import ch.epfl.rigel.math.Angle;
-import ch.epfl.rigel.math.Polynomial;
 
 import static org.junit.jupiter.api.Assertions.*;
 

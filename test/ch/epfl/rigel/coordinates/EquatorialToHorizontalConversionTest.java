@@ -14,7 +14,7 @@ class EquatorialToHorizontalConversionTest {
     @Test
     void apply() {
 
-        /*ZonedDateTime when = ZonedDateTime.of(
+        ZonedDateTime when = ZonedDateTime.of(
                 LocalDate.of(1980, Month.APRIL, 22), LocalTime.of(18, 36, 51),
                 ZoneOffset.UTC);
 
@@ -26,8 +26,8 @@ class EquatorialToHorizontalConversionTest {
         EquatorialToHorizontalConversion equToHor = new EquatorialToHorizontalConversion(
                 when, where);
 
-        HorizontalCoordinates hor = equToHor.apply(equ);*/
+        HorizontalCoordinates hor = equToHor.apply(equ);
 
-        // assertEquals(Angle.ofHr(9.581478), equ.ra(), 1e-2);
+        assertEquals(Angle.ofHr(9.581478), equ.ra(), 1e-2);
     }
 }
