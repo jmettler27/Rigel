@@ -21,6 +21,8 @@ public class Test {
 
         double obliquity = Polynomial.of(coeff0, coeff1, coeff2, coeff3).at(T);
         System.out.println(Angle.toDeg(obliquity));
+        
+        System.out.println(Angle.toHr(Angle.TAU) + "h");
 
     }
 }

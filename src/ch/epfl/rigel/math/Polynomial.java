@@ -68,11 +68,11 @@ public final class Polynomial {
         }
 
         else {
-            // The lowest-degree term (constant)
+            // The lowest-degree coefficient (constant)
             double c0 = coeffs[coeffs.length - 1];
 
             // Polynomial of degree 0 (constant polynomial)
-            // ==> f(x) = v for any x
+            // ==> f(x) = c0 for any x
             if (coeffs.length == 1) {
                 return c0;
             }
@@ -107,9 +107,13 @@ public final class Polynomial {
 
         StringBuilder b = new StringBuilder("");
 
+        // Constant polynomial (of degree 0)
         if (coeffs.length == 1) {
             b.append(coeffs[0]);
-        } else if (coeffs.length == 2) {
+        }
+
+        // Linear polynomial (of degree 1)
+        else if (coeffs.length == 2) {
             if (Math.abs(coeffs[0]) != 1) {
                 b.append(coeffs[0] + "x");
             } else if (coeffs[0] == 1) {
@@ -117,7 +121,11 @@ public final class Polynomial {
             } else {
                 b.append("-x");
             }
-        } else {
+        }
+
+        // Polynomial of degree at least 2
+        else {
+            // Display of the highest-degree (at index 0) coefficient
             if (Math.abs(coeffs[0]) != 1) {
                 b.append(coeffs[0] + "x^" + (coeffs.length - 1));
             } else if (coeffs[0] == 1) {
@@ -127,10 +135,12 @@ public final class Polynomial {
             }
         }
 
+        // Display of the coefficients at index at least 1
         for (int i = 1; i < coeffs.length; ++i) {
-
             if (coeffs[i] != 0) {
-
+                // Does not display the coefficient if the latter is 1 or -1,
+                // unless
+                // the last coefficient is a non-zero constant
                 if (Math.abs(coeffs[i]) == 1) {
                     if (coeffs[i] == 1) {
                         if (i == coeffs.length - 1) {
@@ -149,7 +159,9 @@ public final class Polynomial {
                             b.append("-x^" + (coeffs.length - 1 - i));
                         }
                     }
-                } else {
+                }
+                // The coefficient is not 1
+                else {
                     if (coeffs[i] > 0) {
                         if (i == coeffs.length - 1) {
                             b.append("+" + coeffs[i]);
@@ -173,25 +185,6 @@ public final class Polynomial {
             }
         }
         return b.toString();
-    }
-
-    /**
-     * Verifies if the i-th (strictly positive) coefficient is the first
-     * non-zero displayed coefficient. If it is the case, the sign (+) is not
-     * displayed.
-     * 
-     * @param i
-     *            The position of the i-th coefficient
-     * @return the string displayed
-     */
-    public String displaySign(int i) {
-        boolean verif = false;
-        for (int j = i + 1; j < coeffs.length; j++) {
-            if (coeffs[j] == 0) {
-                verif = true;
-            }
-        }
-        return (verif ? "" : "+");
     }
 
     @Override

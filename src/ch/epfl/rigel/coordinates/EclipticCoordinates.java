@@ -15,26 +15,28 @@ import ch.epfl.rigel.math.RightOpenInterval;
  */
 public final class EclipticCoordinates extends SphericalCoordinates {
 
-    // The valid right open interval [0°, 360°[ (in degrees) for the right
-    // ascension
+    // The valid right open interval [0°, 360°[ (in degrees) for the ecliptic
+    // longitude
     public final static RightOpenInterval LON_INTERVAL_DEG = RightOpenInterval
             .of(0, 360);
 
-    // The valid right open interval [0h, 24h[ (in hours) for the right
-    // ascension
+    // The valid right open interval [0h, 24h[ (in hours) for the ecliptic
+    // longitude
     public final static RightOpenInterval LON_INTERVAL_HR = RightOpenInterval
             .of(0, Angle.toHr(Angle.TAU));
 
-    // The valid right open interval [0, 2*PI[ (in radians) for the right
-    // ascension
+    // The valid right open interval [0, 2*PI[ (in radians) for the ecliptic
+    // longitude
     public final static RightOpenInterval LON_INTERVAL_RAD = RightOpenInterval
             .of(0, Angle.TAU);
 
-    // The valid closed interval [-90°, 90°] (in degrees) for the declination
+    // The valid closed interval [-90°, 90°] (in degrees) for the ecliptic
+    // latitude
     public final static ClosedInterval LAT_INTERVAL_DEG = ClosedInterval.of(-90,
             90);
 
-    // The valid closed interval [-PI/2, PI/2] (in radians) for the declination
+    // The valid closed interval [-PI/2, PI/2] (in radians) for the ecliptic
+    // latitude
     public final static ClosedInterval LAT_INTERVAL_RAD = ClosedInterval
             .of(Angle.ofDeg(-90), Angle.ofDeg(90));
 
