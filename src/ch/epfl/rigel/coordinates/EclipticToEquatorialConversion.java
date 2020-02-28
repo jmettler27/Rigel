@@ -17,6 +17,7 @@ import static java.lang.Math.*;
  *
  * @author Mathias Bouilloud (309979)
  * @author Julien Mettler (309999)
+ * 
  */
 public final class EclipticToEquatorialConversion
         implements Function<EclipticCoordinates, EquatorialCoordinates> {
@@ -30,7 +31,8 @@ public final class EclipticToEquatorialConversion
      * Constructs a change of coordinate system between ecliptic and equatorial
      * coordinates for the given date/time pair.
      *
-     * @param when The given date/time pair
+     * @param when
+     *            The given date/time pair
      */
     public EclipticToEquatorialConversion(ZonedDateTime when) {
 
@@ -52,14 +54,15 @@ public final class EclipticToEquatorialConversion
         double beta = ecl.lat();
 
         // The numerator
-        double num = sin(lambda) * cos(obliquity) - tan(beta) * sin(obliquity);
+        double y = sin(lambda) * cos(obliquity) - tan(beta) * sin(obliquity);
 
         // The denominator
-        double denom = cos(lambda);
+        double x = cos(lambda);
 
         // The first equatorial coordinate, the right ascension
-        // Note : The method atan2 returns an angle in [-PI, PI], while the right ascension must be contained in [0, 2*PI[
-        double alpha = atan2(num, denom);
+        // Note : The method atan2 returns an angle in [-PI, PI], while the
+        // right ascension must be contained in [0, 2*PI[
+        double alpha = atan2(y, x);
 
         // Normalizes the right ascension in its valid interval [0, 2*PI[
         double normalized_Alpha = Angle.normalizePositive(alpha);
@@ -68,7 +71,8 @@ public final class EclipticToEquatorialConversion
                 + cos(beta) * sin(obliquity) * sin(lambda);
 
         // The second equatorial coordinate, the declination
-        // Note : The method asin returns an angle in the range [-PI/2, PI/2], which is the valid declination's range
+        // Note : The method asin returns an angle in the range [-PI/2, PI/2],
+        // which is the valid declination's range
         double delta = asin(tempDelta);
 
         // The equatorial coords corresponding to the given ecliptic coords

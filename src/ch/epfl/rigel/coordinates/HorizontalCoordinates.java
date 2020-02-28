@@ -15,28 +15,25 @@ import ch.epfl.rigel.math.RightOpenInterval;
  *
  * @author Mathias Bouilloud (309979)
  * @author Julien Mettler (309999)
+ * 
  */
 public final class HorizontalCoordinates extends SphericalCoordinates {
 
     // The valid right open interval [0°, 360°[ (in degrees) for the azimuth
-    public final static RightOpenInterval AZ_INTERVAL_DEG = RightOpenInterval
+    private final static RightOpenInterval AZ_INTERVAL_DEG = RightOpenInterval
             .of(0, 360);
 
     // The valid right open interval [0, 2*PI[ (in radians) for the azimuth
-    public final static RightOpenInterval AZ_INTERVAL_RAD = RightOpenInterval
+    private final static RightOpenInterval AZ_INTERVAL_RAD = RightOpenInterval
             .of(0, Angle.ofDeg(360));
 
     // The valid closed interval [-90°, 90°] (in degrees) for the altitude
-    public final static ClosedInterval ALT_INTERVAL_DEG = ClosedInterval.of(-90,
-            90);
+    private final static ClosedInterval ALT_INTERVAL_DEG = ClosedInterval
+            .of(-90, 90);
 
     // The valid closed interval [-PI/2, PI/2] (in radians) for the altitude
-    public final static ClosedInterval ALT_INTERVAL_RAD = ClosedInterval
+    private final static ClosedInterval ALT_INTERVAL_RAD = ClosedInterval
             .of(Angle.ofDeg(-90), Angle.ofDeg(90));
-
-    // The altitude (in degrees) of the zenith, i.e. the point located
-    // vertically above the observer
-    public final static double ZENITH_ALTITUDE_DEG = 90;
 
     /**
      * Constructs horizontal coordinates with the given azimuth and altitude.
@@ -46,7 +43,7 @@ public final class HorizontalCoordinates extends SphericalCoordinates {
      * @param alt
      *            The altitude
      */
-    public HorizontalCoordinates(double az, double alt) {
+    private HorizontalCoordinates(double az, double alt) {
         super(az, alt);
     }
 
@@ -71,8 +68,9 @@ public final class HorizontalCoordinates extends SphericalCoordinates {
                     Angle.ofDeg(altDeg));
         } else {
             throw new IllegalArgumentException(
-                    "The azimuth must be contained in " + AZ_INTERVAL_DEG
-                            + " and the altitude must be contained in "
+                    "Incorrect coordinates: The azimuth (in degrees) must be contained in "
+                            + AZ_INTERVAL_DEG
+                            + " and the altitude (in degrees) must be contained in "
                             + ALT_INTERVAL_DEG + ".");
         }
     }
@@ -96,8 +94,9 @@ public final class HorizontalCoordinates extends SphericalCoordinates {
             return new HorizontalCoordinates(az, alt);
         } else {
             throw new IllegalArgumentException(
-                    "The azimuth must be contained in " + AZ_INTERVAL_RAD
-                            + " and the altitude must be contained in "
+                    "Incorrect coordinates: The azimuth (in radians) must be contained in "
+                            + AZ_INTERVAL_RAD
+                            + " and the altitude (in radians) must be contained in "
                             + ALT_INTERVAL_RAD + ".");
         }
     }
@@ -232,12 +231,12 @@ public final class HorizontalCoordinates extends SphericalCoordinates {
 
     /**
      * Additional method
-     *
-     * Returns a right open interval containing azimuth values, of size 45.0 and
-     * centered in the given azimuth (center);
+     * <p>
+     * Returns a right open interval containing azimuth values (in degrees), of
+     * size 45.0 and centered in the given azimuth (center);
      *
      * @param center
-     *            The given center of the right open interval
+     *            The given center of the right open interval (in degrees)
      * @return a right open interval centered in the given azimuth
      * @throws IllegalArgumentException
      *             if the interval is not valid
@@ -251,7 +250,8 @@ public final class HorizontalCoordinates extends SphericalCoordinates {
                     center + HALVED_SIZE);
         } else {
             throw new IllegalArgumentException(
-                    "The angle must be contained in " + AZ_INTERVAL_DEG + ".");
+                    "Incorrectly defined interval: The azimuth values must be contained in "
+                            + AZ_INTERVAL_DEG + ".");
         }
 
     }

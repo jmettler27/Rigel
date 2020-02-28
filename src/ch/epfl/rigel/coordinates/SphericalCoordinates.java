@@ -72,5 +72,4 @@ abstract class SphericalCoordinates {
     public final boolean equals(Object obj) {
         throw new UnsupportedOperationException();
     }
-
 }

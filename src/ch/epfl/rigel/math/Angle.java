@@ -61,7 +61,7 @@ public final class Angle {
      *             or the number of seconds
      */
     public static double ofDMS(int deg, int min, double sec) {
-        RightOpenInterval interval = RightOpenInterval.of(0, 60);
+        final RightOpenInterval interval = RightOpenInterval.of(0, 60);
 
         if (interval.contains(min) && interval.contains(sec)) {
 

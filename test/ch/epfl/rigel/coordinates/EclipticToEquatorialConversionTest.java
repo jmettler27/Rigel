@@ -26,7 +26,7 @@ class EclipticToEquatorialConversionTest {
     private final EquatorialCoordinates equ = eclToEqu1.apply(ecl1);
 
     @Test
-    void constructionDerivesCorrectEpsilonValue() {
+    void constructionDerivesCorrectObliquity() {
         ZonedDateTime when = ZonedDateTime.of(LocalDate.of(2009, Month.JULY, 6), LocalTime.of(0, 0, 0, 0), ZoneOffset.UTC);
 
         // The number of Julian centuries elapsed since January 1st, 2000 at

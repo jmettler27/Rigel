@@ -107,6 +107,9 @@ class GeographicCoordinatesTest {
         GeographicCoordinates g1 = GeographicCoordinates
                 .ofDeg(Angle.toDeg(Math.PI / 2.0), Angle.toDeg(Math.PI / 4.0));
         assertEquals("(lon=90.0000°, lat=45.0000°)", g1.toString());
+
+        GeographicCoordinates g2 = GeographicCoordinates.ofDeg(6.57, 46.52);
+        assertEquals("(lon=6.5700°, lat=46.5200°)", g2.toString());
     }
     
     @Test

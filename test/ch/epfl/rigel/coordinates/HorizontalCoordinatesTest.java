@@ -4,8 +4,6 @@ package ch.epfl.rigel.coordinates;
 
 import org.junit.jupiter.api.Test;
 
-import ch.epfl.rigel.math.Angle;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class HorizontalCoordinatesTest {
@@ -88,9 +86,31 @@ class HorizontalCoordinatesTest {
 
         assertEquals("NE", HorizontalCoordinates.ofDeg(45, 0).azOctantName("N",
                 "E", "S", "O"));
-        
-        assertEquals("NO", HorizontalCoordinates.ofDeg(335, 0)
-           .azOctantName("N", "E", "S", "O"));
+
+        // Checks if the "else" condition (corresponding to the North-West area)
+        // written in azOctantName works
+
+        // 315 - 22.5, 315 + 22.5
+        assertEquals("NO", HorizontalCoordinates.ofDeg(315 - 22.5, 0)
+                .azOctantName("N", "E", "S", "O"));
+
+        assertEquals("NO", HorizontalCoordinates.ofDeg(300, 0).azOctantName("N",
+                "E", "S", "O"));
+
+        assertEquals("NO", HorizontalCoordinates.ofDeg(310, 0).azOctantName("N",
+                "E", "S", "O"));
+
+        assertEquals("NO", HorizontalCoordinates.ofDeg(307.5, 0)
+                .azOctantName("N", "E", "S", "O"));
+
+        assertEquals("NO", HorizontalCoordinates.ofDeg(320, 0).azOctantName("N",
+                "E", "S", "O"));
+
+        assertEquals("NO", HorizontalCoordinates.ofDeg(315, 0).azOctantName("N",
+                "E", "S", "O"));
+
+        assertEquals("O", HorizontalCoordinates.ofDeg(290, 0).azOctantName("N",
+                "E", "S", "O"));
     }
 
     @Test
@@ -170,7 +190,6 @@ class HorizontalCoordinatesTest {
                 47.3763);
 
         assertEquals(0.0279, EPFLCoords.angularDistanceTo(EPFZCoords), 1e-4);
-
     }
 
     @Test
