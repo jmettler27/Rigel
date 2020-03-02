@@ -7,7 +7,6 @@ import java.util.Locale;
  *
  * @author Mathias Bouilloud (309979)
  * @author Julien Mettler (309999)
- * 
  */
 public final class CartesianCoordinates {
 
@@ -16,11 +15,9 @@ public final class CartesianCoordinates {
 
     /**
      * Constructs Cartesian coordinates with the given abscissa and ordinate.
-     * 
-     * @param x
-     *            The abscissa
-     * @param y
-     *            The ordinate
+     *
+     * @param x The abscissa
+     * @param y The ordinate
      */
     private CartesianCoordinates(double x, double y) {
         this.x = x;
@@ -29,12 +26,11 @@ public final class CartesianCoordinates {
 
     /**
      * Returns the Cartesian coordinates with the given abscissa and ordinate
-     * 
-     * @param x
-     *            The abscissa, unitless
-     * @param y
-     *            The ordinate, unitless
-     * @return
+     *
+     * @param x The abscissa, unitless
+     * @param y The ordinate, unitless
+     *
+     * @return the Cartesian coordinates of abscissa x and ordinate y
      */
     public static CartesianCoordinates of(double x, double y) {
         return new CartesianCoordinates(x, y);
@@ -42,7 +38,7 @@ public final class CartesianCoordinates {
 
     /**
      * Returns the abscissa, unitless.
-     * 
+     *
      * @return the abscissa, unitless
      */
     public double x() {
@@ -51,7 +47,7 @@ public final class CartesianCoordinates {
 
     /**
      * Returns the ordinate, unitless.
-     * 
+     *
      * @return the ordinate, unitless
      */
     public double y() {
@@ -60,7 +56,7 @@ public final class CartesianCoordinates {
 
     @Override
     public String toString() {
-        return String.format(Locale.ROOT, "(x=%.4f°, y=%.4f°)", x, y);
+        return String.format(Locale.ROOT, "(x=%.4f, y=%.4f)", x, y);
     }
 
     @Override

@@ -8,7 +8,7 @@ package ch.epfl.rigel.math;
  * 
  */
 public final class Polynomial {
-    private double[] coeffs;
+    private final double[] coeffs;
 
     /**
      * Constructs a polynomial with the given coefficients (in decreasing

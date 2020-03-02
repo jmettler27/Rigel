@@ -1,13 +1,12 @@
 package ch.epfl.rigel.coordinates;
 
 import ch.epfl.rigel.astronomy.Epoch;
-import ch.epfl.rigel.coordinates.EclipticCoordinates;
-import ch.epfl.rigel.coordinates.EquatorialCoordinates;
 import ch.epfl.rigel.math.Angle;
 import ch.epfl.rigel.math.Polynomial;
 
 import java.time.ZonedDateTime;
 import java.util.function.Function;
+
 
 import static java.lang.Math.*;
 
@@ -17,7 +16,6 @@ import static java.lang.Math.*;
  *
  * @author Mathias Bouilloud (309979)
  * @author Julien Mettler (309999)
- * 
  */
 public final class EclipticToEquatorialConversion
         implements Function<EclipticCoordinates, EquatorialCoordinates> {
@@ -32,8 +30,7 @@ public final class EclipticToEquatorialConversion
      * Constructs a change of coordinate system between ecliptic and equatorial
      * coordinates for the given date/time pair.
      *
-     * @param when
-     *            The given date/time pair
+     * @param when The given date/time pair
      */
     public EclipticToEquatorialConversion(ZonedDateTime when) {
 

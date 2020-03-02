@@ -9,19 +9,23 @@ import java.util.Objects;
  *
  * @author Mathias Bouilloud (309979)
  * @author Julien Mettler (309999)
- * 
+ *
  */
 public abstract class CelestialObject {
 
     private final String name;
     private final EquatorialCoordinates equatorialPos;
+
+    // The angle between two opposite points on the periphery of the "disc" (i.e. the object) as seen by the observer
     private final float angularSize;
+
+    // The apparent magnitude, i.e. the luminosity of the object as perceived from the Earth
     private final float magnitude;
 
     /**
      * Constructs a celestial object with the given name, equatorial position,
      * angular size and magnitude.
-     * 
+     *
      * @param name
      *            The object's name
      * @param equatorialPos
@@ -30,7 +34,7 @@ public abstract class CelestialObject {
      *            The object's angular size
      * @param magnitude
      *            The object's magnitude
-     * 
+     *
      * @throws IllegalArgumentException
      *             if the angular size is strictly negative
      * @throws NullPointerException
@@ -38,8 +42,8 @@ public abstract class CelestialObject {
      */
     CelestialObject(String name, EquatorialCoordinates equatorialPos,
             float angularSize, float magnitude) {
-        if (angularSize < 0) {
-            throw new IllegalArgumentException("The angular size must be >= 0");
+        if (angularSize <= 0) {
+            throw new IllegalArgumentException("The angular size must be > 0");
         }
         this.name = Objects.requireNonNull(name);
         this.equatorialPos = Objects.requireNonNull(equatorialPos);
@@ -49,7 +53,7 @@ public abstract class CelestialObject {
 
     /**
      * Returns the name.
-     * 
+     *
      * @return the name
      */
     public final String name() {
@@ -58,7 +62,7 @@ public abstract class CelestialObject {
 
     /**
      * Returns the angular size.
-     * 
+     *
      * @return the angular size
      */
     public final double angularSize() {
@@ -67,7 +71,7 @@ public abstract class CelestialObject {
 
     /**
      * Returns the magnitude.
-     * 
+     *
      * @return the magnitude
      */
     public final double magnitude() {
@@ -76,7 +80,7 @@ public abstract class CelestialObject {
 
     /**
      * Returns the equatorial position.
-     * 
+     *
      * @return the equatorial position
      */
     public final EquatorialCoordinates equatorialPos() {
@@ -85,7 +89,7 @@ public abstract class CelestialObject {
 
     /**
      * Returns an informative text about the object.
-     * 
+     *
      * @return an informative text about the object
      */
     public String info() {
