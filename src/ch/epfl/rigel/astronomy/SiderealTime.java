@@ -41,16 +41,12 @@ public final class SiderealTime {
         ZonedDateTime whenUTC = when.withZoneSameInstant(ZoneOffset.UTC);
 
         // The beginning of the day containing the epoch (i.e. 0h that day)
-        ZonedDateTime dayStart = ZonedDateTime.of(
-                LocalDate.of(whenUTC.getYear(), whenUTC.getMonth(),
-                        whenUTC.getDayOfMonth()),
-                LocalTime.of(0, 0, 0, 0), ZoneOffset.UTC);
+        ZonedDateTime dayStart = whenUTC.truncatedTo(ChronoUnit.DAYS);
 
         // The number of Julian centuries between the epoch J2000 and the
         // beginning of the day
         double T = Epoch.J2000
                 .julianCenturiesUntil(whenUTC.truncatedTo(ChronoUnit.DAYS));
-
         // The number of milliseconds between the beginning of the day
         // containing the moment and the moment itself.
         double nbMillis = dayStart.until(whenUTC, ChronoUnit.MILLIS);
@@ -58,15 +54,20 @@ public final class SiderealTime {
         // The previous result in hours
         double t = (nbMillis / 1000.0) / 3600.0;
 
+        System.out.println("t = " + t);
         double S0 = Polynomial.of(0.000025862, 2400.051336, 6.697374558).at(T); // Step 4
         double S1 = Polynomial.of(1.002737909, 0).at(t); // Step 6
 
+        System.out.println("S1 = " + S1);
+
         double normalized_S0 = RightOpenInterval.of(0, 24).reduce(S0);
         double normalized_S1 = RightOpenInterval.of(0, 24).reduce(S1);
+        System.out.println("Normalized S1 = " + normalized_S1);
 
         // The Greenwich sidereal time (in hours)
         double Sg = normalized_S0 + normalized_S1;
         double normalizedSg_Hr = RightOpenInterval.of(0, 24).reduce(Sg);
+        System.out.println("Sg = " + Sg);
 
         // The Greenwich sidereal time (in radians)
         double Sg_rad = Angle.ofHr(normalizedSg_Hr);
@@ -74,6 +75,7 @@ public final class SiderealTime {
         // The Greenwich sidereal time (in radians) normalized to [0, 24h[ = [0,TAU[
         double normalizedSg_Rad = Angle.normalizePositive(Sg_rad);
 
+        System.out.println("GST = " + Angle.toHr(normalizedSg_Rad));
         return normalizedSg_Rad;
     }
 
@@ -93,7 +95,6 @@ public final class SiderealTime {
 
         // The sidereal time specific to Greenwich
         double siderealGreenwich = greenwich(when);
-
         // The local sidereal time specific to the given location where
         double Sl = siderealGreenwich + where.lon();
 
