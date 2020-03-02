@@ -26,6 +26,7 @@ public final class EclipticToEquatorialConversion
     // Earth's axis of rotation relative to the ecliptic.
     // 23.5°
     private final double obliquity;
+    private final double T;
 
     /**
      * Constructs a change of coordinate system between ecliptic and equatorial
@@ -38,7 +39,7 @@ public final class EclipticToEquatorialConversion
 
         // The number of Julian centuries elapsed since January 1st, 2000 at
         // 12h00 UTC.
-        double T = Epoch.J2000.julianCenturiesUntil(when);
+        T = Epoch.J2000.julianCenturiesUntil(when);
 
         // The coefficients of the obliquity's polynomial
         double coeff0 = Angle.ofArcsec(0.00181);

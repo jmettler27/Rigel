@@ -28,7 +28,6 @@ class EclipticToEquatorialConversionTest {
     @Test
     void constructionDerivesCorrectObliquity() {
         ZonedDateTime when = ZonedDateTime.of(LocalDate.of(2009, Month.JULY, 6), LocalTime.of(0, 0, 0, 0), ZoneOffset.UTC);
-
         // The number of Julian centuries elapsed since January 1st, 2000 at
         // 12h00 UTC.
         double T = Epoch.J2000.julianCenturiesUntil(when);
@@ -45,7 +44,7 @@ class EclipticToEquatorialConversionTest {
     @Test
     void conversionReturnsCorrectRightAscension() {
         // p.53
-        assertEquals(Angle.ofHr(9.581478), equ.ra(), 1e-2);
+        assertEquals(9.581478, Angle.toHr(equ.ra()), 1e-6); // The expected value is rounded to the nearest millionth in the book
 
         assertEquals(9.581478170200256, (new EclipticToEquatorialConversion(ZonedDateTime.of(2009, 7, 6, 0, 0, 0, 0, ZoneOffset.UTC)))
                 .apply(EclipticCoordinates.of(Angle.ofDMS(139, 41, 10), Angle.ofDMS(4, 52, 31))).raHr());
@@ -56,7 +55,7 @@ class EclipticToEquatorialConversionTest {
     @Test
     void conversionReturnsCorrectDeclination() {
         // p.55
-        assertEquals(Angle.ofDeg(19.535003), equ.dec(), 1e-2);
+        assertEquals(19.535003, Angle.toDeg(equ.dec()), 1e-5); // The expected value is rounded to the nearest millionth in the book
 
         assertEquals(0.34095012064184566, (new EclipticToEquatorialConversion(ZonedDateTime.of(2009, 7, 6, 0, 0, 0, 0, ZoneOffset.UTC)))
                 .apply(EclipticCoordinates.of(Angle.ofDMS(139, 41, 10), Angle.ofDMS(4, 52, 31))).dec());

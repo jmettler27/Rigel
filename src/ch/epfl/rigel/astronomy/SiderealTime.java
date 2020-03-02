@@ -3,6 +3,7 @@ package ch.epfl.rigel.astronomy;
 import ch.epfl.rigel.coordinates.GeographicCoordinates;
 import ch.epfl.rigel.math.Angle;
 import ch.epfl.rigel.math.Polynomial;
+import ch.epfl.rigel.math.RightOpenInterval;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -28,7 +29,7 @@ public final class SiderealTime {
 
     /**
      * Returns the Greenwich sidereal time (the one at longitude 0°) in the
-     * interval [0, π[, for a given date/time pair
+     * interval [0, 2*PI[, for a given date/time pair
      *
      * @param when
      *            The given date/time pair (a moment)
@@ -57,17 +58,20 @@ public final class SiderealTime {
         // The previous result in hours
         double t = (nbMillis / 1000.0) / 3600.0;
 
-        double S0 = Polynomial.of(0.000025862, 2400.051336, 6.697374558).at(T);
-        double S1 = Polynomial.of(1.002737909, 0).at(t);
+        double S0 = Polynomial.of(0.000025862, 2400.051336, 6.697374558).at(T); // Step 4
+        double S1 = Polynomial.of(1.002737909, 0).at(t); // Step 6
+
+        double normalized_S0 = RightOpenInterval.of(0, 24).reduce(S0);
+        double normalized_S1 = RightOpenInterval.of(0, 24).reduce(S1);
 
         // The Greenwich sidereal time (in hours)
-        double Sg = S0 + S1;
+        double Sg = normalized_S0 + normalized_S1;
+        double normalizedSg_Hr = RightOpenInterval.of(0, 24).reduce(Sg);
 
         // The Greenwich sidereal time (in radians)
-        double Sg_rad = Angle.ofHr(Sg);
+        double Sg_rad = Angle.ofHr(normalizedSg_Hr);
 
-        // The Greenwich sidereal time (in radians) normalized to [0, 24h[ = [0,
-        // 2*PI[
+        // The Greenwich sidereal time (in radians) normalized to [0, 24h[ = [0,TAU[
         double normalizedSg_Rad = Angle.normalizePositive(Sg_rad);
 
         return normalizedSg_Rad;
