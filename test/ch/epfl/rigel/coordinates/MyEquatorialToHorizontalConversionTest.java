@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import static java.lang.Math.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-class EquatorialToHorizontalConversionTest {
+class MyEquatorialToHorizontalConversionTest {
 
     @Test
     void conversionReturnsCorrectHorizontalCoordinates() {

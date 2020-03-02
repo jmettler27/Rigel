@@ -2,9 +2,15 @@ package ch.epfl.rigel.astronomy;
 
 import ch.epfl.rigel.coordinates.EquatorialCoordinates;
 
-import java.util.Locale;
 import java.util.Objects;
 
+/**
+ * A celestial object.
+ *
+ * @author Mathias Bouilloud (309979)
+ * @author Julien Mettler (309999)
+ * 
+ */
 public abstract class CelestialObject {
 
     private final String name;
@@ -12,7 +18,26 @@ public abstract class CelestialObject {
     private final float angularSize;
     private final float magnitude;
 
-    CelestialObject(String name, EquatorialCoordinates equatorialPos, float angularSize, float magnitude) {
+    /**
+     * Constructs a celestial object with the given name, equatorial position,
+     * angular size and magnitude.
+     * 
+     * @param name
+     *            The object's name
+     * @param equatorialPos
+     *            The object's equatorial positions
+     * @param angularSize
+     *            The object's angular size
+     * @param magnitude
+     *            The object's magnitude
+     * 
+     * @throws IllegalArgumentException
+     *             if the angular size is strictly negative
+     * @throws NullPointerException
+     *             if the name or the equatorial position are null
+     */
+    CelestialObject(String name, EquatorialCoordinates equatorialPos,
+            float angularSize, float magnitude) {
         if (angularSize < 0) {
             throw new IllegalArgumentException("The angular size must be >= 0");
         }
@@ -22,30 +47,54 @@ public abstract class CelestialObject {
         this.magnitude = magnitude;
     }
 
+    /**
+     * Returns the name.
+     * 
+     * @return the name
+     */
     public final String name() {
         return name;
     }
 
+    /**
+     * Returns the angular size.
+     * 
+     * @return the angular size
+     */
     public final double angularSize() {
         return angularSize;
     }
 
+    /**
+     * Returns the magnitude.
+     * 
+     * @return the magnitude
+     */
     public final double magnitude() {
         return magnitude;
     }
 
+    /**
+     * Returns the equatorial position.
+     * 
+     * @return the equatorial position
+     */
     public final EquatorialCoordinates equatorialPos() {
         return equatorialPos;
     }
 
+    /**
+     * Returns an informative text about the object.
+     * 
+     * @return an informative text about the object
+     */
     public String info() {
-        return name; //"Celestial object : " + name + ", located at " + equatorialPos.toString() + ", of angular size " + angularSize + ", of magnitude " + magnitude;
+        return name;
     }
 
     @Override
     public final String toString() {
         return info();
     }
-
 
 }

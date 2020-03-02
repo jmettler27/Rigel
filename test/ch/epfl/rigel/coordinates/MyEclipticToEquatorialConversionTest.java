@@ -11,7 +11,7 @@ import java.time.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class EclipticToEquatorialConversionTest {
+class MyEclipticToEquatorialConversionTest {
 
     private final ZonedDateTime zonedDateTime1 = ZonedDateTime.of(
             LocalDate.of(2009, Month.JULY, 6), LocalTime.of(14, 36, 51),

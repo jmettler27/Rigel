@@ -5,8 +5,6 @@ import ch.epfl.rigel.math.Angle;
 import ch.epfl.rigel.math.Polynomial;
 import ch.epfl.rigel.math.RightOpenInterval;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
@@ -55,7 +53,8 @@ public final class SiderealTime {
         double t = (nbMillis / 1000.0) / 3600.0;
 
         System.out.println("t = " + t);
-        double S0 = Polynomial.of(0.000025862, 2400.051336, 6.697374558).at(T); // Step 4
+        double S0 = Polynomial.of(0.000025862, 2400.051336, 6.697374558).at(T); // Step
+                                                                                // 4
         double S1 = Polynomial.of(1.002737909, 0).at(t); // Step 6
 
         System.out.println("S1 = " + S1);
@@ -72,7 +71,8 @@ public final class SiderealTime {
         // The Greenwich sidereal time (in radians)
         double Sg_rad = Angle.ofHr(normalizedSg_Hr);
 
-        // The Greenwich sidereal time (in radians) normalized to [0, 24h[ = [0,TAU[
+        // The Greenwich sidereal time (in radians) normalized to [0, 24h[ =
+        // [0,TAU[
         double normalizedSg_Rad = Angle.normalizePositive(Sg_rad);
 
         System.out.println("GST = " + Angle.toHr(normalizedSg_Rad));
