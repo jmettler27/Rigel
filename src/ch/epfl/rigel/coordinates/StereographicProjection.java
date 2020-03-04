@@ -64,10 +64,9 @@ public final class StereographicProjection
      * @return the radius of the circle (i.e. the radius of the parallel)
      */
     public double circleRadiusForParallel(HorizontalCoordinates parallel) {
-        double phi1 = center.alt();
         double phi = parallel.alt();
 
-        return cos(phi) / (sin(phi) + sin(phi1));
+        return cos(phi) / (sin(phi) + sinPhi1);
     }
 
     /**
@@ -118,7 +117,7 @@ public final class StereographicProjection
         // The radius of the projected parallel (a circle) centered in (x,y)
         double rho = sqrt(x * x + y * y);
 
-        double sinC = 2.0 * (rho * rho + 1);
+        double sinC = (2.0 * rho) * (rho * rho + 1);
         double cosC = (1 - rho * rho) / (rho * rho + 1);
 
         // The longitude of the center of the projection
