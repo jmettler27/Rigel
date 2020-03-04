@@ -28,6 +28,7 @@ class MyEclipticToEquatorialConversionTest {
 
     @Test
     void constructionDerivesCorrectObliquity() {
+        // p.52
         ZonedDateTime when = ZonedDateTime.of(LocalDate.of(2009, Month.JULY, 6), LocalTime.of(0, 0, 0, 0), ZoneOffset.UTC);
 
         double T = Epoch.J2000.julianCenturiesUntil(when);
@@ -37,10 +38,28 @@ class MyEclipticToEquatorialConversionTest {
         double coeff1 = -Angle.ofArcsec(0.0006);
         double coeff2 = -Angle.ofArcsec(46.815);
         double coeff3 = Angle.ofDMS(23, 26, 21.45);
-        double obliquity = Polynomial.of(coeff0, coeff1, coeff2, coeff3).at(T);
+        System.out.println(Angle.toDeg(coeff3));
+        // Note : The value given at step 7 in the book is different from this actual coeff3 (which is 23.439291666666666 degrees)
+        // Indeed : the value given is 23.439292 degrees
 
-        // Note : The value of T in the book in rounded to the nearest billionth, which explains the difference found for the value of the obliquity, only to the 5th decimal.
+        double obliquity = Polynomial.of(coeff0, coeff1, coeff2, coeff3).at(T);
+        // Actual :  23.43805 49791 3273 degrees
+        // Correction : 23.43805 49791      degrees (source : https://piazza.com/class/k6kxkvdcio3266?cid=27)
+        // Book :   23.43805 531        degrees
+
+        // Step 6 in the book :
+        // Expected : epsilon = 23.43805 531°
+        // Actual :   epsilon = 23.43805 497913273°
+        // Note : The book uses the value 23.439292 as coeff3 of the polynomial, but on the previous page it gives 23° 26' 21.45'',
+        // which corresponds to 23.4392916667° (source : https://piazza.com/class/k6kxkvdcio3266?cid=27)
+        // The next checks the correct value 23° 26' 21.45'', and we find the correct epsilon at only 0.0021°
         assertEquals(23.43805531, Angle.toDeg(obliquity), 1e-5);
+
+        // Step 7 in the book :
+        // Expected : epsilon = 23◦ 26' 17''
+        // Actual :   epsilon = 23◦ 26' 16.9979''
+        assertEquals(Angle.ofDMS(23,26,17), obliquity, 1e-7);
+
 
     }
 
