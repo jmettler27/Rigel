@@ -7,6 +7,7 @@ import java.util.Locale;
  *
  * @author Mathias Bouilloud (309979)
  * @author Julien Mettler (309999)
+ *
  */
 public final class CartesianCoordinates {
 

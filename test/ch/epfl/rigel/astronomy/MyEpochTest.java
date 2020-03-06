@@ -12,7 +12,7 @@ import java.time.Month;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 
-class EpochTest {
+class MyEpochTest {
 
     // Non-trivial case : 2000-01-03, 18h00 UTC
     private ZonedDateTime d1 = ZonedDateTime.of(
@@ -41,9 +41,5 @@ class EpochTest {
         assertEquals(0.0000616, Epoch.J2000.julianCenturiesUntil(d1), 1e-7);
         assertEquals(0, Epoch.J2000.julianCenturiesUntil(trivialEpoch));
         assertEquals(0, Epoch.J2010.julianCenturiesUntil(trivialEpoch1));
-
     }
 }
-
-// 4h 40m 5.23s
-// assertEquals()

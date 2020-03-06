@@ -70,11 +70,11 @@ public final class StereographicProjection
     }
 
     /**
-     * Returns the projected diameter of a sphere of apparent diameter rad
+     * Returns the projected diameter of a sphere of angular size rad
      * centered at the projection center, assuming that the latter is on the horizon.
      *
      * @param rad
-     *            The apparent diameter of the sphere, i.e. the angular size of the sphere
+     *            The angular size of the sphere, i.e. its apparent diameter
      * @return the projected diameter of the sphere
      */
     public double applyToAngle(double rad) {

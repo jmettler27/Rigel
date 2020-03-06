@@ -20,7 +20,7 @@ public enum Epoch {
     // The date-time pair associated to its time-zone
     private final ZonedDateTime zonedDateTime;
 
-    private final static double JULIAN_CENTURIES_DAYS = 36525.0;
+    private final double JULIAN_CENTURIES_DAYS = 36525.0;
 
     /**
      * Constructs an astronomical epoch through its time and spatial
@@ -54,7 +54,6 @@ public enum Epoch {
      * @return the number of days between this epoch and the given epoch
      */
     public double daysUntil(ZonedDateTime when) {
-
         // The number of milliseconds between this epoch and the given epoch
         double nbMillis = zonedDateTime.until(when, ChronoUnit.MILLIS);
 
@@ -71,11 +70,9 @@ public enum Epoch {
      *         epoch
      */
     public double julianCenturiesUntil(ZonedDateTime when) {
-
         // The number of days between this epoch and the given epoch
         double nbDays = daysUntil(when);
 
         return (nbDays / JULIAN_CENTURIES_DAYS);
     }
-
 }

@@ -7,10 +7,6 @@ import static org.junit.jupiter.api.Assertions.*;
 class MyCartesianCoordinatesTest {
 
     @Test
-    void of() {
-    }
-
-    @Test
     void x() {
         CartesianCoordinates cartesianCoordinates = CartesianCoordinates.of(25.8, 46.5);
         assertEquals(25.8, cartesianCoordinates.x());
@@ -24,8 +20,8 @@ class MyCartesianCoordinatesTest {
 
     @Test
     void testToString() {
-        CartesianCoordinates cartesianCoordinates = CartesianCoordinates.of(34.5678, 205.99);
-        assertEquals("(x=34.5678, y=205.9900)", cartesianCoordinates.toString());
+        CartesianCoordinates cartesianCoordinates = CartesianCoordinates.of(34.56785, 205.99);
+        assertEquals("(x=34.5679, y=205.9900)", cartesianCoordinates.toString());
     }
 
     @Test
