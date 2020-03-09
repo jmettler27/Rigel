@@ -10,7 +10,7 @@ class MyPlanetTest {
     @Test
     void constructorThrowsNullPointerExceptionWhenNull() {
         assertThrows(NullPointerException.class, () -> {
-            new Planet(null, null, 0, 0);
+            new Planet(null, null, 0.5f, 0);
         });
     }
 
@@ -23,6 +23,6 @@ class MyPlanetTest {
 
     @Test
     void info() {
-        assertEquals("Naboo", new Planet("Naboo", EquatorialCoordinates.of(0, 0), 0, 0).toString());
+        assertEquals("Naboo", new Planet("Naboo", EquatorialCoordinates.of(0, 0), 0.5f, 0).toString());
     }
 }

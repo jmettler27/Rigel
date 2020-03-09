@@ -7,7 +7,6 @@ import ch.epfl.rigel.math.Angle;
 import ch.epfl.rigel.math.Polynomial;
 import org.junit.jupiter.api.Test;
 
-import java.sql.SQLOutput;
 import java.time.*;
 
 import static org.junit.jupiter.api.Assertions.*;

@@ -3,8 +3,6 @@ package ch.epfl.rigel.coordinates;
 import ch.epfl.rigel.math.Angle;
 import org.junit.jupiter.api.Test;
 
-import static java.lang.Math.cos;
-import static java.lang.Math.sin;
 import static org.junit.jupiter.api.Assertions.*;
 
 class MyStereographicProjectionTest {
@@ -25,11 +23,9 @@ class MyStereographicProjectionTest {
 
     @Test
     void applyToAngle() {
-
         // p.176
         double moonAngularSize = Angle.ofDMS(0,32,49);
         StereographicProjection projection = new StereographicProjection(HorizontalCoordinates.ofDeg(0,90));
-        System.out.println(projection.applyToAngle(moonAngularSize));
 
     }
 

@@ -51,7 +51,6 @@ public final class Moon extends CelestialObject {
             throw new IllegalArgumentException(
                     "The phase must be contained in [0,1]");
         }
-
     }
 
     @Override
