@@ -35,9 +35,7 @@ public final class Sun extends CelestialObject {
      * @throws NullPointerException
      *             if the ecliptic or the equatorial position are null
      */
-    public Sun(EclipticCoordinates eclipticPos,
-            EquatorialCoordinates equatorialPos, float angularSize,
-            float meanAnomaly) {
+    public Sun(EclipticCoordinates eclipticPos,EquatorialCoordinates equatorialPos, float angularSize,float meanAnomaly) {
         super("Soleil", equatorialPos, angularSize, -26.7f);
 
         this.eclipticPos = Objects.requireNonNull(eclipticPos);

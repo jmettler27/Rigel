@@ -44,7 +44,7 @@ public abstract class CelestialObject {
      */
     CelestialObject(String name, EquatorialCoordinates equatorialPos,
             float angularSize, float magnitude) {
-        if (angularSize <= 0) {
+        if (angularSize < 0) {
             throw new IllegalArgumentException("The angular size must be > 0");
         }
         this.name = Objects.requireNonNull(name);

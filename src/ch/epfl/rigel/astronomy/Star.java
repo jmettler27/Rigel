@@ -14,8 +14,7 @@ public final class Star extends CelestialObject {
 
     private final int hipparcosId;
     private final float colorIndex;
-    private final static ClosedInterval COLOR_INDEX_INTERVAL = ClosedInterval
-            .of(-0.5, 5.5);
+    private final static ClosedInterval COLOR_INDEX_INTERVAL = ClosedInterval.of(-0.5, 5.5);
 
     /**
      * Constructs a star with the given name, equatorial position, angular size
@@ -40,9 +39,7 @@ public final class Star extends CelestialObject {
      * @throws NullPointerException
      *             if the name or the equatorial position are null
      */
-    public Star(int hipparcosId, String name,
-            EquatorialCoordinates equatorialPos, float magnitude,
-            float colorIndex) {
+    public Star(int hipparcosId, String name, EquatorialCoordinates equatorialPos, float magnitude, float colorIndex) {
         super(name, equatorialPos, 0, magnitude);
 
         if (!(hipparcosId >= 0 && COLOR_INDEX_INTERVAL.contains(colorIndex))) {
