@@ -8,7 +8,7 @@ public final class Asterism {
 
     private final List<Star> stars;
 
-    Asterism(List<Star> stars) {
+    public Asterism(List<Star> stars) {
         if (stars.isEmpty()) {
             throw new IllegalArgumentException("The list of stars is empty.");
         }

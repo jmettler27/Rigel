@@ -53,36 +53,42 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
         this.bigOmega = bigOmega;
         this.angularSize1UA = Angle.ofArcsec(angularSize1UA);
         this.magnitude1UA = magnitude1UA;
+
     }
 
     @Override
     public Planet at(double daysSinceJ2010, EclipticToEquatorialConversion eclipticToEquatorialConversion) {
+        double earthMeanAnomaly = (Angle.TAU / 365.242191) * (daysSinceJ2010 / EARTH.tropicalYear) + EARTH.epsilon - EARTH.omega;
+        double earthTrueAnomaly = earthMeanAnomaly + 2 * EARTH.excentricity * sin(earthMeanAnomaly);
+        double R = (EARTH.a * (1.0 - EARTH.excentricity * EARTH.excentricity)) / (1 + EARTH.excentricity * cos(earthTrueAnomaly));
+        double L = EARTH.omega + earthTrueAnomaly;
 
-        // R : orbital radius
-        // L : orbital longitude
+        // r : orbital radius
+        // l : orbital longitude
         // psi : heliocentric ecliptic latitude
-        // r : ecliptic radius
-        // l : ecliptic longitude
+        // rPrime : ecliptic radius
+        // lPrime : ecliptic longitude
 
         double meanAnomaly = (Angle.TAU / 365.242191) * (daysSinceJ2010 / tropicalYear) + epsilon - omega;
         double trueAnomaly = meanAnomaly + 2 * excentricity * sin(meanAnomaly);
 
-        double R = (a * (1 - excentricity * excentricity)) / (1 + excentricity * cos(trueAnomaly));
-        double L = trueAnomaly + omega;
-        double psi = asin(sin(L - bigOmega) * sin(i));
+        double r = (a * (1 - excentricity * excentricity)) / (1 + excentricity * cos(trueAnomaly));
 
-        double r = R * cos(psi);
+        double l = trueAnomaly + omega;
+        double psi = asin(sin(l - bigOmega) * sin(i));
 
-        double numerator = sin(L - bigOmega) * cos(i);
-        double denominator = cos(L - bigOmega);
+        double rPrime = r * cos(psi);
+
+        double numerator = sin(l - bigOmega) * cos(i);
+        double denominator = cos(l - bigOmega);
         double eclipticLon_notNormalized = atan2(numerator, denominator) + bigOmega;
-        double l = Angle.normalizePositive(eclipticLon_notNormalized);
+        double lPrime = Angle.normalizePositive(eclipticLon_notNormalized);
 
         EclipticCoordinates eclipticCoordinates;
         if (inferior.contains(this)) {
-            eclipticCoordinates = inferiorPlanetCoords(R, L, r, l, psi);
+            eclipticCoordinates = inferiorPlanetCoords(R, L, rPrime, lPrime, psi);
         } else {
-            eclipticCoordinates = superiorPlanetCoords(R, L, r, l, psi);
+            eclipticCoordinates = superiorPlanetCoords(R, L, rPrime, lPrime, psi);
         }
 
         double rho = sqrt(R * R + r * r - 2.0 * R * r * cos(l - L) * cos(psi));
@@ -92,33 +98,34 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
         double magnitude = magnitude1UA + 5.0 * log10((r * rho) / sqrt(F));
 
         EquatorialCoordinates equatorialCoordinates = eclipticToEquatorialConversion.apply(eclipticCoordinates);
+
         return new Planet(frenchName, equatorialCoordinates, (float) angularSize, (float) magnitude);
     }
 
-    private EclipticCoordinates inferiorPlanetCoords(double R, double L, double r, double l, double psi) {
+    private EclipticCoordinates inferiorPlanetCoords(double R, double L, double rPrime, double lPrime, double psi) {
 
-        double numeratorLambda = r * sin(L - l);
-        double denominatorLambda = R - r * cos(L - l);
+        double numeratorLambda = rPrime * sin(L - lPrime);
+        double denominatorLambda = R - rPrime * cos(L - lPrime);
         double lambda_notNormalized = PI + L + atan2(numeratorLambda, denominatorLambda);
         double lambda = Angle.normalizePositive(lambda_notNormalized);
 
-        double numeratorBeta = r * tan(psi) * sin(lambda) - l;
-        double denominatorBeta = R * sin(l - L);
+        double numeratorBeta = rPrime * tan(psi) * sin(lambda - lPrime);
+        double denominatorBeta = R * sin(lPrime - L);
         double beta = atan2(numeratorBeta, denominatorBeta);
 
         return EclipticCoordinates.of(lambda, beta);
     }
 
-    private EclipticCoordinates superiorPlanetCoords(double R, double L, double r, double l, double psi) {
+    private EclipticCoordinates superiorPlanetCoords(double R, double L, double rPrime, double lPrime, double psi) {
 
-        double numeratorLambda = R * sin(l - L);
-        double denominatorLambda = r - R * cos(l - L);
+        double numeratorLambda = R * sin(lPrime - L);
+        double denominatorLambda = rPrime - R * cos(lPrime - L);
 
-        double lambda_notNormalized = l + atan2(numeratorLambda, denominatorLambda);
+        double lambda_notNormalized = lPrime + atan2(numeratorLambda, denominatorLambda);
         double lambda = Angle.normalizePositive(lambda_notNormalized);
 
-        double numeratorBeta = r * tan(psi) * sin(lambda) - l;
-        double denominatorBeta = R * sin(l - L);
+        double numeratorBeta = rPrime * tan(psi) * sin(lambda - lPrime);
+        double denominatorBeta = R * sin(lPrime - L);
         double beta = atan2(numeratorBeta, denominatorBeta);
 
         return EclipticCoordinates.of(lambda, beta);

@@ -19,7 +19,7 @@ public final class Star extends CelestialObject {
      * @throws IllegalArgumentException if the angular size is strictly negative, and/or if the hipparcos ID is negative, and/or the color index is not contained in [-0.5, 5.5]
      * @throws NullPointerException     if the name or the equatorial position are null
      */
-    public Star(int hipparcosId, String name, EquatorialCoordinates equatorialPos, float angularSize, float magnitude, float colorIndex) {
+    public Star(int hipparcosId, String name, EquatorialCoordinates equatorialPos, float magnitude, float colorIndex) {
         super(name, equatorialPos, 0, magnitude);
 
 
