@@ -14,8 +14,8 @@ import java.util.Locale;
  */
 public final class Moon extends CelestialObject {
 
-    // The percentage of the "disc" (i.e. the Moon) visible from the Earth that
-    // is illuminated by the Sun
+    // The illuminated percentage of the Moon's "disc" illuminated by the Sun,
+    // as seen from the Earth
     private final float phase;
 
     // The valid closed interval for the phase

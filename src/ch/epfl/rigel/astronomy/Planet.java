@@ -16,13 +16,13 @@ public final class Planet extends CelestialObject {
      * size and magnitude.
      * 
      * @param name
-     *            The object's name
+     *            The planet's name
      * @param equatorialPos
-     *            The object's equatorial positions
+     *            The planet's equatorial positions
      * @param angularSize
-     *            The object's angular size
+     *            The planet's angular size (in radians)
      * @param magnitude
-     *            The object's magnitude
+     *            The object's magnitude (unitless)
      * 
      * @throws IllegalArgumentException
      *             if the angular size is strictly negative

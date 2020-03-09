@@ -22,7 +22,8 @@ public final class SiderealTime {
     /**
      * Default constructor.
      */
-    private SiderealTime() {}
+    private SiderealTime() {
+    }
 
     /**
      * Returns the Greenwich sidereal time (the one at longitude 0°) in the
@@ -71,8 +72,8 @@ public final class SiderealTime {
     }
 
     /**
-     * Returns the local sidereal time in the interval [0, 2*PI[ (in radians) for a given date/time pair
-     * and specific to the given location.
+     * Returns the local sidereal time in the interval [0, 2*PI[ (in radians)
+     * for a given date/time pair and specific to the given location.
      *
      * @param when
      *            The given date-time pair
@@ -81,7 +82,8 @@ public final class SiderealTime {
      * @return the local sidereal time (in radians) for the given date/time pair
      *         and specific to the given location
      */
-    public static double local(ZonedDateTime when, GeographicCoordinates where) {
+    public static double local(ZonedDateTime when,
+            GeographicCoordinates where) {
         // The sidereal time (in radians) specific to Greenwich
         double siderealGreenwich = greenwich(when);
 
