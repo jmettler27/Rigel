@@ -111,17 +111,15 @@ public final class StereographicProjection implements Function<HorizontalCoordin
         double rho = sqrt(x * x + y * y);
 
         double sinC = (2.0 * rho) / (rho * rho + 1.0);
-        double cosC = (1 - rho * rho) / (rho * rho + 1.0);
+        double cosC = (1.0 - rho * rho) / (rho * rho + 1.0);
 
         // The longitude of the center of the projection
         double lambda0 = center.az();
 
         double numerator = x * sinC;
         double denominator = rho * cosPhi1 * cosC - y * sinPhi1 * sinC;
-
         // The first horizontal coordinate, the azimuth
         double lambda = atan2(numerator, denominator) + lambda0;
-
         // The azimuth normalized in its valid interval [0, 2*PI[
         double normalized_Lambda = Angle.normalizePositive(lambda);
 
