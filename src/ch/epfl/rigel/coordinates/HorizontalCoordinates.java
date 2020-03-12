@@ -20,20 +20,16 @@ import ch.epfl.rigel.math.RightOpenInterval;
 public final class HorizontalCoordinates extends SphericalCoordinates {
 
     // The valid right open interval [0°, 360°[ (in degrees) for the azimuth
-    private final static RightOpenInterval AZ_INTERVAL_DEG = RightOpenInterval
-            .of(0, 360);
+    private final static RightOpenInterval AZ_INTERVAL_DEG = RightOpenInterval .of(0, 360);
 
     // The valid right open interval [0, 2*PI[ (in radians) for the azimuth
-    private final static RightOpenInterval AZ_INTERVAL_RAD = RightOpenInterval
-            .of(0, Angle.ofDeg(360));
+    private final static RightOpenInterval AZ_INTERVAL_RAD = RightOpenInterval.of(0, Angle.ofDeg(360));
 
     // The valid closed interval [-90°, 90°] (in degrees) for the altitude
-    private final static ClosedInterval ALT_INTERVAL_DEG = ClosedInterval
-            .of(-90, 90);
+    private final static ClosedInterval ALT_INTERVAL_DEG = ClosedInterval.of(-90, 90);
 
     // The valid closed interval [-PI/2, PI/2] (in radians) for the altitude
-    private final static ClosedInterval ALT_INTERVAL_RAD = ClosedInterval
-            .of(Angle.ofDeg(-90), Angle.ofDeg(90));
+    private final static ClosedInterval ALT_INTERVAL_RAD = ClosedInterval.of(Angle.ofDeg(-90), Angle.ofDeg(90));
 
     /**
      * Constructs horizontal coordinates with the given azimuth and altitude.
@@ -93,11 +89,7 @@ public final class HorizontalCoordinates extends SphericalCoordinates {
         if (AZ_INTERVAL_RAD.contains(az) && ALT_INTERVAL_RAD.contains(alt)) {
             return new HorizontalCoordinates(az, alt);
         } else {
-            throw new IllegalArgumentException(
-                    "Incorrect coordinates: The azimuth (in radians) must be contained in "
-                            + AZ_INTERVAL_RAD
-                            + " and the altitude (in radians) must be contained in "
-                            + ALT_INTERVAL_RAD + ".");
+            throw new IllegalArgumentException("Incorrect coordinates: The azimuth (in radians) must be contained in "+ AZ_INTERVAL_RAD+ " and the altitude (in radians) must be contained in "+ ALT_INTERVAL_RAD + ".");
         }
     }
 
@@ -135,13 +127,10 @@ public final class HorizontalCoordinates extends SphericalCoordinates {
      */
     public String azOctantName(String n, String e, String s, String w) {
 
-        final RightOpenInterval NORTH_INTERVAL_LEFT = RightOpenInterval
-                .of(360 - 45.0 / 2.0, 360.0);
-        final RightOpenInterval NORTH_INTERVAL_RIGHT = RightOpenInterval.of(0,
-                45.0 / 2.0);
+        final RightOpenInterval NORTH_INTERVAL_LEFT = RightOpenInterval.of(360 - 45.0 / 2.0, 360.0);
+        final RightOpenInterval NORTH_INTERVAL_RIGHT = RightOpenInterval.of(0,45.0 / 2.0);
         // North
-        if (NORTH_INTERVAL_LEFT.contains(azDeg())
-                || NORTH_INTERVAL_RIGHT.contains(azDeg())) {
+        if (NORTH_INTERVAL_LEFT.contains(azDeg())|| NORTH_INTERVAL_RIGHT.contains(azDeg())) {
             return n;
         }
 
@@ -179,7 +168,6 @@ public final class HorizontalCoordinates extends SphericalCoordinates {
         else {
             return n + w;
         }
-
     }
 
     /**
@@ -219,14 +207,12 @@ public final class HorizontalCoordinates extends SphericalCoordinates {
         double az2 = that.az();
         double alt2 = that.alt();
 
-        return acos(
-                sin(alt1) * sin(alt2) + cos(alt1) * cos(alt2) * cos(az1 - az2));
+        return acos(sin(alt1) * sin(alt2) + cos(alt1) * cos(alt2) * cos(az1 - az2));
     }
 
     @Override
     public String toString() {
-        return String.format(Locale.ROOT, "(az=%.4f°, alt=%.4f°)", azDeg(),
-                altDeg());
+        return String.format(Locale.ROOT, "(az=%.4f°, alt=%.4f°)", azDeg(), altDeg());
     }
 
     /**
@@ -244,16 +230,11 @@ public final class HorizontalCoordinates extends SphericalCoordinates {
     private RightOpenInterval centeredInterval(double center) {
         final double HALVED_SIZE = 45.0 / 2.0;
 
-        if (AZ_INTERVAL_DEG.contains(center - HALVED_SIZE)
-                && AZ_INTERVAL_DEG.contains(center + HALVED_SIZE)) {
-            return RightOpenInterval.of(center - HALVED_SIZE,
-                    center + HALVED_SIZE);
+        if (AZ_INTERVAL_DEG.contains(center - HALVED_SIZE) && AZ_INTERVAL_DEG.contains(center + HALVED_SIZE)) {
+            return RightOpenInterval.of(center - HALVED_SIZE,center + HALVED_SIZE);
         } else {
-            throw new IllegalArgumentException(
-                    "Incorrectly defined interval: The azimuth values must be contained in "
-                            + AZ_INTERVAL_DEG + ".");
+            throw new IllegalArgumentException("Incorrectly defined interval: The azimuth values must be contained in " + AZ_INTERVAL_DEG + ".");
         }
-
     }
 
 }

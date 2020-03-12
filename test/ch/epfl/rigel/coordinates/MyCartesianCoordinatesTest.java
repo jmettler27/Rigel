@@ -8,20 +8,18 @@ class MyCartesianCoordinatesTest {
 
     @Test
     void x() {
-        CartesianCoordinates cartesianCoordinates = CartesianCoordinates.of(25.8, 46.5);
-        assertEquals(25.8, cartesianCoordinates.x());
+        assertEquals(25.8, CartesianCoordinates.of(25.8, 46.5).x());
+        assertEquals(0.0, CartesianCoordinates.of(0,81.5).x());
     }
 
     @Test
     void y() {
-        CartesianCoordinates cartesianCoordinates = CartesianCoordinates.of(25.8, 46.5);
-        assertEquals(46.5, cartesianCoordinates.y());
+        assertEquals(46.5, CartesianCoordinates.of(25.8, 46.5).y());
     }
 
     @Test
     void testToString() {
-        CartesianCoordinates cartesianCoordinates = CartesianCoordinates.of(34.56785, 205.99);
-        assertEquals("(x=34.5679, y=205.9900)", cartesianCoordinates.toString());
+        assertEquals("(x=34.5679, y=205.9900)", CartesianCoordinates.of(34.56785, 205.99).toString());
     }
 
     @Test

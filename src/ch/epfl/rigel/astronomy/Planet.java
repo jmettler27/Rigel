@@ -27,10 +27,9 @@ public final class Planet extends CelestialObject {
      * @throws IllegalArgumentException
      *             if the angular size is strictly negative
      * @throws NullPointerException
-     *             if the name of the equatorial position are null
+     *             if the name and/or the equatorial position are null
      */
-    public Planet(String name, EquatorialCoordinates equatorialPos,
-            float angularSize, float magnitude) {
+    public Planet(String name, EquatorialCoordinates equatorialPos, float angularSize, float magnitude) {
         super(name, equatorialPos, angularSize, magnitude);
     }
 }

@@ -45,15 +45,15 @@ class MyStereographicProjectionTest {
 
     @Test
     void inverseApply() {
-
+        StereographicProjection projection = new StereographicProjection(HorizontalCoordinates.ofDeg(45,20));
+        HorizontalCoordinates azAlt = projection.inverseApply(CartesianCoordinates.of(0,25));
     }
 
     @Test
     void testToString() {
-        HorizontalCoordinates center = HorizontalCoordinates.ofDeg(25.45,
-                5.2436789);
+        HorizontalCoordinates center = HorizontalCoordinates.ofDeg(25.45,5.2436789);
         StereographicProjection stereographicProjection = new StereographicProjection(center);
-        assertEquals("Stereographic Projection: center's coordinates: (az=25.4500°, alt=5.2437°)", stereographicProjection.toString());
+        assertEquals("Stereographic Projection centered in (az=25.4500°, alt=5.2437°)", stereographicProjection.toString());
     }
 
     @Test

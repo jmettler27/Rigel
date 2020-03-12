@@ -20,8 +20,8 @@ public abstract class CelestialObject {
     // (i.e. the object) as seen by the observer
     private final float angularSize;
 
-    // The apparent magnitude, i.e. the luminosity of the object as perceived
-    // from the Earth (unitless)
+    // The apparent magnitude (unitless), i.e. the luminosity of the object as perceived
+    // from the Earth
     private final float magnitude;
 
     /**
@@ -40,12 +40,11 @@ public abstract class CelestialObject {
      * @throws IllegalArgumentException
      *             if the angular size is strictly negative
      * @throws NullPointerException
-     *             if the name or the equatorial position are null
+     *             if the name and/or the equatorial position are null
      */
-    CelestialObject(String name, EquatorialCoordinates equatorialPos,
-            float angularSize, float magnitude) {
+    CelestialObject(String name, EquatorialCoordinates equatorialPos, float angularSize, float magnitude) {
         if (angularSize < 0) {
-            throw new IllegalArgumentException("The angular size must be > 0");
+            throw new IllegalArgumentException("The angular size must be >= 0");
         }
         this.name = Objects.requireNonNull(name);
         this.equatorialPos = Objects.requireNonNull(equatorialPos);
@@ -95,7 +94,7 @@ public abstract class CelestialObject {
      * @return an informative text about the object
      */
     public String info() {
-        return name;
+        return name();
     }
 
     @Override

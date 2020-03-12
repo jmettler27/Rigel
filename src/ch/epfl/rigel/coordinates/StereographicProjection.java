@@ -7,14 +7,12 @@ import java.util.function.Function;
 import static java.lang.Math.*;
 
 /**
- * A stereographic projection, used to project on a plane (in Cartesian coordinates) the position (initially in horizontal coordinates) of celestial objects visible in the sky.
+ * A stereographic projection on a plane of the horizontal coordinates of a celestial object visible in the sky.
  *
  * @author Mathias Bouilloud (309979)
  * @author Julien Mettler (309999)
- *
  */
-public final class StereographicProjection
-        implements Function<HorizontalCoordinates, CartesianCoordinates> {
+public final class StereographicProjection implements Function<HorizontalCoordinates, CartesianCoordinates> {
 
     // The center of the projection, projected at the origin of the plane
     private final HorizontalCoordinates center;
@@ -26,8 +24,7 @@ public final class StereographicProjection
     /**
      * Constructs a stereographic projection centered in the given center point.
      *
-     * @param center
-     *            The given center point
+     * @param center The center of this projection
      */
     public StereographicProjection(HorizontalCoordinates center) {
         this.center = center;
@@ -40,16 +37,15 @@ public final class StereographicProjection
      * corresponding to the projection of the parallel passing through the given
      * point hor.
      *
-     * @param hor
-     *            The given point on the parallel
+     * @param hor The point on the parallel
+     *
      * @return the Cartesian coordinates of the center of the circle
      */
-    public CartesianCoordinates circleCenterForParallel(
-            HorizontalCoordinates hor) {
+    public CartesianCoordinates circleCenterForParallel(HorizontalCoordinates hor) {
         // The given point's altitude, i.e. the latitude of the parallel
         double phi = hor.alt();
 
-        // The ordinate of the center of the circle
+        // The ordinate of the center of the circle (may be infinite)
         double cy = cosPhi1 / (sin(phi) + sinPhi1);
 
         return CartesianCoordinates.of(0, cy);
@@ -59,9 +55,9 @@ public final class StereographicProjection
      * Returns the radius of the circle corresponding to the projection of the
      * parallel passing through the given point hor.
      *
-     * @param parallel
-     *            The given point on the parallel
-     * @return the radius of the circle (i.e. the radius of the parallel)
+     * @param parallel The point on the parallel
+     *
+     * @return the radius of the circle (may be infinite)
      */
     public double circleRadiusForParallel(HorizontalCoordinates parallel) {
         double phi = parallel.alt();
@@ -73,8 +69,8 @@ public final class StereographicProjection
      * Returns the projected diameter of a sphere of angular size rad
      * centered at the projection center, assuming that the latter is on the horizon.
      *
-     * @param rad
-     *            The angular size of the sphere, i.e. its apparent diameter
+     * @param rad The angular size of the sphere, i.e. its apparent diameter
+     *
      * @return the projected diameter of the sphere
      */
     public double applyToAngle(double rad) {
@@ -91,24 +87,21 @@ public final class StereographicProjection
         double phi = azAlt.alt();
 
         double lambdaDelta = lambda - lambda0;
-        double d = 1.0 / (1.0 + sin(phi) * sinPhi1
-                + cos(phi) * cosPhi1 * cos(lambdaDelta));
+        double d = 1.0 / (1.0 + sin(phi) * sinPhi1 + cos(phi) * cosPhi1 * cos(lambdaDelta));
 
         double x = d * cos(phi) * sin(lambdaDelta);
-        double y = d
-                * (sin(phi) * cosPhi1 - cos(phi) * sinPhi1 * cos(lambdaDelta));
+        double y = d * (sin(phi) * cosPhi1 - cos(phi) * sinPhi1 * cos(lambdaDelta));
 
         return CartesianCoordinates.of(x, y);
     }
 
     /**
      * Returns the horizontal coordinates of the point whose projection is the
-     * Cartesian coordinate point xy.
+     * given Cartesian coordinate point.
      *
-     * @param xy
-     *            The given Cartesian coordinate point, i.e. the projection
-     * @return the horizontal coordinates of the corresponding point, before
-     *         projection
+     * @param xy The Cartesian coordinate point, i.e. the projection
+     *
+     * @return the horizontal coordinates of the corresponding point, before projection
      */
     public HorizontalCoordinates inverseApply(CartesianCoordinates xy) {
         double x = xy.x(); // The abscissa of xy
@@ -117,8 +110,8 @@ public final class StereographicProjection
         // The radius of the projected parallel (a circle) centered in (x,y)
         double rho = sqrt(x * x + y * y);
 
-        double sinC = (2.0 * rho) * (rho * rho + 1);
-        double cosC = (1 - rho * rho) / (rho * rho + 1);
+        double sinC = (2.0 * rho) / (rho * rho + 1.0);
+        double cosC = (1 - rho * rho) / (rho * rho + 1.0);
 
         // The longitude of the center of the projection
         double lambda0 = center.az();
@@ -126,7 +119,7 @@ public final class StereographicProjection
         double numerator = x * sinC;
         double denominator = rho * cosPhi1 * cosC - y * sinPhi1 * sinC;
 
-        // The first horizontal coordinates, the azimuth
+        // The first horizontal coordinate, the azimuth
         double lambda = atan2(numerator, denominator) + lambda0;
 
         // The azimuth normalized in its valid interval [0, 2*PI[
@@ -140,7 +133,7 @@ public final class StereographicProjection
 
     @Override
     public String toString() {
-        return "Stereographic Projection: center's coordinates: " + center.toString();
+        return "Stereographic Projection centered in " + center.toString();
     }
 
     @Override
