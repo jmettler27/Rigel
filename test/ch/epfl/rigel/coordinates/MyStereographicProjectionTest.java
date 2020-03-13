@@ -40,10 +40,6 @@ class MyStereographicProjectionTest {
 
     @Test
     void applyToAngle() {
-        HorizontalCoordinates center2 = HorizontalCoordinates.of(Math.PI / 4, Math.PI / 4);
-        StereographicProjection e2 = new StereographicProjection(center2);
-        double z = e2.applyToAngle(Math.PI / 2);
-
         assertEquals(0.00436333005262522, new StereographicProjection(HorizontalCoordinates.ofDeg(23, 45)).applyToAngle(Angle.ofDeg(1 / 2.0)));
     }
 
@@ -84,9 +80,6 @@ class MyStereographicProjectionTest {
     @Test
     void inverseApply() {
         assertEquals(3.648704634091643, new StereographicProjection(HorizontalCoordinates.ofDeg(45, 45)).inverseApply(CartesianCoordinates.of(10, 0)).az());
-
-        assertEquals(3.9269908169872414, new StereographicProjection(HorizontalCoordinates.ofDeg(45, 20)).inverseApply(CartesianCoordinates.of(0, 25)).az());
-        assertEquals(-0.2691084761522857, new StereographicProjection(HorizontalCoordinates.ofDeg(45, 20)).inverseApply(CartesianCoordinates.of(0, 25)).alt());
     }
 
     @Test
