@@ -84,6 +84,5 @@ class MyPlanetModelTest {
         // Expected delta (book): delta = -24◦ 30' 0 9               '' ; delta = -24.50 25            degrees
         // Actual delta :         delta = -24◦ 30' 0 3.14086630058628'' ; delta = -24.50 0872462861274 degrees
         assertEquals(Angle.ofDMS(-24, 30, 9), mercury2003.equatorialPos().dec(), 1e-1);
-        System.out.println(mercury2003.equatorialPos().decDeg());
     }
 }

@@ -38,7 +38,7 @@ public enum SunModel implements CelestialObjectModel<Sun> {
     SunModel() {}
 
     @Override
-    public Sun at(double daysSinceJ2010,EclipticToEquatorialConversion eclipticToEquatorialConversion) {
+    public Sun at(double daysSinceJ2010, EclipticToEquatorialConversion eclipticToEquatorialConversion) {
 
         // The Sun's mean anomaly (for which the Sun occupies a circular orbit)
         double meanAnomaly = ((Angle.TAU / TROPICAL_YEAR) * daysSinceJ2010) + EPSILON_G - OMEGA_G;
@@ -48,9 +48,7 @@ public enum SunModel implements CelestialObjectModel<Sun> {
         double trueAnomaly = meanAnomaly + 2.0 * ECCENTRICITY * sin(meanAnomaly);
 
         // The geocentric ecliptic longitude of the Sun
-        double lambda = trueAnomaly + OMEGA_G;
-
-        double normalized_Lambda = Angle.normalizePositive(lambda);
+        double lambda = Angle.normalizePositive(trueAnomaly + OMEGA_G);
 
         // The Sun's angular size (as seen from Earth)
         double angularSize = THETA_0 * ((1.0 + ECCENTRICITY * cos(trueAnomaly)) / (1.0 - ECCENTRICITY * ECCENTRICITY));
@@ -59,7 +57,7 @@ public enum SunModel implements CelestialObjectModel<Sun> {
         // coordinates at the given epoch.
         // The reference plane is the ecliptic in which the Earth and the Sun
         // are located.
-        EclipticCoordinates eclipticCoordinates = EclipticCoordinates.of(normalized_Lambda,0);
+        EclipticCoordinates eclipticCoordinates = EclipticCoordinates.of(lambda,0);
 
         return new Sun(eclipticCoordinates, eclipticToEquatorialConversion.apply(eclipticCoordinates),(float) angularSize, (float) meanAnomaly);
     }

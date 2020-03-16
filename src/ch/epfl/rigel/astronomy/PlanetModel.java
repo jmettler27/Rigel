@@ -4,7 +4,6 @@ import ch.epfl.rigel.coordinates.EclipticCoordinates;
 import ch.epfl.rigel.coordinates.EclipticToEquatorialConversion;
 import ch.epfl.rigel.coordinates.EquatorialCoordinates;
 import ch.epfl.rigel.math.Angle;
-import ch.epfl.rigel.math.ClosedInterval;
 
 import java.util.List;
 
@@ -91,72 +90,72 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
 
         // 1st step : The position of the planet in its own orbit
         double Np = Angle.normalizePositive((Angle.TAU / 365.242191) * (daysSinceJ2010 / tropicalYear));
-        System.out.println("Np = " + Angle.toDeg(Np) + " degrees");
+       // System.out.println("Np = " + Angle.toDeg(Np) + " degrees");
 
         // The planet's mean anomaly (in radians)
         double meanAnomaly = Np + epsilon - omega;
-        System.out.println("Mp = " + Angle.toDeg(meanAnomaly) + " degrees");
+       // System.out.println("Mp = " + Angle.toDeg(meanAnomaly) + " degrees");
 
 
         // The planet's true anomaly (in radians)
         double trueAnomaly = meanAnomaly + 2.0 * eccentricity * sin(meanAnomaly);
         double normalized_TrueAnomaly = Angle.normalizePositive(trueAnomaly);
-        System.out.println("vp = " + Angle.toDeg(normalized_TrueAnomaly) + " degrees");
+       // System.out.println("vp = " + Angle.toDeg(normalized_TrueAnomaly) + " degrees");
 
         // The planet's orbital radius (distance to the Sun) (in AU)
         double r = (a * (1.0 - eccentricity * eccentricity)) / (1.0 + eccentricity * cos(normalized_TrueAnomaly));
-        System.out.println("r = " + r + " AU");
+       // System.out.println("r = " + r + " AU");
 
         // The planet's orbital longitude (in radians)
         double l = normalized_TrueAnomaly + omega;
-        System.out.println("lp = " + Angle.toDeg(l) + " degrees");
+       // System.out.println("lp = " + Angle.toDeg(l) + " degrees");
 
         // 2nd step : The position of the planet is projected on the ecliptic
         // plane and then expressed in heliocentric ecliptic coordinates
 
         // The planet's heliocentric ecliptic latitude (in radians)
         double psi = asin(sin(l - bigOmega) * sin(i));
-        System.out.println("psi = " + Angle.toDeg(psi) + " degrees");
+       // System.out.println("psi = " + Angle.toDeg(psi) + " degrees");
 
         // The planet's ecliptic radius (in AU)
         double rPrime = r * cos(psi);
-        System.out.println("r' = " + rPrime + " AU");
+       // System.out.println("r' = " + rPrime + " AU");
 
         double numerator = sin(l - bigOmega) * cos(i);
         double denominator = cos(l - bigOmega);
 
         // The planet's ecliptic radius (in AU)
         double lPrime = atan2(numerator, denominator) + bigOmega;
-        System.out.println("y = " + numerator);
-        System.out.println("x = " + denominator);
+       // System.out.println("y = " + numerator);
+       // System.out.println("x = " + denominator);
 
         // The planet's heliocentric ecliptic longitude (in radius)
         double normalized_LPrime = Angle.normalizePositive(lPrime);
-        System.out.println("l' = " + Angle.toDeg(normalized_LPrime) + " degrees");
+        //System.out.println("l' = " + Angle.toDeg(normalized_LPrime) + " degrees");
 
         // 3rd step : The position of the Earth is determined
 
         double Ne = Angle.normalizePositive((Angle.TAU / 365.242191) * (daysSinceJ2010 / EARTH.tropicalYear));
-        System.out.println("Ne = " + Angle.toDeg(Ne) + " degrees");
+        //System.out.println("Ne = " + Angle.toDeg(Ne) + " degrees");
 
         // The Earth's mean anomaly (in radians)
         double earthMeanAnomaly = Ne + EARTH.epsilon- EARTH.omega;
-        System.out.println("Me = " + Angle.toDeg(earthMeanAnomaly) + " degrees");
+        //System.out.println("Me = " + Angle.toDeg(earthMeanAnomaly) + " degrees");
 
 
         // The Earth's true anomaly (in radians)
         double earthTrueAnomaly = earthMeanAnomaly + 2.0 * EARTH.eccentricity * sin(earthMeanAnomaly);
         double normalized_EarthTA = Angle.normalizePositive(earthTrueAnomaly);
-        System.out.println("ve = " + Angle.toDeg(normalized_EarthTA) + " degrees");
+        //System.out.println("ve = " + Angle.toDeg(normalized_EarthTA) + " degrees");
 
         // The Earth's orbital radius (in AU)
         double R = (EARTH.a * (1.0 - EARTH.eccentricity * EARTH.eccentricity)) / (1.0 + EARTH.eccentricity * cos(normalized_EarthTA));
-        System.out.println("R = " + R + " AU");
+        //System.out.println("R = " + R + " AU");
 
         // The Earth's orbital longitude (in radians)
         double L = EARTH.omega + normalized_EarthTA;
         double normalized_L = Angle.normalizePositive(L);
-        System.out.println("L = " + Angle.toDeg(normalized_L) + " degrees");
+        //System.out.println("L = " + Angle.toDeg(normalized_L) + " degrees");
 
 
         // 4th step : The position of the Earth and the planet are combined to
@@ -221,7 +220,7 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
 
         // The planet's geocentric ecliptic longitude normalized in [0, 2*PI[
         double normalized_Lambda = Angle.normalizePositive(lambda);
-        System.out.println("lambda = " + Angle.toDeg(normalized_Lambda) + " degrees");
+        //System.out.println("lambda = " + Angle.toDeg(normalized_Lambda) + " degrees");
 
         double numeratorBeta = rPrime * tan(psi) * sin(normalized_Lambda - lPrime);
         double denominatorBeta = R * sin(lPrime - L);
@@ -230,7 +229,7 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
         // Note : We use here the method atan since it returns an angle in the range [-PI/2, PI/2],
         // which is the valid latitude range
         double beta = atan(numeratorBeta/ denominatorBeta);
-        System.out.println("beta = " + Angle.toDeg(beta) + " degrees");
+       // System.out.println("beta = " + Angle.toDeg(beta) + " degrees");
 
         return EclipticCoordinates.of(normalized_Lambda, beta);
     }
@@ -259,7 +258,7 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
 
         // The planet's geocentric ecliptic longitude normalized in [0, 2*PI[
         double normalized_Lambda = Angle.normalizePositive(lambda);
-        System.out.println("lambda = " + Angle.toDeg(normalized_Lambda) + " degrees");
+        //System.out.println("lambda = " + Angle.toDeg(normalized_Lambda) + " degrees");
 
         double numeratorBeta = rPrime * tan(psi) * sin(normalized_Lambda - lPrime);
 
@@ -267,7 +266,7 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
         // Note : We use here the method atan since it returns an angle in the range [-PI/2, PI/2],
         // which is the valid latitude range
         double beta = atan(numeratorBeta / numeratorLambda);
-        System.out.println("beta = " + Angle.toDeg(beta) + " degrees");
+        //System.out.println("beta = " + Angle.toDeg(beta) + " degrees");
 
         return EclipticCoordinates.of(normalized_Lambda, beta);
     }
