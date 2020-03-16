@@ -19,7 +19,7 @@ class MyPlanetModelTest {
 
     @Test
     void atWorksOnJupiterExample() {
-        // Book p. 126 : Jupiter's right ascension and declination on 22 November 2003
+        // Book p. 126 : Jupiter's right ascension and declination on 22 November 2003 at 0h UT
         Planet jupiter2003 = PlanetModel.JUPITER.at(-2231.0, eclipticToEquatorialConversion);
 
         /*
