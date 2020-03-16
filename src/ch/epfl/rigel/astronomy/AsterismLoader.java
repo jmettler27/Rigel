@@ -1,37 +1,41 @@
 package ch.epfl.rigel.astronomy;
 
-import ch.epfl.rigel.coordinates.EquatorialCoordinates;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
-public enum AsterismLoader implements StarCatalogue.Loader{
+public enum AsterismLoader implements StarCatalogue.Loader {
     INSTANCE();
 
 
     @Override
     public void load(InputStream inputStream, StarCatalogue.Builder builder) throws IOException {
-       /* BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-        String stringLine = reader.readLine();
-        String[] splittedString = stringLine.split(",");
-        EquatorialCoordinates equatorialCoordinates = EquatorialCoordinates.of(Double.parseDouble(splittedString[RARAD - 1]), Double.parseDouble(splittedString[DECRAD - 1]));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
 
-        String name = "" + splittedString[PROPER - 1];
-        if(name == ""){
-            if(splittedString[BAYER - 1] == ""){
-                name += ("? " + splittedString[CON - 1]);
-            } else{
-                name += (splittedString[BAYER - 1] + " " + splittedString[CON - 1]);
+        reader.readLine();
+        String line = "";
+        List<Star> stars = builder.stars();
+
+        while (line != null) {
+            line = reader.readLine();
+            if (line != null) {
+                String[] splittedString = line.split(",");
+
+                List<Star> starsAsterism = new ArrayList<>();
+
+                for (int i = 0; i < splittedString.length; ++i) {
+                    int hipparcosID = (Integer.parseInt(splittedString[i]));
+                    for (Star s : stars) {
+                        if (s.hipparcosId() == hipparcosID) {
+                            starsAsterism.add(s);
+                        }
+                    }
+                }
+                builder.addAsterism(new Asterism(starsAsterism));
             }
         }
-
-        builder.addStar(new Star(
-                Integer.parseInt(splittedString[HIP-1]),
-                name,
-                equatorialCoordinates,
-                (float) Double.parseDouble(splittedString[MAG-1]),
-                (float) Double.parseDouble(splittedString[CI - 1])));*/
     }
 }

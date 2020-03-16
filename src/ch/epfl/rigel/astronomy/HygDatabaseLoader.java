@@ -20,24 +20,30 @@ public enum HygDatabaseLoader implements StarCatalogue.Loader {
     @Override
     public void load(InputStream inputStream, StarCatalogue.Builder builder) throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-        String stringLine = reader.readLine();
-        String[] splittedString = stringLine.split(",");
-        EquatorialCoordinates equatorialCoordinates = EquatorialCoordinates.of(Double.parseDouble(splittedString[RARAD - 1]), Double.parseDouble(splittedString[DECRAD - 1]));
 
-        String name = "" + splittedString[PROPER - 1];
-        if(name == ""){
-            if(splittedString[BAYER - 1] == ""){
-                name += ("? " + splittedString[CON - 1]);
-            } else{
-                name += (splittedString[BAYER - 1] + " " + splittedString[CON - 1]);
+        reader.readLine();
+        String line = "";
+
+        while (line != null) {
+            line = reader.readLine();
+
+            if(line != null){
+                String[] splittedString = line.split(",");
+                EquatorialCoordinates equatorialCoordinates = EquatorialCoordinates.of(Double.parseDouble(splittedString[RARAD - 1]), Double.parseDouble(splittedString[DECRAD - 1]));
+
+                String name = "" + splittedString[PROPER - 1];
+                if (name.equals("")) {
+                    if (splittedString[BAYER - 1] == "") {
+                        name += ("? " + splittedString[CON - 1]);
+                    } else {
+                        name += (splittedString[BAYER - 1] + " " + splittedString[CON - 1]);
+                    }
+                }
+                float ci = splittedString[CI - 1].equals("")  ? 0f : (float) Double.parseDouble(splittedString[CI - 1]);
+                float mag = splittedString[MAG - 1].equals("") ? 0f : (float) Double.parseDouble(splittedString[MAG - 1]);
+                int hipparcosID = splittedString[HIP - 1].equals("") ? 0 : Integer.parseInt(splittedString[HIP - 1]);
+                builder.addStar(new Star(hipparcosID, name,equatorialCoordinates, mag, ci));
             }
         }
-        
-        builder.addStar(new Star(
-                Integer.parseInt(splittedString[HIP-1]),
-                name,
-                equatorialCoordinates,
-                (float) Double.parseDouble(splittedString[MAG-1]),
-                (float) Double.parseDouble(splittedString[CI - 1])));
     }
 }
