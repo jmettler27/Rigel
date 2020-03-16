@@ -27,6 +27,7 @@ public interface CelestialObjectModel<O> {
      *            celestial object
      * 
      * @return the celestial object modeled by this model
+     *
      */
     O at(double daysSinceJ2010, EclipticToEquatorialConversion eclipticToEquatorialConversion);
 }

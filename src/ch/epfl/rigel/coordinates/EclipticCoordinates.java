@@ -17,13 +17,11 @@ public final class EclipticCoordinates extends SphericalCoordinates {
 
     // The valid right open interval [0, 2*PI[ (in radians) for the ecliptic
     // longitude
-    private final static RightOpenInterval LON_INTERVAL_RAD = RightOpenInterval
-            .of(0, Angle.TAU);
+    private final static RightOpenInterval LON_INTERVAL_RAD = RightOpenInterval.of(0, Angle.TAU);
 
     // The valid closed interval [-PI/2, PI/2] (in radians) for the ecliptic
     // latitude
-    private final static ClosedInterval LAT_INTERVAL_RAD = ClosedInterval
-            .of(Angle.ofDeg(-90), Angle.ofDeg(90));
+    private final static ClosedInterval LAT_INTERVAL_RAD = ClosedInterval.of(Angle.ofDeg(-90), Angle.ofDeg(90));
 
     /**
      * Constructs ecliptic coordinates with the given longitude and latitude.
@@ -52,10 +50,8 @@ public final class EclipticCoordinates extends SphericalCoordinates {
         if (LON_INTERVAL_RAD.contains(lon) && LAT_INTERVAL_RAD.contains(lat)) {
             return new EclipticCoordinates(lon, lat);
         } else {
-            throw new IllegalArgumentException(
-                    "The longitude must be contained in " + LON_INTERVAL_RAD
-                            + " and the latitude must be contained in "
-                            + LAT_INTERVAL_RAD + ".");
+            throw new IllegalArgumentException( "The longitude must be contained in " + LON_INTERVAL_RAD
+                            + " and the latitude must be contained in " + LAT_INTERVAL_RAD + ".");
         }
     }
 
@@ -97,8 +93,7 @@ public final class EclipticCoordinates extends SphericalCoordinates {
 
     @Override
     public String toString() {
-        return String.format(Locale.ROOT, "(λ=%.4f°, β=%.4f°)", lonDeg(),
-                latDeg());
+        return String.format(Locale.ROOT, "(λ=%.4f°, β=%.4f°)", lonDeg(),latDeg());
     }
 
 }

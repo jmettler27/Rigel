@@ -20,9 +20,9 @@ class MyAsterismTest {
     @Test
     void stars() {
         List<Star> stars = new ArrayList<>();
-        /*stars.add(MyStarTest.RIGEL);
+        stars.add(MyStarTest.RIGEL);
         stars.add(MyStarTest.BETELGEUSE);
-        stars.add(MyStarTest.BELLATRIX);*/
+        stars.add(MyStarTest.BELLATRIX);
 
         Asterism orion = new Asterism(stars);
         assertEquals("[Rigel, Betelgeuse, Bellatrix]", orion.stars().toString());

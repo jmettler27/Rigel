@@ -65,11 +65,7 @@ public final class Angle {
 
         if (interval.contains(min) && interval.contains(sec)) {
 
-            double deg1 = (double) deg;
-            double min1 = (double) min;
-            double sec1 = (double) sec;
-
-            return Math.toRadians(deg1 + min1 / 60 + sec1 / 3600);
+            return Math.toRadians((double) deg + (double) min / 60 + sec / 3600);
 
         } else {
             throw new IllegalArgumentException();

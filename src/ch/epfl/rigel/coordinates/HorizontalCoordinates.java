@@ -58,17 +58,11 @@ public final class HorizontalCoordinates extends SphericalCoordinates {
      */
     public static HorizontalCoordinates ofDeg(double azDeg, double altDeg) {
 
-        if (AZ_INTERVAL_DEG.contains(azDeg)
-                && ALT_INTERVAL_DEG.contains(altDeg)) {
-            return new HorizontalCoordinates(Angle.ofDeg(azDeg),
-                    Angle.ofDeg(altDeg));
-        } else {
-            throw new IllegalArgumentException(
-                    "Incorrect coordinates: The azimuth (in degrees) must be contained in "
-                            + AZ_INTERVAL_DEG
-                            + " and the altitude (in degrees) must be contained in "
-                            + ALT_INTERVAL_DEG + ".");
+        if (AZ_INTERVAL_DEG.contains(azDeg) && ALT_INTERVAL_DEG.contains(altDeg)) {
+            return new HorizontalCoordinates(Angle.ofDeg(azDeg), Angle.ofDeg(altDeg));
         }
+        throw new IllegalArgumentException("Incorrect coordinates: The azimuth (in degrees) must be contained in " + AZ_INTERVAL_DEG
+                            + " and the altitude (in degrees) must be contained in " + ALT_INTERVAL_DEG + ".");
     }
 
     /**
@@ -90,8 +84,9 @@ public final class HorizontalCoordinates extends SphericalCoordinates {
 
         if (AZ_INTERVAL_RAD.contains(az) && ALT_INTERVAL_RAD.contains(alt)) {
             return new HorizontalCoordinates(az, alt);
-        } throw new IllegalArgumentException("Incorrect coordinates: The azimuth (in radians) must be contained in "+ AZ_INTERVAL_RAD+ " and the altitude (in radians) must be contained in "+ ALT_INTERVAL_RAD + ".");
-
+        }
+        throw new IllegalArgumentException("Incorrect coordinates: The azimuth (in radians) must be contained in "+ AZ_INTERVAL_RAD
+                + " and the altitude (in radians) must be contained in "+ ALT_INTERVAL_RAD + ".");
     }
 
     /**

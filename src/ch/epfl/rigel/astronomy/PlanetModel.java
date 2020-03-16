@@ -4,6 +4,7 @@ import ch.epfl.rigel.coordinates.EclipticCoordinates;
 import ch.epfl.rigel.coordinates.EclipticToEquatorialConversion;
 import ch.epfl.rigel.coordinates.EquatorialCoordinates;
 import ch.epfl.rigel.math.Angle;
+import ch.epfl.rigel.math.ClosedInterval;
 
 import java.util.List;
 
@@ -55,22 +56,19 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
      * @param tropicalYear
      *            The planet's period (in tropical years)
      * @param epsilon
-     *            The planet's longitude at J2010 (in radians)
+     *            The planet's longitude at J2010 (in degrees)
      * @param omega
-     *            The planet's longitude at the perigee (in radians)
+     *            The planet's longitude at the perigee (in degrees)
      * @param eccentricity
      *            The eccentricity of the planet's orbit (unitless)
      * @param a
-     *            The semi-major axis of the planet's orbit (in astronomical
-     *            unit AU)
+     *            The semi-major axis of the planet's orbit (in astronomical unit AU)
      * @param i
-     *            The inclination of the planet's orbit to the ecliptic (in
-     *            radians)
+     *            The inclination of the planet's orbit to the ecliptic (in degrees)
      * @param bigOmega
-     *            The longitude of the ascending node (in radians)
+     *            The longitude of the ascending node (in degrees)
      * @param theta0
-     *            The angular size (in arcseconds) of the planet - except Earth
-     *            - at a distance of 1 AU
+     *            The angular size (in arcseconds) of the planet - except Earth - at a distance of 1 AU
      * @param v0
      *            The magnitude (unitless) of the planet seen from a distance of 1 AU
      */
@@ -131,7 +129,6 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
         double lPrime = atan2(numerator, denominator) + bigOmega;
         System.out.println("y = " + numerator);
         System.out.println("x = " + denominator);
-        //System.out.println("l' = " + Angle.toDeg(l) + " degrees");
 
         // The planet's heliocentric ecliptic longitude (in radius)
         double normalized_LPrime = Angle.normalizePositive(lPrime);
@@ -177,14 +174,12 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
         }
 
         else {
-            // The Earth is the origin of the geocentric ecliptic coordinates
-            // system
+            // The Earth is the origin of the geocentric ecliptic coordinates system
             eclipticCoordinates = EclipticCoordinates.of(0, 0);
         }
 
         // The planet's equatorial coordinates
         EquatorialCoordinates equatorialCoordinates = eclipticToEquatorialConversion.apply(eclipticCoordinates);
-        // Beta
 
         // The distance between the planet and the Earth (in AU)
         double rho = sqrt(R * R + r * r - 2.0 * R * r * cos(l - normalized_L) * cos(psi));
@@ -273,7 +268,6 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
         // which is the valid latitude range
         double beta = atan(numeratorBeta / numeratorLambda);
         System.out.println("beta = " + Angle.toDeg(beta) + " degrees");
-
 
         return EclipticCoordinates.of(normalized_Lambda, beta);
     }

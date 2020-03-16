@@ -23,14 +23,17 @@ public final class Asterism {
      *             if the list contains no stars
      */
     public Asterism(List<Star> stars) {
-        if (stars.isEmpty()) { throw new IllegalArgumentException("The list of stars is empty.");}
-        this.stars = List.copyOf(stars); // Immutable list
+        if (stars.isEmpty()) {
+            throw new IllegalArgumentException("The list of stars is empty.");
+        }
+        this.stars = List.copyOf(stars); // Immutable list of stars
     }
 
     /**
      * Returns the list of stars.
      * 
      * @return the list of stars
+     *
      */
     public List<Star> stars() {
         return List.copyOf(stars);

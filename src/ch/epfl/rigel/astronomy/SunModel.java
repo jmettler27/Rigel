@@ -35,7 +35,7 @@ public enum SunModel implements CelestialObjectModel<Sun> {
     /**
      * Default constructor.
      */
-    private SunModel() {}
+    SunModel() {}
 
     @Override
     public Sun at(double daysSinceJ2010,EclipticToEquatorialConversion eclipticToEquatorialConversion) {

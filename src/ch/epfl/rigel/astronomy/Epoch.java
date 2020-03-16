@@ -39,11 +39,9 @@ public enum Epoch {
      * @param zoneOffset
      *            The associated time-zone
      */
-    private Epoch(int year, Month month, int dayOfMonth, int hour, int minute,
-            ZoneOffset zoneOffset) {
+    Epoch(int year, Month month, int dayOfMonth, int hour, int minute, ZoneOffset zoneOffset) {
 
-        zonedDateTime = ZonedDateTime.of(LocalDate.of(year, month, dayOfMonth),
-                LocalTime.of(hour, minute), zoneOffset);
+        zonedDateTime = ZonedDateTime.of(LocalDate.of(year, month, dayOfMonth), LocalTime.of(hour, minute), zoneOffset);
     }
 
     /**
