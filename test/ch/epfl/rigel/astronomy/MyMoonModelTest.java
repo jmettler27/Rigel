@@ -47,7 +47,8 @@ class MyMoonModelTest {
         // Actual beta :                beta = 1.716257 424835272 degrees
 
         // Expected alpha (book) : alpha = 14.211 666666666666h
-        // Actual alpha :          alpha = 14.211 456457836277h
+        // Actual alpha :          alpha = 14.211 45645783 6277h
+        //                                 14.211 45645783 5897h
         assertEquals(14.0 + 12.0 / 60.0 + 42.0 / 3600.0, moon2003.equatorialPos().raHr(), 1.0 / 3600.0);
 
         // Expected delta (book) : delta = -0.2011 8798138683525 radians

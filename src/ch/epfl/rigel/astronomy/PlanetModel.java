@@ -162,20 +162,10 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
         // obtain the position of the planet in geocentric ecliptic coordinates.
 
         // The planet's geocentric ecliptic coordinates
-        EclipticCoordinates eclipticCoordinates;
-
-        if (INNER_PLANETS.contains(this)) {
-            eclipticCoordinates = innerPlanetsCoords(R, normalized_L, rPrime, normalized_LPrime, psi);
-        }
-
-        else if (OUTER_PLANETS.contains(this)) {
-            eclipticCoordinates = outerPlanetsCoords(R, normalized_L, rPrime, normalized_LPrime, psi);
-        }
-
-        else {
-            // The Earth is the origin of the geocentric ecliptic coordinates system
-            eclipticCoordinates = EclipticCoordinates.of(0, 0);
-        }
+        // Note : We assume that the method at will never be applied to the Earth
+        EclipticCoordinates eclipticCoordinates = INNER_PLANETS.contains(this) ?
+                innerPlanetsCoords(R, normalized_L, rPrime, normalized_LPrime, psi) :
+                outerPlanetsCoords(R, normalized_L, rPrime, normalized_LPrime, psi);
 
         // The planet's equatorial coordinates
         EquatorialCoordinates equatorialCoordinates = eclipticToEquatorialConversion.apply(eclipticCoordinates);
