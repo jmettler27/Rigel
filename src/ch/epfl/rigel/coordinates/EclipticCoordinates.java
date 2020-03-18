@@ -15,44 +15,40 @@ import ch.epfl.rigel.math.RightOpenInterval;
  */
 public final class EclipticCoordinates extends SphericalCoordinates {
 
-    // The valid right open interval [0, 2*PI[ (in radians) for the ecliptic
-    // longitude
+    // The valid right open interval [0, 2*PI[ (in radians) for the ecliptic longitude
     private final static RightOpenInterval LON_INTERVAL_RAD = RightOpenInterval.of(0, Angle.TAU);
 
-    // The valid closed interval [-PI/2, PI/2] (in radians) for the ecliptic
-    // latitude
+    // The valid closed interval [-PI/2, PI/2] (in radians) for the ecliptic latitude
     private final static ClosedInterval LAT_INTERVAL_RAD = ClosedInterval.of(Angle.ofDeg(-90), Angle.ofDeg(90));
 
     /**
-     * Constructs ecliptic coordinates with the given longitude and latitude.
+     * Constructs ecliptic coordinates (in radians) with the given longitude and latitude (in radians).
      * 
      * @param lon
-     *            The longitude
+     *            The longitude (in radians)
      * @param lat
-     *            The latitude
+     *            The latitude (in radians)
      */
     private EclipticCoordinates(double lon, double lat) {
         super(lon, lat);
     }
 
     /**
-     * Returns the ecliptic coordinates (in radians) with the given longitude
-     * and latitude (in radians).
+     * Returns the ecliptic coordinates (in radians) with the given longitude and latitude (in radians).
      * 
      * @param lon
-     *            The longitude, in radians
+     *            The longitude (in radians)
      * @param lat
-     *            The latitude, in radians
+     *            The latitude (in radians)
+     *
      * @return the ecliptic coordinates (longitude and latitude) in radians
      */
     public static EclipticCoordinates of(double lon, double lat) {
-
-        if (LON_INTERVAL_RAD.contains(lon) && LAT_INTERVAL_RAD.contains(lat)) {
-            return new EclipticCoordinates(lon, lat);
-        } else {
-            throw new IllegalArgumentException( "The longitude must be contained in " + LON_INTERVAL_RAD
-                            + " and the latitude must be contained in " + LAT_INTERVAL_RAD + ".");
+        if(!(LON_INTERVAL_RAD.contains(lon) && LAT_INTERVAL_RAD.contains(lat))){
+            throw new IllegalArgumentException( "The longitude (in radians) must be contained in " + LON_INTERVAL_RAD
+                    + " and the latitude (in radians) must be contained in " + LAT_INTERVAL_RAD + ".");
         }
+        return new EclipticCoordinates(lon, lat);
     }
 
     /**

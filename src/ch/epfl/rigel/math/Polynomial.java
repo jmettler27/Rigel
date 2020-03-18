@@ -75,43 +75,40 @@ public final class Polynomial {
 
             else {
                 // The value of f(x) to be derived
-                double v = c0;
-
-                // The main part (without the constant c0) of f(x)
-                double c = coeffs[0] * x;
+                double value = coeffs[0]*x;
 
                 // Polynomial of degree at least 2 (exactly two coefficients)
                 if (coeffs.length != 2) {
                     for (int i = 1; i < coeffs.length - 1; ++i) {
-                        c = (c + coeffs[i]) * x;
+                        value = (value + coeffs[i]) * x;
                     }
                 }
 
                 // Polynomial of degree 1
-                v += c;
+                value += c0;
 
-                return v;
+                return value;
             }
         }
     }
 
     @Override
     public String toString() {
-        StringBuilder b = new StringBuilder();
+        StringBuilder builder = new StringBuilder();
 
         // Constant polynomial (of degree 0)
         if (coeffs.length == 1) {
-            b.append(coeffs[0]);
+            builder.append(coeffs[0]);
         }
 
         // Linear polynomial (of degree 1)
         else if (coeffs.length == 2) {
             if (Math.abs(coeffs[0]) != 1) {
-                b.append(coeffs[0]).append("x");
+                builder.append(coeffs[0]).append("x");
             } else if (coeffs[0] == 1) {
-                b.append("x");
+                builder.append("x");
             } else {
-                b.append("-x");
+                builder.append("-x");
             }
         }
 
@@ -119,12 +116,13 @@ public final class Polynomial {
         else {
             // Display of the highest-degree (at index 0) coefficient
             if (Math.abs(coeffs[0]) != 1) {
-                b.append(coeffs[0]).append("x^").append(coeffs.length - 1);
+                builder.append(coeffs[0]).append("x^");
             } else if (coeffs[0] == 1) {
-                b.append("x^").append(coeffs.length - 1);
+                builder.append("x^");
             } else {
-                b.append("-x^").append(coeffs.length - 1);
+                builder.append("-x^");
             }
+            builder.append(coeffs.length - 1);
         }
 
         // Display of the coefficients at index at least 1
@@ -135,19 +133,19 @@ public final class Polynomial {
                 if (Math.abs(coeffs[i]) == 1) {
                     if (coeffs[i] == 1) {
                         if (i == coeffs.length - 1) {
-                            b.append("+1");
+                            builder.append("+1");
                         } else if (i == coeffs.length - 2) {
-                            b.append("+x");
+                            builder.append("+x");
                         } else {
-                            b.append("+x^").append(coeffs.length - 1 - i);
+                            builder.append("+x^").append(coeffs.length - 1 - i);
                         }
                     } else {
                         if (i == coeffs.length - 1) {
-                            b.append("-1");
+                            builder.append("-1");
                         } else if (i == coeffs.length - 2) {
-                            b.append("-x");
+                            builder.append("-x");
                         } else {
-                            b.append("-x^").append(coeffs.length - 1 - i);
+                            builder.append("-x^").append(coeffs.length - 1 - i);
                         }
                     }
                 }
@@ -155,25 +153,25 @@ public final class Polynomial {
                 else {
                     if (coeffs[i] > 0) {
                         if (i == coeffs.length - 1) {
-                            b.append("+").append(coeffs[i]);
+                            builder.append("+").append(coeffs[i]);
                         } else if (i == coeffs.length - 2) {
-                            b.append("+").append(coeffs[i]).append("x");
+                            builder.append("+").append(coeffs[i]).append("x");
                         } else {
-                            b.append("+").append(coeffs[i]).append("x^").append(coeffs.length - 1 - i);
+                            builder.append("+").append(coeffs[i]).append("x^").append(coeffs.length - 1 - i);
                         }
                     } else {
                         if (i == coeffs.length - 1) {
-                            b.append(coeffs[i]);
+                            builder.append(coeffs[i]);
                         } else if (i == coeffs.length - 2) {
-                            b.append(coeffs[i]).append("x");
+                            builder.append(coeffs[i]).append("x");
                         } else {
-                            b.append(coeffs[i]).append("x^").append(coeffs.length - 1 - i);
+                            builder.append(coeffs[i]).append("x^").append(coeffs.length - 1 - i);
                         }
                     }
                 }
             }
         }
-        return b.toString();
+        return builder.toString();
     }
 
     @Override

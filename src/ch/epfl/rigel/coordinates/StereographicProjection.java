@@ -20,11 +20,11 @@ public final class StereographicProjection implements Function<HorizontalCoordin
     // The cosine and sine of the center's latitude
     private final double cosPhi1, sinPhi1;
 
-
     /**
      * Constructs a stereographic projection centered in the given center point.
      *
-     * @param center The center of this projection
+     * @param center
+     *            The center of this projection
      */
     public StereographicProjection(HorizontalCoordinates center) {
         this.center = center;
@@ -33,11 +33,11 @@ public final class StereographicProjection implements Function<HorizontalCoordin
     }
 
     /**
-     * Returns the Cartesian coordinates of the center of the circle
-     * corresponding to the projection of the parallel passing through the given
-     * point hor.
+     * Returns the Cartesian coordinates of the center of the circle corresponding to the projection of
+     * the parallel passing through the given point hor.
      *
-     * @param hor The point on the parallel
+     * @param hor
+     *            The point on the parallel
      *
      * @return the Cartesian coordinates of the center of the circle
      */
@@ -46,16 +46,17 @@ public final class StereographicProjection implements Function<HorizontalCoordin
         double phi = hor.alt();
 
         // The ordinate of the center of the circle (may be infinite)
-        double cy = cosPhi1 / (sin(phi) + sinPhi1);
+        double centerY = cosPhi1 / (sin(phi) + sinPhi1);
 
-        return CartesianCoordinates.of(0, cy);
+        return CartesianCoordinates.of(0, centerY);
     }
 
     /**
-     * Returns the radius of the circle corresponding to the projection of the
-     * parallel passing through the given point hor.
+     * Returns the radius of the circle corresponding to the projection of the parallel passing through
+     * the given point hor.
      *
-     * @param parallel The point on the parallel
+     * @param parallel
+     *            The point on the parallel
      *
      * @return the radius of the circle (may be infinite)
      */
@@ -66,10 +67,11 @@ public final class StereographicProjection implements Function<HorizontalCoordin
     }
 
     /**
-     * Returns the projected diameter of a sphere of angular size rad
-     * centered at the projection center, assuming that the latter is on the horizon.
+     * Returns the projected diameter of a sphere of angular size rad centered at the projection center,
+     * assuming that the latter is on the horizon.
      *
-     * @param rad The angular size of the sphere, i.e. its apparent diameter
+     * @param rad
+     *            The angular size of the sphere, i.e. its apparent diameter
      *
      * @return the projected diameter of the sphere
      */
@@ -82,7 +84,8 @@ public final class StereographicProjection implements Function<HorizontalCoordin
         // The longitude of the center of the projection
         double lambda0 = center.az();
 
-        // The azimuth (lambda) and the altitude (phi) of the point to be projected
+        // The azimuth (lambda) and the altitude (phi) of the point to be
+        // projected
         double lambda = azAlt.az();
         double phi = azAlt.alt();
 
@@ -96,10 +99,10 @@ public final class StereographicProjection implements Function<HorizontalCoordin
     }
 
     /**
-     * Returns the horizontal coordinates of the point whose projection is the
-     * given Cartesian coordinate point.
+     * Returns the horizontal coordinates of the point whose projection is the given Cartesian coordinate point.
      *
-     * @param xy The Cartesian coordinate point, i.e. the projection
+     * @param xy
+     *            The Cartesian coordinate point, i.e. the projection
      *
      * @return the horizontal coordinates of the corresponding point, before projection
      */
@@ -108,25 +111,26 @@ public final class StereographicProjection implements Function<HorizontalCoordin
         double y = xy.y(); // The ordinate of xy
 
         // The radius of the projected parallel (a circle) centered in (x,y)
-        double rho = sqrt(x * x + y * y);
+        double radius = sqrt(x * x + y * y);
 
-        double sinC = (2.0 * rho) / (rho * rho + 1.0);
-        double cosC = (1.0 - rho * rho) / (rho * rho + 1.0);
+        double sinC = (2.0 * radius) / (radius * radius + 1.0);
+        double cosC = (1.0 - radius * radius) / (radius * radius + 1.0);
 
         // The longitude of the center of the projection
-        double lambda0 = center.az();
+        double centerLon = center.az();
 
-        double numerator = x * sinC;
-        double denominator = rho * cosPhi1 * cosC - y * sinPhi1 * sinC;
-        // The first horizontal coordinate, the azimuth
-        double lambda = atan2(numerator, denominator) + lambda0;
-        // The azimuth normalized in its valid interval [0, 2*PI[
-        double normalized_Lambda = Angle.normalizePositive(lambda);
+        // Derivation of the azimuth (the first horizontal coordinate):
+        double numeratorAz = x * sinC;
+        double denominatorAz = radius * cosPhi1 * cosC - y * sinPhi1 * sinC;
 
-        // The second horizontal coordinates, the altitude
-        double phi = asin(cosC * sinPhi1 + (y * sinC * cosPhi1) / rho);
+        // The azimuth, normalized in its valid interval [0, 2*PI[
+        double az = Angle.normalizePositive(atan2(numeratorAz, denominatorAz) + centerLon);
 
-        return HorizontalCoordinates.of(normalized_Lambda, phi);
+        // The second horizontal coordinates, the altitude, in its valid
+        // interval [-PI/2, PI/2]
+        double alt = asin(cosC * sinPhi1 + (y * sinC * cosPhi1) / radius);
+
+        return HorizontalCoordinates.of(az, alt);
     }
 
     @Override

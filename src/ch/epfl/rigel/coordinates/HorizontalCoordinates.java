@@ -30,63 +30,57 @@ public final class HorizontalCoordinates extends SphericalCoordinates {
     private final static ClosedInterval ALT_INTERVAL_RAD = ClosedInterval.of(Angle.ofDeg(-90), Angle.ofDeg(90));
 
     /**
-     * Constructs horizontal coordinates with the given azimuth and altitude.
+     * Constructs horizontal coordinates (in radians) with the given azimuth and altitude (in radians).
      *
      * @param az
-     *            The azimuth
+     *            The azimuth (in radians)
      * @param alt
-     *            The altitude
+     *            The altitude (in radians)
      */
     private HorizontalCoordinates(double az, double alt) {
         super(az, alt);
     }
 
     /**
-     * Returns the horizontal coordinates (in radians) with the given azimuth
-     * and altitude (in degrees).
+     * Returns the horizontal coordinates (in radians) with the given azimuth and altitude (in degrees).
      *
      * @param azDeg
-     *            The azimuth, in degrees
+     *            The azimuth (in degrees)
      * @param altDeg
-     *            The altitude, in degrees
+     *            The altitude (in degrees)
      *
      * @return the horizontal coordinates (azimuth and altitude) in radians
      *
      * @throws IllegalArgumentException
-     *             if at least one of the coordinates is not contained in its
-     *             valid interval
+     *             if at least one of the coordinates is not contained in its valid interval
      */
     public static HorizontalCoordinates ofDeg(double azDeg, double altDeg) {
-
-        if (AZ_INTERVAL_DEG.contains(azDeg) && ALT_INTERVAL_DEG.contains(altDeg)) {
-            return new HorizontalCoordinates(Angle.ofDeg(azDeg), Angle.ofDeg(altDeg));
+        if(!(AZ_INTERVAL_DEG.contains(azDeg) && ALT_INTERVAL_DEG.contains(altDeg))){
+            throw new IllegalArgumentException("The azimuth (in degrees) must be contained in " + AZ_INTERVAL_DEG
+                    + " and the altitude (in degrees) must be contained in " + ALT_INTERVAL_DEG + ".");
         }
-        throw new IllegalArgumentException("Incorrect coordinates: The azimuth (in degrees) must be contained in " + AZ_INTERVAL_DEG
-                            + " and the altitude (in degrees) must be contained in " + ALT_INTERVAL_DEG + ".");
+        return new HorizontalCoordinates(Angle.ofDeg(azDeg), Angle.ofDeg(altDeg));
     }
 
     /**
-     * Returns the horizontal coordinates (in radians) with the given azimuth
-     * and altitude (in radians).
+     * Returns the horizontal coordinates (in radians) with the given azimuth and altitude (in radians).
      *
      * @param az
-     *            The azimuth, in radians
+     *            The azimuth (in radians)
      * @param alt
-     *            The altitude, in radians
+     *            The altitude (in radians)
      *
      * @return the horizontal coordinates (azimuth and altitude) in radians
      *
      * @throws IllegalArgumentException
-     *             if at least one of the coordinates is not contained in its
-     *             valid interval
+     *             if at least one of the coordinates is not contained in its valid interval
      */
     public static HorizontalCoordinates of(double az, double alt) {
-
-        if (AZ_INTERVAL_RAD.contains(az) && ALT_INTERVAL_RAD.contains(alt)) {
-            return new HorizontalCoordinates(az, alt);
+        if(!(AZ_INTERVAL_RAD.contains(az) && ALT_INTERVAL_RAD.contains(alt))){
+            throw new IllegalArgumentException("The azimuth (in radians) must be contained in "+ AZ_INTERVAL_RAD
+                    + " and the altitude (in radians) must be contained in "+ ALT_INTERVAL_RAD + ".");
         }
-        throw new IllegalArgumentException("Incorrect coordinates: The azimuth (in radians) must be contained in "+ AZ_INTERVAL_RAD
-                + " and the altitude (in radians) must be contained in "+ ALT_INTERVAL_RAD + ".");
+        return new HorizontalCoordinates(az, alt);
     }
 
     /**
@@ -108,8 +102,8 @@ public final class HorizontalCoordinates extends SphericalCoordinates {
     }
 
     /**
-     * Displays the octant in which the azimuth of the receiver is located, with
-     * the four cardinal points (north, east, south and west).
+     * Displays the octant in which the azimuth of the receiver is located, with the four cardinal points
+     * (north, east, south and west).
      *
      * @param n
      *            The north cardinal point
@@ -124,44 +118,46 @@ public final class HorizontalCoordinates extends SphericalCoordinates {
      */
     public String azOctantName(String n, String e, String s, String w) {
 
+        // The two ranges for the North octant
         final RightOpenInterval NORTH_INTERVAL_LEFT = RightOpenInterval.of(360 - 45.0 / 2.0, 360.0);
         final RightOpenInterval NORTH_INTERVAL_RIGHT = RightOpenInterval.of(0,45.0 / 2.0);
-        // North
-        if (NORTH_INTERVAL_LEFT.contains(azDeg())|| NORTH_INTERVAL_RIGHT.contains(azDeg())) {
+
+        // North range
+        if (NORTH_INTERVAL_LEFT.contains(azDeg()) || NORTH_INTERVAL_RIGHT.contains(azDeg())) {
             return n;
         }
 
-        // North-East
+        // North-East range
         else if (centeredInterval(45.0).contains(azDeg())) {
             return n + e;
         }
 
-        // East
+        // East range
         else if (centeredInterval(90.0).contains(azDeg())) {
             return e;
         }
 
-        // South-East
+        // South-East range
         else if (centeredInterval(135.0).contains(azDeg())) {
             return s + e;
         }
 
-        // South
+        // South range
         else if (centeredInterval(180.0).contains(azDeg())) {
             return s;
         }
 
-        // South-West
+        // South-West range
         else if (centeredInterval(225.0).contains(azDeg())) {
             return s + w;
         }
 
-        // West
+        // West range
         else if (centeredInterval(270.0).contains(azDeg())) {
             return w;
         }
 
-        // North-West
+        // North-West range
         else {
             return n + w;
         }
@@ -186,14 +182,12 @@ public final class HorizontalCoordinates extends SphericalCoordinates {
     }
 
     /**
-     * Returns the angular distance between the receiver (this) and the given
-     * point (that).
+     * Returns the angular distance between the receiver (this) and the given point (that).
      *
      * @param that
      *            The given point
      *
-     * @return the angular distance (in radians) between the receiver and the
-     *         given point
+     * @return the angular distance (in radians) between the receiver and the given point
      */
     public double angularDistanceTo(HorizontalCoordinates that) {
 
@@ -214,10 +208,10 @@ public final class HorizontalCoordinates extends SphericalCoordinates {
     }
 
     /**
-     * Additional method
+     * Additional method.
      *
      * Returns a right open interval containing azimuth values (in degrees), of
-     * size 45.0 and centered in the given azimuth (center);
+     * size 45.0 and centered in the given azimuth (center).
      *
      * @param center
      *            The given center of the right open interval (in degrees)
@@ -230,8 +224,10 @@ public final class HorizontalCoordinates extends SphericalCoordinates {
     private RightOpenInterval centeredInterval(double center) {
         final double HALVED_SIZE = 45.0 / 2.0;
 
-        if (AZ_INTERVAL_DEG.contains(center - HALVED_SIZE) && AZ_INTERVAL_DEG.contains(center + HALVED_SIZE)) {
-            return RightOpenInterval.of(center - HALVED_SIZE,center + HALVED_SIZE);
-        } throw new IllegalArgumentException("Incorrectly defined interval: The azimuth values must be contained in " + AZ_INTERVAL_DEG + ".");
+        if(!(AZ_INTERVAL_DEG.contains(center - HALVED_SIZE) && AZ_INTERVAL_DEG.contains(center + HALVED_SIZE))){
+            throw new IllegalArgumentException("Incorrectly defined interval: The azimuth values must be contained in "
+                    + AZ_INTERVAL_DEG + ".");
+        }
+        return RightOpenInterval.of(center - HALVED_SIZE,center + HALVED_SIZE);
     }
 }

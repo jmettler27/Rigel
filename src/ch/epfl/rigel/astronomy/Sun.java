@@ -18,8 +18,8 @@ public final class Sun extends CelestialObject {
     private final float meanAnomaly;
 
     /**
-     * Constructs the Sun at a point in time with the given ecliptic position,
-     * equatorial position, angular size and mean anomaly.
+     * Constructs the Sun at a point in time with the given ecliptic position quatorial position, angular size
+     * and mean anomaly.
      * 
      * @param eclipticPos
      *            The Sun's ecliptic position

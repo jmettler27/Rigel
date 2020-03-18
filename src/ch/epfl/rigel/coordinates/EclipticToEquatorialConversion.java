@@ -19,12 +19,7 @@ import static java.lang.Math.*;
  */
 public final class EclipticToEquatorialConversion implements Function<EclipticCoordinates, EquatorialCoordinates> {
 
-    // The obliquity of the ecliptic, i.e. the angle of inclination of the
-    // Earth's axis of rotation relative to the ecliptic.
-    private final double obliquity, cosEpsilon, sinEpsilon;
-
-    // The number of Julian centuries elapsed since January 1st, 2000 at 12h00 UTC.
-    private final double T;
+    private final double cosEpsilon, sinEpsilon;
 
     /**
      * Constructs a change of coordinate system between ecliptic and equatorial
@@ -33,14 +28,19 @@ public final class EclipticToEquatorialConversion implements Function<EclipticCo
      * @param when The given date/time pair
      */
     public EclipticToEquatorialConversion(ZonedDateTime when) {
-        T = Epoch.J2000.julianCenturiesUntil(when);
+        // The number of Julian centuries elapsed since January 1st, 2000 at 12h00 UTC.
+        double T = Epoch.J2000.julianCenturiesUntil(when);
 
         // The coefficients of the obliquity's polynomial
         double coeff0 = Angle.ofArcsec(0.00181);
         double coeff1 = -Angle.ofArcsec(0.0006);
         double coeff2 = -Angle.ofArcsec(46.815);
         double coeff3 = Angle.ofDMS(23, 26, 21.45);
-        obliquity = Polynomial.of(coeff0, coeff1, coeff2, coeff3).at(T);
+
+        // The obliquity of the ecliptic, i.e. the angle of inclination of the
+        // Earth's axis of rotation relative to the ecliptic.
+        double obliquity = Polynomial.of(coeff0, coeff1, coeff2, coeff3).at(T);
+
         cosEpsilon = cos(obliquity);
         sinEpsilon = sin(obliquity);
     }
@@ -50,30 +50,22 @@ public final class EclipticToEquatorialConversion implements Function<EclipticCo
         double lambda = ecl.lon(); // The ecliptic longitude
         double beta = ecl.lat(); // The ecliptic latitude
 
-        // The numerator
-        double y = sin(lambda) * cosEpsilon - tan(beta) * sinEpsilon;
+        // Derivation of the right ascension (the first equatorial coordinate):
+        double y = sin(lambda) * cosEpsilon - tan(beta) * sinEpsilon; // The numerator of the right ascension's formula
+        double x = cos(lambda); // The denominator of the right ascension's formula
 
-        // The denominator
-        double x = cos(lambda);
+        // The right ascension, normalized in its valid interval [0, 2*PI[
+        double alpha = Angle.normalizePositive(atan2(y, x));
 
-        // The first equatorial coordinate, the right ascension
-        // Note : The method atan2 returns an angle in [-PI, PI], while the
-        // right ascension must be contained in [0, 2*PI[
-        double alpha = atan2(y, x);
+        // Derivation of the declination (the second equatorial coordinate):
+        double tempDelta = sin(beta) * cosEpsilon + cos(beta) * sinEpsilon * sin(lambda);
 
-        // Normalizes the right ascension in its valid interval [0, 2*PI[
-        double normalized_Alpha = Angle.normalizePositive(alpha);
-
-        double tempDelta = sin(beta) * cosEpsilon
-                + cos(beta) * sinEpsilon * sin(lambda);
-
-        // The second equatorial coordinate, the declination
-        // Note : The method asin returns an angle in the range [-PI/2, PI/2],
-        // which is the valid declination's range
+        // The declination
+        // Note : The method asin returns an angle in the range [-PI/2, PI/2], which is the valid declination's range
         double delta = asin(tempDelta);
 
         // The equatorial coordinates corresponding to the given ecliptic coordinates
-        return EquatorialCoordinates.of(normalized_Alpha, delta);
+        return EquatorialCoordinates.of(alpha, delta);
     }
 
     @Override

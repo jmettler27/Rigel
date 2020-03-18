@@ -15,22 +15,19 @@ import ch.epfl.rigel.math.RightOpenInterval;
  */
 public final class GeographicCoordinates extends SphericalCoordinates {
 
-    // The valid right open interval [-180°, 180°[ (in degrees) for the
-    // longitude
-    private final static RightOpenInterval LON_INTERVAL_DEG = RightOpenInterval
-            .of(-180, 180);
+    // The valid right open interval [-180°, 180°[ (in degrees) for the longitude
+    private final static RightOpenInterval LON_INTERVAL_DEG = RightOpenInterval.of(-180, 180);
 
     // The valid closed interval [-90°, 90°] (in degrees) for the latitude
-    private final static ClosedInterval LAT_INTERVAL_DEG = ClosedInterval
-            .of(-90, 90);
+    private final static ClosedInterval LAT_INTERVAL_DEG = ClosedInterval.of(-90, 90);
 
     /**
-     * Constructs geographic coordinates with the given longitude and latitude.
+     * Constructs geographic coordinates (in radians) with the given longitude and latitude (in radians).
      *
      * @param lon
-     *            The longitude
+     *            The longitude (in radians)
      * @param lat
-     *            The latitude
+     *            The latitude (in radians)
      */
     private GeographicCoordinates(double lon, double lat) {
         super(lon, lat);
@@ -41,25 +38,21 @@ public final class GeographicCoordinates extends SphericalCoordinates {
      * and latitude (in degrees).
      *
      * @param longDeg
-     *            The longitude, in degrees
+     *            The longitude (in degrees)
      * @param latDeg
-     *            The latitude, in degrees
+     *            The latitude (in degrees)
+     *
      * @return the geographic coordinates (longitude and latitude) in radians
+     *
      * @throws IllegalArgumentException
-     *             if at least one of the coordinates is not contained in its
-     *             valid right open interval
+     *             if at least one of the coordinates is not contained in its valid right open interval
      */
     public static GeographicCoordinates ofDeg(double longDeg, double latDeg) {
-
-        if (isValidLonDeg(longDeg) && isValidLatDeg(latDeg)) {
-            return new GeographicCoordinates(Angle.ofDeg(longDeg),
-                    Angle.ofDeg(latDeg));
-        } else {
-            throw new IllegalArgumentException(
-                    "The longitude must be contained in " + LON_INTERVAL_DEG
-                            + " and the latitude must be contained in "
-                            + LAT_INTERVAL_DEG + ".");
+        if(!(isValidLonDeg(longDeg) && isValidLatDeg(latDeg))){
+            throw new IllegalArgumentException("The longitude (in degrees) must be contained in " + LON_INTERVAL_DEG
+                            + " and the latitude (in degrees) must be contained in " + LAT_INTERVAL_DEG + ".");
         }
+        return new GeographicCoordinates(Angle.ofDeg(longDeg), Angle.ofDeg(latDeg));
     }
 
     /**
@@ -124,8 +117,6 @@ public final class GeographicCoordinates extends SphericalCoordinates {
 
     @Override
     public String toString() {
-        return String.format(Locale.ROOT, "(lon=%.4f°, lat=%.4f°)", lonDeg(),
-                latDeg());
+        return String.format(Locale.ROOT, "(lon=%.4f°, lat=%.4f°)", lonDeg(), latDeg());
     }
-
 }

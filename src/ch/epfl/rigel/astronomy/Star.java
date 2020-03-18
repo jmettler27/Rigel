@@ -19,8 +19,7 @@ public final class Star extends CelestialObject {
     private final static ClosedInterval COLOR_INDEX_INTERVAL = ClosedInterval.of(-0.5f, 5.5f);
 
     /**
-     * Constructs a star with the given name, equatorial position, angular size
-     * and magnitude.
+     * Constructs a star with the given name, equatorial position, angular size and magnitude.
      * 
      * @param hipparcosId
      *            The star's identification number in the Hipparcos catalogue

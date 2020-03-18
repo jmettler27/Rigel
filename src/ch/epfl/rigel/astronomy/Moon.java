@@ -14,16 +14,14 @@ import java.util.Locale;
  */
 public final class Moon extends CelestialObject {
 
-    // The illuminated percentage of the Moon's "disc" illuminated by the Sun,
-    // as seen from the Earth
+    // The illuminated percentage (between 0 and 1) of the Moon's "disc" illuminated by the Sun, as seen from the Earth
     private final float phase;
 
-    // The valid closed interval for the phase
+    // The valid closed interval [0,1] for the phase
     private final static ClosedInterval PHASE_INTERVAL = ClosedInterval.of(0,1);
 
     /**
-     * Constructs the Moon at a point in time with the given equatorial
-     * position, angular size, magnitude and phase.
+     * Constructs the Moon at a point in time with the given equatorial position, angular size, magnitude and phase.
      * 
      * @param equatorialPos
      *            The Moon's equatorial position
@@ -43,10 +41,11 @@ public final class Moon extends CelestialObject {
     public Moon(EquatorialCoordinates equatorialPos, float angularSize, float magnitude, float phase) {
         super("Lune", equatorialPos, angularSize, magnitude);
 
-        if (!(PHASE_INTERVAL.contains(phase))) { throw new IllegalArgumentException( "The phase must be contained in [0,1]"); }
+        if (!(PHASE_INTERVAL.contains(phase))) {
+            throw new IllegalArgumentException( "The phase must be contained in [0,1]");
+        }
             this.phase = phase;
     }
-
 
     @Override
     public String info() {

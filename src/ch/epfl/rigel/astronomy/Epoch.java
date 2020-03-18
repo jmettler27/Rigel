@@ -4,8 +4,7 @@ import java.time.*;
 import java.time.temporal.ChronoUnit;
 
 /**
- * An astronomical epoch, i.e. a date/time pair corresponding to a reference
- * time (a moment).
+ * An astronomical epoch, i.e. a date/time pair corresponding to a reference time (an instant).
  *
  * @author Mathias Bouilloud (309979)
  * @author Julien Mettler (309999)
@@ -17,14 +16,10 @@ public enum Epoch {
 
     J2010(2009, Month.DECEMBER, 31, 0, 0, ZoneOffset.UTC);
 
-    // The date-time pair associated to its time-zone
-    private final ZonedDateTime zonedDateTime;
-
-    private final double JULIAN_CENTURIES_DAYS = 36525.0;
+    private final ZonedDateTime zonedDateTime; // The date/time pair associated to its time-zone
 
     /**
-     * Constructs an astronomical epoch through its time and spatial
-     * informations.
+     * Constructs an astronomical epoch through its time and spatial informations.
      * 
      * @param year
      *            The year of the reference time
@@ -40,7 +35,6 @@ public enum Epoch {
      *            The associated time-zone
      */
     Epoch(int year, Month month, int dayOfMonth, int hour, int minute, ZoneOffset zoneOffset) {
-
         zonedDateTime = ZonedDateTime.of(LocalDate.of(year, month, dayOfMonth), LocalTime.of(hour, minute), zoneOffset);
     }
 
@@ -49,6 +43,7 @@ public enum Epoch {
      *
      * @param when
      *            The given epoch
+     *
      * @return the number of days between this epoch and the given epoch
      */
     public double daysUntil(ZonedDateTime when) {
@@ -59,17 +54,17 @@ public enum Epoch {
     }
 
     /**
-     * Returns the number of Julian centuries (36525 days) between this epoch
-     * and the given epoch.
+     * Returns the number of Julian centuries (36525 days) between this epoch and the given epoch.
      *
      * @param when
      *            The given epoch
-     * @return the number of Julian centuries between this epoch and the given
-     *         epoch
+     *
+     * @return the number of Julian centuries between this epoch and the given epoch
      */
     public double julianCenturiesUntil(ZonedDateTime when) {
         // The number of days between this epoch and the given epoch
         double nbDays = daysUntil(when);
+        double JULIAN_CENTURIES_DAYS = 36525.0;
 
         return (nbDays / JULIAN_CENTURIES_DAYS);
     }

@@ -18,15 +18,14 @@ import static java.lang.Math.*;
  */
 public final class EquatorialToHorizontalConversion implements Function<EquatorialCoordinates, HorizontalCoordinates> {
 
-    private final ZonedDateTime when; // The given epoch
-    private final GeographicCoordinates where; // The given location
+    private final ZonedDateTime when; // The astronomical epoch of the conversion
+    private final GeographicCoordinates where; // The location of the conversion
 
-    // The observer's latitude
-    private final double phi, cosPhi, sinPhi;
+    private final double cosPhi, sinPhi; // The cosine and sine of the observer's latitude
 
     /**
-     * Constructs a change of coordinate system between equatorial and
-     * horizontal coordinates for the given date/time pair and location.
+     * Constructs a change of coordinate system between equatorial and horizontal coordinates
+     * for the given date/time pair and location.
      *
      * @param when
      *            The given date/time pair
@@ -36,7 +35,8 @@ public final class EquatorialToHorizontalConversion implements Function<Equatori
     public EquatorialToHorizontalConversion(ZonedDateTime when, GeographicCoordinates where) {
         this.when = when;
         this.where = where;
-        phi = where.lat();
+
+        double phi = where.lat(); // The observer's latitude
         cosPhi = cos(phi);
         sinPhi = sin(phi);
     }
@@ -46,30 +46,22 @@ public final class EquatorialToHorizontalConversion implements Function<Equatori
         double alpha = equ.ra(); // The right ascension
         double delta = equ.dec(); // The declination
 
-        // The hour angle (sidereal time - right ascension). Is equal to 0 if
-        // the astronomical object lies due south
-        double H = SiderealTime.local(when, where) - alpha; // hour angle
+        // The hour angle. Is equal to 0 if the astronomical object lies due south
+        double hourAngle = SiderealTime.local(when, where) - alpha; // hour angle
 
-        double tempAltitude = sin(delta) * sinPhi
-                + cos(delta) * cosPhi * cos(H);
+        // Derivation of the altitude (The second horizontal coordinate) :
+        double tempAltitude = sin(delta) * sinPhi + cos(delta) * cosPhi * cos(hourAngle);
+        double alt = asin(tempAltitude); // The altitude, in its valid range [-PI/2, PI/2]
 
-        // The second horizontal coordinate, the altitude
-        // Note : The method asin returns an angle in the range [-PI/2, PI/2],
-        // which is the valid alt's range
-        double h = asin(tempAltitude);
+        // Derivation of the azimuth (the first horizontal coordinate) :
+        double numeratorAz = -cos(delta) * cosPhi * sin(hourAngle);
+        double denominatorAz = sin(delta) - sinPhi * sin(alt);
 
-        double numerator = -cos(delta) * cosPhi * sin(H);
-        double denominator = sin(delta) - sinPhi * sin(h);
+        // The azimuth, normalized in its valid interval [0, 2*PI[
+        // (The method atan2 returns an angle in the range [-PI, PI])
+        double az = Angle.normalizePositive(atan2(numeratorAz, denominatorAz));
 
-        // The first horizontal coordinate, the azimuth
-        // Note : The method atan2 returns an angle in the range [-PI, PI],
-        // while the az must be contained in [0, 2*PI[
-        double A = atan2(numerator, denominator);
-
-        // Normalizes the azimuth in its valid interval [0, 2*PI[
-        double normalized_Azimuth = Angle.normalizePositive(A);
-
-        return HorizontalCoordinates.of(normalized_Azimuth, h);
+        return HorizontalCoordinates.of(az, alt);
     }
 
     @Override

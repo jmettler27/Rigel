@@ -47,6 +47,7 @@ class MyPlanetModelTest {
         // Expected alpha (book) : alpha = 11h 11m 14                 s ; 11.187 222222222223 h
         // Actual alpha :          alpha = 11h 11m 13.757764954840788 s ; 11.187 154934709678 h
         assertEquals((11.0 + 11.0 / 60.0 + 14.0 / 3600.0), jupiter2003.equatorialPos().raHr(), 1.0 / 3600.0);
+        System.out.println(jupiter2003.equatorialPos().raHr());
 
         // Expected delta (book): delta = 06◦ 21' 2 5                '' ; delta = 6.35 9615384615385 degrees
         // Actual delta :         delta = 06◦ 21' 2 3.887824068722622'' ; delta = 6.35 6635506685756 degrees

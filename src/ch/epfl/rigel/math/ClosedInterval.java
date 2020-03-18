@@ -36,11 +36,10 @@ public final class ClosedInterval extends Interval {
      *             if the low bound is not strictly smaller than the high bound
      */
     public static ClosedInterval of(double low, double high) {
-        if (low < high) {
-            return new ClosedInterval(low, high);
-        } else {
-            throw new IllegalArgumentException("low bound >= high bound");
+        if(!(low < high)){
+            throw new IllegalArgumentException("The low bound must be strictly smaller than the high bound");
         }
+        return new ClosedInterval(low, high);
     }
 
     /**
@@ -54,11 +53,10 @@ public final class ClosedInterval extends Interval {
      *             if the size is not strictly positive
      */
     public static ClosedInterval symmetric(double size) {
-        if (size > 0.0) {
-            return new ClosedInterval(-size / 2.0, size / 2.0);
-        } else {
-            throw new IllegalArgumentException("size <= 0");
+        if(!(size > 0.0)){
+            throw new IllegalArgumentException("The size must be > 0");
         }
+        return new ClosedInterval(-size / 2.0, size / 2.0);
     }
 
     @Override

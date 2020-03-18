@@ -12,8 +12,7 @@ import ch.epfl.rigel.coordinates.EquatorialCoordinates;
 public final class Planet extends CelestialObject {
 
     /**
-     * Constructs a planet with the given name, equatorial position, angular
-     * size and magnitude.
+     * Constructs a planet with the given name, equatorial position, angular size and magnitude.
      * 
      * @param name
      *            The planet's name

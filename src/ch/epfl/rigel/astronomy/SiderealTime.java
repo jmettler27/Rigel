@@ -10,9 +10,8 @@ import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 
 /**
- * The methods allowing to derive the sidereal time, a unit used to measure the
- * time it takes for the Earth to take a spin on itself (24 hours of sidereal
- * time). 1 hour of sidereal time corresponds to a 15° angle.
+ * The methods allowing to derive the sidereal time, a unit used to measure the time it takes for the Earth
+ * to take a spin on itself (24 hours of sidereal time). 1 hour of sidereal time corresponds to a 15° angle.
  *
  * @author Mathias Bouilloud (309979)
  * @author Julien Mettler (309999)
@@ -22,15 +21,15 @@ public final class SiderealTime {
     /**
      * Default constructor.
      */
-    private SiderealTime() {
-    }
+    private SiderealTime() {}
 
     /**
-     * Returns the Greenwich sidereal time (the one at longitude 0°) in the
-     * interval [0, 2*PI[ (in radians), for a given date/time pair.
+     * Returns the Greenwich sidereal time (the one at longitude 0°) in the interval [0, 2*PI[ (in radians),
+     * for a given date/time pair.
      *
      * @param when
      *            The given date/time pair (a moment)
+     *
      * @return the Greenwich sidereal time (in radians)
      */
     public static double greenwich(ZonedDateTime when) {
@@ -40,56 +39,53 @@ public final class SiderealTime {
         // The beginning of the day containing the epoch (i.e. 0h that day)
         ZonedDateTime dayStart = whenUTC.truncatedTo(ChronoUnit.DAYS);
 
-        // The number of Julian centuries between the epoch J2000 and the
-        // beginning of the day
-        double T = Epoch.J2000.julianCenturiesUntil(dayStart);
+        // The number of Julian centuries between the epoch J2000 and the beginning of the day
+        double nbJulianCenturies = Epoch.J2000.julianCenturiesUntil(dayStart);
 
-        // The number of milliseconds between the beginning of the day
-        // containing the moment and the moment itself.
+        // The number of milliseconds between the beginning of the day containing the moment and the moment itself.
         double nbMillis = dayStart.until(whenUTC, ChronoUnit.MILLIS);
         // The previous result in hours
-        double t = (nbMillis / 1000.0) / 3600.0;
+        double nbMillis_hr = (nbMillis / 1000.0) / 3600.0;
 
-        double S0 = Polynomial.of(0.000025862, 2400.051336, 6.697374558).at(T);
-        double S1 = Polynomial.of(1.002737909, 0).at(t);
+        double S0 = Polynomial.of(0.000025862, 2400.051336, 6.697374558).at(nbJulianCenturies);
+        double S1 = Polynomial.of(1.002737909, 0).at(nbMillis_hr);
 
         // S0 and S1 (in hours) normalized to to [0, 24h[
         double normalized_S0 = RightOpenInterval.of(0, 24).reduce(S0);
         double normalized_S1 = RightOpenInterval.of(0, 24).reduce(S1);
 
         // The Greenwich sidereal time (in hours)
-        double Sg = normalized_S0 + normalized_S1;
+        double siderealGreenwich_hr = normalized_S0 + normalized_S1;
 
         // The Greenwich sidereal time (in hours) normalized to [0, 24h[
-        double normalizedSg_Hr = RightOpenInterval.of(0, 24).reduce(Sg);
+        double normalizedSg_hr = RightOpenInterval.of(0, 24).reduce(siderealGreenwich_hr);
 
         // The Greenwich sidereal time (in radians)
-        double Sg_rad = Angle.ofHr(normalizedSg_Hr);
+        double siderealGreenwich_rad = Angle.ofHr(normalizedSg_hr);
 
         // The Greenwich sidereal time (in radians) normalized to [0,2*PI[
-        return Angle.normalizePositive(Sg_rad);
+        return Angle.normalizePositive(siderealGreenwich_rad);
     }
 
     /**
-     * Returns the local sidereal time in the interval [0, 2*PI[ (in radians)
-     * for a given date/time pair and specific to the given location.
+     * Returns the local sidereal time in the interval [0, 2*PI[ (in radians) for a given date/time pair
+     * and specific to the given location.
      *
      * @param when
      *            The given date-time pair
      * @param where
      *            The given location's geographic coordinates
-     * @return the local sidereal time (in radians) for the given date/time pair
-     *         and specific to the given location
+     *
+     * @return the local sidereal time (in radians) for the given date/time pair and specific to the given location
      */
-    public static double local(ZonedDateTime when,
-            GeographicCoordinates where) {
+    public static double local(ZonedDateTime when, GeographicCoordinates where) {
         // The sidereal time (in radians) specific to Greenwich
         double siderealGreenwich = greenwich(when);
 
         // The local sidereal time , specific to the given location where
-        double Sl = siderealGreenwich + where.lon();
+        double localSiderealTime = siderealGreenwich + where.lon();
 
         // The local sidereal time normalized to the interval [0, 2*PI[
-        return Angle.normalizePositive(Sl);
+        return Angle.normalizePositive(localSiderealTime);
     }
 }

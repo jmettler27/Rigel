@@ -19,7 +19,6 @@ public enum AsterismLoader implements StarCatalogue.Loader {
 
     @Override
     public void load(InputStream inputStream, StarCatalogue.Builder builder) throws IOException {
-
         List<Star> stars = builder.stars();
 
         // The buffered reader of the given input stream (i.e. the catalogue of stars)

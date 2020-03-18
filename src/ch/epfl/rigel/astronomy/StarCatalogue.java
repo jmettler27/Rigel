@@ -26,16 +26,15 @@ public final class StarCatalogue {
      *            The asterisms of this catalogue
      *
      * @throws IllegalArgumentException
-     *             if at least one asterism contains a star that is not on the
-     *             given list of stars
+     *             if at least one asterism contains a star that is not on the given list of stars
      */
     public StarCatalogue(List<Star> stars, List<Asterism> asterisms) {
-
         for (Asterism asterism : asterisms) {
             for (Star s : asterism.stars()) {
                 if (!(stars.contains(s))) {
                     throw new IllegalArgumentException(
-                            "Invalid asterism(s): At least one asterism contains a star that is not on the given list of stars");
+                            "Invalid asterism(s): At least one asterism contains a star that is not on " +
+                                    "the given list of stars");
                 }
             }
         }
@@ -52,8 +51,8 @@ public final class StarCatalogue {
     /**
      * Additional method.
      *
-     * Constructs the list of the indices of the stars composing the given asterism
-     * (i.e. constructs the value associated to the given key, in the map).
+     * Constructs the list of the indices of the stars composing the given asterism (i.e. constructs the value
+     * associated to the given key, in the map).
      * Note : the given asterism is assumed to be contained in the catalogue since this method is used in the constructor.
      *
      * @param a
@@ -90,8 +89,7 @@ public final class StarCatalogue {
     }
 
     /**
-     * Returns the list of the indices (in the catalogue) of the stars composing
-     * the given asterism
+     * Returns the list of the indices (in the catalogue) of the stars composing the given asterism
      *
      * @param asterism
      *            The asterism of the catalogue
@@ -144,8 +142,7 @@ public final class StarCatalogue {
         }
 
         /**
-         * Returns an unmodifiable view on the stars of the catalogue under
-         * construction.
+         * Returns an unmodifiable view on the stars of the catalogue under construction.
          *
          * @return an unmodifiable view on the stars of the catalogue under
          *         construction
@@ -174,18 +171,15 @@ public final class StarCatalogue {
         }
 
         /**
-         * Returns an unmodifiable view on the asterisms of the catalogue under
-         * construction.
+         * Returns an unmodifiable view on the asterisms of the catalogue under construction.
          *
-         * @return an unmodifiable view on the asterisms of the catalogue under
-         *         construction
+         * @return an unmodifiable view on the asterisms of the catalogue under construction
          */
         public List<Asterism> asterisms() {return Collections.unmodifiableList(asterisms);}
 
         /**
-         * Asks the given loader to add to the catalogue under construction the
-         * stars and/or asterisms the loader obtains from the given input
-         * stream, and returns the builder of this catalogue.
+         * Asks the given loader to add to the catalogue under construction the stars and/or asterisms the loader
+         * obtains from the given input stream, and returns the builder of this catalogue.
          *
          * @param inputStream
          *            The input stream
@@ -203,8 +197,7 @@ public final class StarCatalogue {
         }
 
         /**
-         * Returns the catalogue of the stars and asterisms added so far to its
-         * builder.
+         * Returns the catalogue of the stars and asterisms added so far to its builder.
          *
          * @return the builded catalogue.
          */
@@ -223,8 +216,8 @@ public final class StarCatalogue {
     public interface Loader {
 
         /**
-         * Loads the stars and/or asterisms from the given input stream and adds
-         * them to the catalogue under construction of the builder;
+         * Loads the stars and/or asterisms from the given input stream and adds them to the catalogue
+         * under construction of the builder;
          *
          * @param inputStream
          *            The input stream

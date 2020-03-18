@@ -17,8 +17,10 @@ public final class CartesianCoordinates {
     /**
      * Constructs Cartesian coordinates with the given abscissa and ordinate.
      *
-     * @param x The abscissa, unitless
-     * @param y The ordinate, unitless
+     * @param x
+     *            The abscissa (unitless)
+     * @param y
+     *            The ordinate (unitless)
      */
     private CartesianCoordinates(double x, double y) {
         this.x = x;
@@ -26,10 +28,12 @@ public final class CartesianCoordinates {
     }
 
     /**
-     * Returns the Cartesian coordinates with the given abscissa and ordinate
+     * Returns the Cartesian coordinates with the given abscissa and ordinate.
      *
-     * @param x The abscissa, unitless
-     * @param y The ordinate, unitless
+     * @param x
+     *            The abscissa (unitless)
+     * @param y
+     *            The ordinate (unitless)
      *
      * @return the Cartesian coordinates of abscissa x and ordinate y
      */

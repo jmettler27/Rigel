@@ -33,7 +33,6 @@ public final class Asterism {
      * Returns the list of stars.
      * 
      * @return the list of stars
-     *
      */
     public List<Star> stars() {
         return List.copyOf(stars);

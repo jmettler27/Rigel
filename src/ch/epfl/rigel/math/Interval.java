@@ -9,8 +9,7 @@ package ch.epfl.rigel.math;
  */
 public abstract class Interval {
 
-    private final double lowBound;
-    private final double highBound;
+    private final double lowBound, highBound;
 
     /**
      * Constructs an interval with the given low bound and high bound.

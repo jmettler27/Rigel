@@ -1,29 +1,29 @@
 package ch.epfl.rigel.math;
 
 /**
- * The methods and constants allowing to work on angles represented by double
- * values.
- * 
+ * The methods and constants allowing to work on angles.
+ *
  * @author Mathias Bouilloud (309979)
  * @author Julien Mettler (309999)
- * 
+ *
  */
 public final class Angle {
 
-    public final static double TAU = 2 * Math.PI;
+    public final static double
+            TAU = 2 * Math.PI, // 2*PI
+            RAD_PER_HOUR = TAU / 24.0, // Conversion from hours to radians
+            HOUR_PER_RAD = 24.0 / TAU; // Conversion from radians to hours
 
-    private final static double RAD_PER_HOUR = TAU / 24.0; // hour --> rad
-    private final static double HOUR_PER_RAD = 24.0 / TAU; // rad --> hour
+    private final static RightOpenInterval DMS_INTERVAL = RightOpenInterval.of(0, 60);
 
     /**
      * Default constructor.
      */
-    private Angle() {
-    }
+    private Angle() {}
 
     /**
      * Normalizes the rad angle by reducing it to the interval [0,TAU[.
-     * 
+     *
      * @param rad
      *            The angle to be normalized
      * @return the normalized angle
@@ -35,7 +35,7 @@ public final class Angle {
     /**
      * Returns the angle corresponding to the given number of arc seconds, in
      * radians.
-     * 
+     *
      * @param sec
      *            The number of arc seconds
      * @return the angle in radians
@@ -47,7 +47,7 @@ public final class Angle {
     /**
      * Returns the angle corresponding to the given angle deg​° min​′ sec​″, in
      * radians.
-     * 
+     *
      * @param deg
      *            The given number of degrees
      * @param min
@@ -55,27 +55,22 @@ public final class Angle {
      * @param sec
      *            The given number of seconds
      * @return the angle in radians
-     * 
+     *
      * @throws IllegalArgumentException
      *             if the interval [0,60[ does not contain the number of minutes
      *             or the number of seconds
      */
     public static double ofDMS(int deg, int min, double sec) {
-        final RightOpenInterval interval = RightOpenInterval.of(0, 60);
-
-        if (interval.contains(min) && interval.contains(sec)) {
-
-            return Math.toRadians((double) deg + (double) min / 60 + sec / 3600);
-
-        } else {
+        if (!(DMS_INTERVAL.contains(min) && DMS_INTERVAL.contains(sec))) {
             throw new IllegalArgumentException();
         }
+        return Math.toRadians((double) deg + (double) min / 60 + sec / 3600);
     }
 
     /**
      * Returns the angle corresponding to the given angle in degrees, in
      * radians.
-     * 
+     *
      * @param deg
      *            The given angle in degrees
      * @return the angle in radians
@@ -87,7 +82,7 @@ public final class Angle {
     /**
      * Returns the angle corresponding to the given angle in radians, in
      * degrees.
-     * 
+     *
      * @param rad
      *            The given angle in radians
      * @return the angle in degrees
@@ -98,7 +93,7 @@ public final class Angle {
 
     /**
      * Returns the angle corresponding to the given angle in hours, in radians.
-     * 
+     *
      * @param hr
      *            The given angle in hours
      * @return the angle in radians
@@ -109,7 +104,7 @@ public final class Angle {
 
     /**
      * Returns the angle corresponding to the given angle in radians, in hours.
-     * 
+     *
      * @param rad
      *            The given angle in radians
      * @return the angle in hours

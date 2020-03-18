@@ -11,8 +11,7 @@ import ch.epfl.rigel.math.Angle;
  */
 abstract class SphericalCoordinates {
 
-    private final double longitude;
-    private final double latitude;
+    private final double longitude, latitude;
 
     /**
      * Constructs spherical coordinates with the given longitude and latitude.
