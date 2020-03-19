@@ -12,7 +12,6 @@ import java.util.List;
  *
  * @author Mathias Bouilloud (309979)
  * @author Julien Mettler (309999)
- *
  */
 public enum AsterismLoader implements StarCatalogue.Loader {
     INSTANCE();
@@ -24,32 +23,25 @@ public enum AsterismLoader implements StarCatalogue.Loader {
         // The buffered reader of the given input stream (i.e. the catalogue of stars)
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
 
-        String line = "";
+        String line;
 
-        while (line != null) {
+        while ((line = reader.readLine()) != null) {
+            // Array of 37 columns resulting from the split of the current line of the database
+            String[] columns = line.split(",");
 
-            // The current line of the catalogue of asterisms, corresponding to the values of an asterism
-            line = reader.readLine();
-            System.out.println(line);
+            List<Star> starsAsterism = new ArrayList<>();
 
-            if (line != null) {
+            for (String column : columns) {
+                int hipparcosID = Integer.parseInt(column);
 
-                // Array of 37 columns resulting from the split of the current line of the database
-                String[] columns = line.split(",");
-
-                List<Star> starsAsterism = new ArrayList<>();
-
-                for (int i = 0; i < columns.length; ++i) {
-                    int hipparcosID = Integer.parseInt(columns[i]);
-
-                    for (Star s : stars) {
-                        if (s.hipparcosId() == hipparcosID) {
-                            starsAsterism.add(s);
-                        }
+                for (Star s : stars) {
+                    if (s.hipparcosId() == hipparcosID) {
+                        starsAsterism.add(s);
                     }
                 }
-                builder.addAsterism(new Asterism(starsAsterism));
             }
+            builder.addAsterism(new Asterism(starsAsterism));
         }
     }
+
 }

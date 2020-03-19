@@ -28,56 +28,48 @@ public enum HygDatabaseLoader implements StarCatalogue.Loader {
 
     @Override
     public void load(InputStream inputStream, StarCatalogue.Builder builder) throws IOException {
-
         // The buffered reader of the given input stream (i.e. the HYG database)
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
 
         // The header line, giving the names of the column (which is thus unusable for this loader)
         reader.readLine();
 
-        String line = "";
+        String line;
 
-        while (line != null) {
+        while ((line = reader.readLine()) != null) {
+            // Array of 37 columns resulting from the split of the current line of the database
+            String[] columns = line.split(",");
 
-            // The current line of the HYG database, corresponding to the different values of a single star
-            line = reader.readLine();
+            // The star's Hipparcos identification number (0 by default)
+            int hipparcosId = columns[HIP - 1].equals("") ? 0 : Integer.parseInt(columns[HIP - 1]);
 
-            if (line != null) {
-                // Array of 37 columns resulting from the split of the current line of the database
-                String[] columns = line.split(",");
+            // The star's name
+            String name;
 
-                // The star's Hipparcos identification number (0 by default)
-                int hipparcosId = columns[HIP - 1].equals("") ? 0 : Integer.parseInt(columns[HIP - 1]);
-
-                // The star's name
-                String name;
-
-                if (columns[PROPER - 1].equals("")) {
-                    StringBuilder nameBuilder = new StringBuilder();
-                    if (columns[BAYER - 1].equals("")) {
-                        nameBuilder.append("?");
-                    }
-                    else {
-                        nameBuilder.append(columns[BAYER - 1]);
-                    }
-                    nameBuilder.append(" ").append(columns[CON-1]);
-                    name = nameBuilder.toString();
+            if (columns[PROPER - 1].equals("")) {
+                StringBuilder nameBuilder = new StringBuilder();
+                if (columns[BAYER - 1].equals("")) {
+                    nameBuilder.append("?");
+                } else {
+                    nameBuilder.append(columns[BAYER - 1]);
                 }
-                else {
-                    name = columns[PROPER - 1];
-                }
-
-                // The star's equatorial position
-                EquatorialCoordinates equatorialCoordinates = EquatorialCoordinates.of(Double.parseDouble(columns[RARAD - 1]), Double.parseDouble(columns[DECRAD - 1]));
-
-                // The star's magnitude (0 by default)
-                float magnitude = columns[MAG - 1].equals("") ? 0f : (float) Double.parseDouble(columns[MAG - 1]);
-
-                // The star's color index (0 by default)
-                float colorIndex = columns[CI - 1].equals("") ? 0f : (float) Double.parseDouble(columns[CI - 1]);
-
-                builder.addStar(new Star(hipparcosId, name, equatorialCoordinates, magnitude, colorIndex));
+                nameBuilder.append(" ").append(columns[CON - 1]);
+                name = nameBuilder.toString();
+            } else {
+                name = columns[PROPER - 1];
             }
+
+            // The star's equatorial position
+            EquatorialCoordinates equatorialCoordinates = EquatorialCoordinates.of(Double.parseDouble(columns[RARAD - 1]), Double.parseDouble(columns[DECRAD - 1]));
+
+            // The star's magnitude (0 by default)
+            float magnitude = columns[MAG - 1].equals("") ? 0f : (float) Double.parseDouble(columns[MAG - 1]);
+
+            // The star's color index (0 by default)
+            float colorIndex = columns[CI - 1].equals("") ? 0f : (float) Double.parseDouble(columns[CI - 1]);
+
+            builder.addStar(new Star(hipparcosId, name, equatorialCoordinates, magnitude, colorIndex));
+
         }
     }
 }
