@@ -39,56 +39,51 @@ public final class Polynomial {
      *             if the highest-degree coefficient is 0
      */
     public static Polynomial of(double coefficientN, double... coefficients) {
-        if (coefficientN != 0) {
-            double[] coeffsWithoutN = new double[coefficients.length];
-            System.arraycopy(coefficients, 0, coeffsWithoutN, 0, coefficients.length);
+        if (coefficientN == 0) {
+            throw new IllegalArgumentException();
+        }
+        double[] coeffsWithoutN = new double[coefficients.length];
+        System.arraycopy(coefficients, 0, coeffsWithoutN, 0, coefficients.length);
 
-            return new Polynomial(coefficientN, coeffsWithoutN);
-
-        } throw new IllegalArgumentException();
-
+        return new Polynomial(coefficientN, coeffsWithoutN);
     }
 
     /**
-     * Returns the value of this polynomial function for the given argument :
-     * derives f(x).
+     * Returns the value of this polynomial function for the given argument : derives f(x).
      *
      * @param x
      *            The given argument
+     *
      * @return the value of the polynomial function for the given argument
      */
     public double at(double x) {
-
         // Polynomial with all coefficients equal to 0
         if (coeffs.length == 0) {
             return 0.0;
         }
+        // The lowest-degree coefficient (constant)
+        double c0 = coeffs[coeffs.length - 1];
+
+        // Polynomial of degree 0 (constant polynomial), i.e. f(x) = c0 for any x
+        if (coeffs.length == 1) {
+            return c0;
+        }
 
         else {
-            // The lowest-degree coefficient (constant)
-            double c0 = coeffs[coeffs.length - 1];
+            // The value of f(x) to be derived
+            double value = coeffs[0]*x;
 
-            // Polynomial of degree 0 (constant polynomial), i.e. f(x) = c0 for any x
-            if (coeffs.length == 1) {
-                return c0;
-            }
-
-            else {
-                // The value of f(x) to be derived
-                double value = coeffs[0]*x;
-
-                // Polynomial of degree at least 2 (exactly two coefficients)
-                if (coeffs.length != 2) {
-                    for (int i = 1; i < coeffs.length - 1; ++i) {
-                        value = (value + coeffs[i]) * x;
-                    }
+            // Polynomial of degree at least 2 (exactly two coefficients)
+            if (coeffs.length != 2) {
+                for (int i = 1; i < coeffs.length - 1; ++i) {
+                    value = (value + coeffs[i]) * x;
                 }
-
-                // Polynomial of degree 1
-                value += c0;
-
-                return value;
             }
+
+            // Polynomial of degree 1
+            value += c0;
+
+            return value;
         }
     }
 
@@ -104,7 +99,8 @@ public final class Polynomial {
         // Linear polynomial (of degree 1)
         else if (coeffs.length == 2) {
             if (Math.abs(coeffs[0]) != 1) {
-                builder.append(coeffs[0]).append("x");
+                builder.append(coeffs[0])
+                        .append("x");
             } else if (coeffs[0] == 1) {
                 builder.append("x");
             } else {
@@ -116,7 +112,8 @@ public final class Polynomial {
         else {
             // Display of the highest-degree (at index 0) coefficient
             if (Math.abs(coeffs[0]) != 1) {
-                builder.append(coeffs[0]).append("x^");
+                builder.append(coeffs[0])
+                        .append("x^");
             } else if (coeffs[0] == 1) {
                 builder.append("x^");
             } else {
@@ -137,7 +134,8 @@ public final class Polynomial {
                         } else if (i == coeffs.length - 2) {
                             builder.append("+x");
                         } else {
-                            builder.append("+x^").append(coeffs.length - 1 - i);
+                            builder.append("+x^")
+                                    .append(coeffs.length - 1 - i);
                         }
                     } else {
                         if (i == coeffs.length - 1) {
@@ -145,28 +143,25 @@ public final class Polynomial {
                         } else if (i == coeffs.length - 2) {
                             builder.append("-x");
                         } else {
-                            builder.append("-x^").append(coeffs.length - 1 - i);
+                            builder.append("-x^")
+                                    .append(coeffs.length - 1 - i);
                         }
                     }
                 }
                 // The coefficient is not 1
                 else {
                     if (coeffs[i] > 0) {
-                        if (i == coeffs.length - 1) {
-                            builder.append("+").append(coeffs[i]);
-                        } else if (i == coeffs.length - 2) {
-                            builder.append("+").append(coeffs[i]).append("x");
-                        } else {
-                            builder.append("+").append(coeffs[i]).append("x^").append(coeffs.length - 1 - i);
-                        }
+                        builder.append("+");
+                    }
+                    if (i == coeffs.length - 1) {
+                        builder.append(coeffs[i]);
+                    } else if (i == coeffs.length - 2) {
+                        builder.append(coeffs[i])
+                                .append("x");
                     } else {
-                        if (i == coeffs.length - 1) {
-                            builder.append(coeffs[i]);
-                        } else if (i == coeffs.length - 2) {
-                            builder.append(coeffs[i]).append("x");
-                        } else {
-                            builder.append(coeffs[i]).append("x^").append(coeffs.length - 1 - i);
-                        }
+                        builder.append(coeffs[i])
+                                .append("x^")
+                                .append(coeffs.length - 1 - i);
                     }
                 }
             }

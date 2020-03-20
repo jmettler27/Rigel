@@ -10,7 +10,7 @@ import java.util.List;
 import static java.lang.Math.*;
 
 /**
- * A model of a planet, based on its observed position at the epoch J2010.
+ * A model of a planet of the solar system, based on its observed position at the epoch J2010.
  *
  * @author Mathias Bouilloud (309979)
  * @author Julien Mettler (309999)
@@ -31,7 +31,7 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
             1.523689, 1.8497,49.632, 9.36, -1.52),
 
     JUPITER("Jupiter", 11.857911, 337.917132, 14.6633, 0.048907,
-            5.20278,1.3035, 100.595, 196.74, -9.40),
+            5.20278, 1.3035, 100.595, 196.74, -9.40),
 
     SATURN("Saturne", 29.310579, 172.398316, 89.567, 0.053853,
             9.51134, 2.4873,113.752, 165.60, -8.88),
@@ -44,10 +44,15 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
 
     private final String frenchName;
 
-    private final double tropicalYear, lon2010, lonPerigee, eccentricity, axis, inclination, lonAscending, angularSize1AU, magnitude1AU;
+    private final double tropicalYear, lonJ2010, lonPerigee, eccentricity, axis, inclination, lonAscending,
+            angularSize1AU, magnitude1AU;
+
+    private final static double ANGULAR_VELOCITY = Angle.TAU / 365.242191;
 
     // The planets of the solar system, following elliptical orbits around the Sun
-    public final static List<PlanetModel> ALL = List.of(MERCURY, VENUS, EARTH, MARS, JUPITER, SATURN, URANUS, NEPTUNE),
+    public final static List<PlanetModel> ALL = List.of(MERCURY, VENUS, EARTH,MARS, JUPITER, SATURN, URANUS, NEPTUNE);
+
+    private final static List<PlanetModel>
             INNER_PLANETS = ALL.subList(0, 2), // The planets that orbit closer to the Sun than the Earth
             OUTER_PLANETS = ALL.subList(3, 8); // The planets that orbit further to the Sun than the Earth
 
@@ -58,7 +63,7 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
      *            The planet's french name
      * @param tropicalYear
      *            The planet's period (in tropical years)
-     * @param lon2010Deg
+     * @param lonJ2010Deg
      *            The planet's longitude at J2010 (in degrees)
      * @param lonPerigeeDeg
      *            The planet's longitude at the perigee (in degrees)
@@ -75,13 +80,12 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
      * @param magnitude1AU
      *            The magnitude (unitless) of the planet seen from a distance of 1 AU
      */
-    PlanetModel(String frenchName, double tropicalYear, double lon2010Deg, double lonPerigeeDeg, double eccentricity,
-                double axis, double inclinationDeg, double lonAscendingDeg, double angularSize1AUArc,
-                double magnitude1AU) {
+    PlanetModel(String frenchName, double tropicalYear, double lonJ2010Deg, double lonPerigeeDeg, double eccentricity,
+                double axis, double inclinationDeg, double lonAscendingDeg, double angularSize1AUArc, double magnitude1AU) {
 
         this.frenchName = frenchName;
         this.tropicalYear = tropicalYear;
-        this.lon2010 = Angle.ofDeg(lon2010Deg);
+        this.lonJ2010 = Angle.ofDeg(lonJ2010Deg);
         this.lonPerigee = Angle.ofDeg(lonPerigeeDeg);
         this.eccentricity = eccentricity;
         this.axis = axis;
@@ -93,98 +97,113 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
 
     @Override
     public Planet at(double daysSinceJ2010, EclipticToEquatorialConversion eclipticToEquatorialConversion) {
-
         // 1st step : The position of the planet in its own orbit
-        double Np = Angle.normalizePositive((Angle.TAU / 365.242191) * (daysSinceJ2010 / tropicalYear));
-       // System.out.println("Np = " + Angle.toDeg(Np) + " degrees");
-
-        // The planet's mean anomaly (in radians)
-        double meanAnomaly = Np + lon2010 - lonPerigee;
-       // System.out.println("Mp = " + Angle.toDeg(meanAnomaly) + " degrees");
-
-
-        // The planet's true anomaly (in radians)
-        double trueAnomaly = Angle.normalizePositive(meanAnomaly + 2.0 * eccentricity * sin(meanAnomaly));
-       // System.out.println("vp = " + Angle.toDeg(normalized_TrueAnomaly) + " degrees");
+        double trueAnomaly = trueAnomaly(daysSinceJ2010);
 
         // The planet's orbital radius (distance to the Sun) (in AU)
-        double orbitalRadius = (axis * (1.0 - eccentricity * eccentricity)) / (1.0 + eccentricity * cos(trueAnomaly));
-       // System.out.println("r = " + r + " AU");
+        double orbitalRadius = orbitalRadius(trueAnomaly);
 
-        // The planet's orbital longitude (in radians)
-        double orbitalLon = trueAnomaly + lonPerigee;
-       // System.out.println("lp = " + Angle.toDeg(l) + " degrees");
+        // The planet's heliocentric longitude (in radians)
+        double helioLon = heliocentricLongitude(trueAnomaly);
 
-        // 2nd step : The position of the planet is projected on the ecliptic
-        // plane and then expressed in heliocentric ecliptic coordinates
+        // 2nd step : The position of the planet is projected on the ecliptic plane and then expressed in
+        // heliocentric ecliptic coordinates
 
-        // The planet's heliocentric ecliptic latitude (in radians)
-        double helioEclipticLat = asin(sin(orbitalLon - lonAscending) * sin(inclination));
-       // System.out.println("psi = " + Angle.toDeg(psi) + " degrees");
+        // The planet's heliocentric ecliptic latitude (in radians, in the interval [-PI/2, PI/2])
+        double helioEclipticLat = asin(sin(helioLon - lonAscending) * sin(inclination));
 
-        // The planet's ecliptic radius (in AU)
+        // The projection of the orbital radius on the ecliptic plane (in AU)
         double eclipticRadius = orbitalRadius * cos(helioEclipticLat);
-       // System.out.println("r' = " + rPrime + " AU");
 
-        double numerator = sin(orbitalLon - lonAscending) * cos(inclination);
-        double denominator = cos(orbitalLon - lonAscending);
-        // The planet's ecliptic longitude (in AU)
-        double eclipticLon = Angle.normalizePositive(atan2(numerator, denominator) + lonAscending);
-       // System.out.println("y = " + numerator);
-       // System.out.println("x = " + denominator);
-        //System.out.println("l' = " + Angle.toDeg(normalized_LPrime) + " degrees");
-
+        double helioEclipticLonNumerator = sin(helioLon - lonAscending) * cos(inclination);
+        double helioEclipticLonDenominator = cos(helioLon - lonAscending);
+        // The planet's heliocentric ecliptic longitude (in radians, in the interval [0, 2*PI[)
+        double helioEclipticLon = Angle.normalizePositive(atan2(helioEclipticLonNumerator, helioEclipticLonDenominator)
+                + lonAscending);
 
         // 3rd step : The position of the Earth is determined
-        double Ne = Angle.normalizePositive((Angle.TAU / 365.242191) * (daysSinceJ2010 / EARTH.tropicalYear));
-        //System.out.println("Ne = " + Angle.toDeg(Ne) + " degrees");
-
-        // The Earth's mean anomaly (in radians)
-        double earthMeanAnomaly = Ne + EARTH.lon2010 - EARTH.lonPerigee;
-        //System.out.println("Me = " + Angle.toDeg(earthMeanAnomaly) + " degrees");
-
 
         // The Earth's true anomaly (in radians)
-        double earthTrueAnomaly = Angle.normalizePositive(earthMeanAnomaly + 2.0 * EARTH.eccentricity
-                * sin(earthMeanAnomaly));
-        //System.out.println("ve = " + Angle.toDeg(normalized_EarthTA) + " degrees");
+        double earthTrueAnomaly = EARTH.trueAnomaly(daysSinceJ2010);
 
         // The Earth's orbital radius (in AU)
-        double earthOrbitalRadius = (EARTH.axis * (1.0 - EARTH.eccentricity * EARTH.eccentricity))
-                / (1.0 + EARTH.eccentricity * cos(earthTrueAnomaly));
-        //System.out.println("R = " + R + " AU");
+        double earthOrbitalRadius = EARTH.orbitalRadius(earthTrueAnomaly);
 
-        // The Earth's orbital longitude (in radians)
-        double earthOrbitalLon = Angle.normalizePositive(EARTH.lonPerigee + earthTrueAnomaly);
-        //System.out.println("L = " + Angle.toDeg(normalized_L) + " degrees");
+        // The Earth's orbital longitude (in radians, in the interval [0, 2*PI[)
+        double earthHelioLon = Angle.normalizePositive(EARTH.heliocentricLongitude(earthTrueAnomaly));
 
-        // 4th step : The position of the Earth and the planet are combined to
-        // obtain the position of the planet in geocentric ecliptic coordinates.
+        // 4th step : The position of the Earth and the planet are combined to obtain the position of the planet
+        // in geocentric ecliptic coordinates.
 
         // The planet's geocentric ecliptic coordinates
         // Note : We assume that the method at will never be applied to the Earth
         EclipticCoordinates eclipticCoordinates = INNER_PLANETS.contains(this) ?
-                innerPlanetsCoords(earthOrbitalRadius, earthOrbitalLon, eclipticRadius, eclipticLon, helioEclipticLat) :
-                outerPlanetsCoords(earthOrbitalRadius, earthOrbitalLon, eclipticRadius, eclipticLon, helioEclipticLat);
+                innerPlanetsCoords(earthOrbitalRadius, earthHelioLon, eclipticRadius, helioEclipticLon, helioEclipticLat) :
+                outerPlanetsCoords(earthOrbitalRadius, earthHelioLon, eclipticRadius, helioEclipticLon, helioEclipticLat);
 
         // The planet's equatorial coordinates
         EquatorialCoordinates equatorialCoordinates = eclipticToEquatorialConversion.apply(eclipticCoordinates);
 
         // The distance between the planet and the Earth (in AU)
         double earthPlanetDistance = sqrt(earthOrbitalRadius * earthOrbitalRadius + orbitalRadius * orbitalRadius
-                - 2.0 * earthOrbitalRadius * orbitalRadius * cos(orbitalLon - earthOrbitalLon) * cos(helioEclipticLat));
+                        - 2.0 * earthOrbitalRadius * orbitalRadius * cos(helioLon - earthHelioLon) * cos(helioEclipticLat));
 
         // The planet's angular size (in radians)
         double angularSize = angularSize1AU / earthPlanetDistance;
 
         // The planet's phase, i.e. the illuminated percentage of the planet's
         // "disc" illuminated by the Sun, as seen from the Earth
-        double phase = (1.0 + cos(eclipticCoordinates.lon() - orbitalLon)) / 2.0;
+        double phase = (1.0 + cos(eclipticCoordinates.lon() - helioLon)) / 2.0;
 
         // The planet's magnitude (unitless)
         double magnitude = magnitude1AU + 5.0 * log10((orbitalRadius * earthPlanetDistance) / sqrt(phase));
 
         return new Planet(frenchName, equatorialCoordinates, (float) angularSize, (float) magnitude);
+    }
+
+    /**
+     * Returns the planet's true anomaly (in radians).
+     * 
+     * @param daysSinceJ2010
+     *            The number of days elapsed from the epoch J2010 to the epoch of the observed position
+     *            of the celestial object (may be negative).
+     *
+     * @return the planet's true anomaly (in radians)
+     */
+    private double trueAnomaly(double daysSinceJ2010) {
+        double planetTemp = Angle.normalizePositive(ANGULAR_VELOCITY * (daysSinceJ2010 / tropicalYear));
+
+        // The planet's mean anomaly (in radians)
+        double meanAnomaly = planetTemp + lonJ2010 - lonPerigee;
+
+        // The planet's true anomaly (in radians)
+        return Angle.normalizePositive(meanAnomaly + 2.0 * eccentricity * sin(meanAnomaly));
+    }
+
+    /**
+     * Returns the planet's orbital radius (i.e. the distance to the Sun) (in AU).
+     *
+     * @param trueAnomaly
+     *            The planet's true anomaly (in radians)
+     *
+     * @return the planet's orbital radius (in AU)
+     */
+    private double orbitalRadius(double trueAnomaly) {
+        double orbitalRadiusNumerator = axis * (1.0 - eccentricity * eccentricity);
+        double orbitalRadiusDenominator = 1.0 + eccentricity * cos(trueAnomaly);
+        return orbitalRadiusNumerator / orbitalRadiusDenominator;
+    }
+
+    /**
+     * Returns the planet's heliocentric longitude (in radians).
+     * 
+     * @param trueAnomaly
+     *            The planet's true anomaly (in radians)
+     *
+     * @return the planet's heliocentric longitude (in radians)
+     */
+    private double heliocentricLongitude(double trueAnomaly) {
+        return trueAnomaly + lonPerigee;
     }
 
     /**
@@ -203,8 +222,8 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
      *
      * @return the geocentric ecliptic coordinates of an inner planet
      */
-    private EclipticCoordinates innerPlanetsCoords(double earthOrbitalRadius, double earthOrbitalLon,
-                                                   double eclipticRadius, double helioEclipticLon, double helioEclipticLat) {
+    private EclipticCoordinates innerPlanetsCoords(double earthOrbitalRadius, double earthOrbitalLon, double eclipticRadius,
+                                                   double helioEclipticLon, double helioEclipticLat) {
 
         // Derivation of the planet's geocentric ecliptic longitude:
         double numeratorLon = eclipticRadius * sin(earthOrbitalLon - helioEclipticLon);
@@ -212,7 +231,6 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
 
         // The planet's geocentric ecliptic longitude normalized in [0, 2*PI[
         double geoEclipticLon = Angle.normalizePositive(PI + earthOrbitalLon + atan2(numeratorLon, denominatorLon));
-        //System.out.println("lambda = " + Angle.toDeg(normalized_Lambda) + " degrees");
 
         // Derivation of the planet's geocentric ecliptic latitude:
         double numeratorBeta = eclipticRadius * tan(helioEclipticLat) * sin(geoEclipticLon - helioEclipticLon);
@@ -221,8 +239,7 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
         // The planet's geocentric ecliptic latitude, in [-PI/2, PI/2]
         // Note : We use here the method atan since it returns an angle in the range [-PI/2, PI/2], which is
         // the valid latitude range
-        double geoEclipticLat = atan(numeratorBeta/ denominatorBeta);
-       // System.out.println("beta = " + Angle.toDeg(beta) + " degrees");
+        double geoEclipticLat = atan(numeratorBeta / denominatorBeta);
 
         return EclipticCoordinates.of(geoEclipticLon, geoEclipticLat);
     }
@@ -243,8 +260,8 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
      *
      * @return the geocentric ecliptic coordinates of an outer planet
      */
-    private EclipticCoordinates outerPlanetsCoords(double earthOrbitalRadius, double earthOrbitalLon,
-                                                   double eclipticRadius, double helioEclipticLon, double helioEclipticLat) {
+    private EclipticCoordinates outerPlanetsCoords(double earthOrbitalRadius, double earthOrbitalLon, double eclipticRadius,
+                                                   double helioEclipticLon, double helioEclipticLat) {
 
         // Derivation of the planet's geocentric ecliptic longitude:
         double numeratorLon = earthOrbitalRadius * sin(helioEclipticLon - earthOrbitalLon);
@@ -252,7 +269,6 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
 
         // The planet's geocentric ecliptic longitude normalized in [0, 2*PI[
         double geoEclipticLon = Angle.normalizePositive(helioEclipticLon + atan2(numeratorLon, denominatorLon));
-        //System.out.println("lambda = " + Angle.toDeg(normalized_Lambda) + " degrees");
 
         // Derivation of the planet's geocentric ecliptic latitude:
         double numeratorLat = eclipticRadius * tan(helioEclipticLat) * sin(geoEclipticLon - helioEclipticLon);
@@ -260,7 +276,6 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
         // The planet's geocentric ecliptic latitude
         // Note : The method atan returns an angle in the range [-PI/2, PI/2], which is the valid latitude range
         double geoEclipticLat = atan(numeratorLat / numeratorLon);
-        //System.out.println("beta = " + Angle.toDeg(beta) + " degrees");
 
         return EclipticCoordinates.of(geoEclipticLon, geoEclipticLat);
     }

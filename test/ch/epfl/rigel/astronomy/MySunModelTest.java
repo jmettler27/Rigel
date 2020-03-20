@@ -13,9 +13,13 @@ class MySunModelTest {
     @Test
     void atWorks() {
         // Book p.105 : The right ascension and declination of the Sun on Greenwich date 27 July 2003 at 0 h UT
-        ZonedDateTime when = ZonedDateTime.of(LocalDate.of(2003, Month.JULY, 27), LocalTime.of(0, 0, 0, 0), ZoneOffset.UTC);
+        ZonedDateTime when = ZonedDateTime.of(
+                LocalDate.of(2003, Month.JULY, 27),
+                LocalTime.of(0, 0, 0, 0), ZoneOffset.UTC);
         EclipticToEquatorialConversion eclipticToEquatorialConversion = new EclipticToEquatorialConversion(when);
-        Sun sun = SunModel.SUN.at(Epoch.J2010.daysUntil(when), eclipticToEquatorialConversion); // The Sun at 0 h UT on Greenwich date 27 July 2003
+
+        // The Sun at 0 h UT on Greenwich date 27 July 2003
+        Sun sun = SunModel.SUN.at(Epoch.J2010.daysUntil(when), eclipticToEquatorialConversion);
 
         // Expected ra (book) : 8h 23m 34s             = 8.392 777777777777h
         // Actual ra          : 8h 23m 33.65810987214h = 8.392 682808297806h
@@ -29,17 +33,21 @@ class MySunModelTest {
 
     @Test
     void atWorks1() {
-        assertEquals(5.9325494700300885, SunModel.SUN.at(27 + 31, new EclipticToEquatorialConversion(
-                ZonedDateTime.of(LocalDate.of(2010, Month.FEBRUARY, 27), LocalTime.of(0, 0), ZoneOffset.UTC)))
+        assertEquals(5.9325494700300885, SunModel.SUN.at(27 + 31,
+                new EclipticToEquatorialConversion(
+                ZonedDateTime.of(LocalDate.of(2010, Month.FEBRUARY, 27),
+                        LocalTime.of(0, 0), ZoneOffset.UTC)))
                 .equatorialPos().ra());
 
-        assertEquals(8.392682808297808, SunModel.SUN.at(-2349, new EclipticToEquatorialConversion(
-                ZonedDateTime.of(LocalDate.of(2003, Month.JULY, 27), LocalTime.of(0, 0, 0, 0), ZoneOffset.UTC)))
+        assertEquals(8.392682808297808, SunModel.SUN.at(-2349,
+                new EclipticToEquatorialConversion(
+                ZonedDateTime.of(LocalDate.of(2003, Month.JULY, 27),
+                        LocalTime.of(0, 0, 0, 0), ZoneOffset.UTC)))
                 .equatorialPos().raHr(), 1e-14);
 
         assertEquals(19.35288373097352, SunModel.SUN.at(-2349, new EclipticToEquatorialConversion(
-                ZonedDateTime.of(LocalDate.of(2003, Month.JULY,
-                        27), LocalTime.of(0, 0, 0, 0), ZoneOffset.UTC)))
+                ZonedDateTime.of(LocalDate.of(2003, Month.JULY,27),
+                        LocalTime.of(0, 0, 0, 0), ZoneOffset.UTC)))
                 .equatorialPos().decDeg());
     }
 }

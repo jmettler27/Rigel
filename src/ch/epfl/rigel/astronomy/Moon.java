@@ -42,9 +42,9 @@ public final class Moon extends CelestialObject {
         super("Lune", equatorialPos, angularSize, magnitude);
 
         if (!(PHASE_INTERVAL.contains(phase))) {
-            throw new IllegalArgumentException( "The phase must be contained in [0,1]");
+            throw new IllegalArgumentException( "The phase must be contained in " + PHASE_INTERVAL.toString());
         }
-            this.phase = phase;
+        this.phase = phase;
     }
 
     @Override

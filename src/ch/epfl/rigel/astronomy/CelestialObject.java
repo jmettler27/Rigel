@@ -55,7 +55,7 @@ public abstract class CelestialObject {
      *
      * @return the name
      */
-    public final String name() {
+    public String name() {
         return name;
     }
 
@@ -64,7 +64,7 @@ public abstract class CelestialObject {
      *
      * @return the angular size
      */
-    public final double angularSize() {
+    public double angularSize() {
         return angularSize;
     }
 
@@ -73,7 +73,7 @@ public abstract class CelestialObject {
      *
      * @return the magnitude
      */
-    public final double magnitude() {
+    public double magnitude() {
         return magnitude;
     }
 
@@ -82,7 +82,7 @@ public abstract class CelestialObject {
      *
      * @return the equatorial position
      */
-    public final EquatorialCoordinates equatorialPos() {
+    public EquatorialCoordinates equatorialPos() {
         return equatorialPos;
     }
 

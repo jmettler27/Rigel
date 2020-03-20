@@ -84,8 +84,7 @@ public final class StereographicProjection implements Function<HorizontalCoordin
         // The longitude of the center of the projection
         double lambda0 = center.az();
 
-        // The azimuth (lambda) and the altitude (phi) of the point to be
-        // projected
+        // The azimuth (lambda) and the altitude (phi) of the point to be projected
         double lambda = azAlt.az();
         double phi = azAlt.alt();
 
@@ -126,8 +125,7 @@ public final class StereographicProjection implements Function<HorizontalCoordin
         // The azimuth, normalized in its valid interval [0, 2*PI[
         double az = Angle.normalizePositive(atan2(numeratorAz, denominatorAz) + centerLon);
 
-        // The second horizontal coordinates, the altitude, in its valid
-        // interval [-PI/2, PI/2]
+        // The second horizontal coordinates, the altitude, in its valid interval [-PI/2, PI/2]
         double alt = asin(cosC * sinPhi1 + (y * sinC * cosPhi1) / radius);
 
         return HorizontalCoordinates.of(az, alt);
@@ -135,7 +133,7 @@ public final class StereographicProjection implements Function<HorizontalCoordin
 
     @Override
     public String toString() {
-        return "Stereographic Projection centered in " + center.toString();
+        return "StereographicProjection centered in " + center.toString();
     }
 
     @Override
