@@ -178,5 +178,4 @@ public final class Polynomial {
     public final boolean equals(Object obj) {
         throw new UnsupportedOperationException();
     }
-
 }

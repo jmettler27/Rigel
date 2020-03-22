@@ -6,6 +6,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 
 /**
  * A loader of a HYG catalogue, containing only stars with a magnitude less than or equal to 6.
@@ -28,8 +29,8 @@ public enum HygDatabaseLoader implements StarCatalogue.Loader {
 
     @Override
     public void load(InputStream inputStream, StarCatalogue.Builder builder) throws IOException {
-        // The buffered reader of the given input stream (i.e. the HYG database)
-        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+        // The buffered reader of the given input stream (i.e. the HYG database, encoded in ASCII)
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.US_ASCII));
 
         // The header line, giving the names of the column (which is thus unusable for this loader)
         reader.readLine();

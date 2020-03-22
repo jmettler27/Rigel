@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,8 +21,8 @@ public enum AsterismLoader implements StarCatalogue.Loader {
     public void load(InputStream inputStream, StarCatalogue.Builder builder) throws IOException {
         List<Star> stars = builder.stars();
 
-        // The buffered reader of the given input stream (i.e. the catalogue of stars)
-        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+        // The buffered reader of the given input stream (i.e. the catalogue of stars, encoded in ASCII)
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.US_ASCII));
 
         String line;
 
@@ -43,5 +44,4 @@ public enum AsterismLoader implements StarCatalogue.Loader {
             builder.addAsterism(new Asterism(starsAsterism));
         }
     }
-
 }

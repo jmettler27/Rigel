@@ -10,14 +10,26 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class MyMoonModelTest {
 
-    private final ZonedDateTime when = ZonedDateTime.of(LocalDate.of(2003, Month.SEPTEMBER, 1), LocalTime.of(0, 0, 0, 0), ZoneOffset.UTC);
-    private final EclipticToEquatorialConversion eclipticToEquatorialConversion = new EclipticToEquatorialConversion(when);
+    // Book p.166: The position of the Moon on 1 September 2003 at 0h UT
+    private static final ZonedDateTime ZDT_20030901 = ZonedDateTime.of(
+            LocalDate.of(2003, Month.SEPTEMBER, 1),
+            LocalTime.of(0, 0, 0, 0),
+            ZoneOffset.UTC);
+    private static final EclipticToEquatorialConversion ECLIPTIC_TO_EQUATORIAL_CONVERSION_20030901 =
+            new EclipticToEquatorialConversion(ZDT_20030901);
+    private static final Moon MOON_2003 = MoonModel.MOON.at(Epoch.J2010.daysUntil(ZDT_20030901), ECLIPTIC_TO_EQUATORIAL_CONVERSION_20030901);
+
+    // The position of the Moon on 1 September 1979 at 0h UT
+    private static final ZonedDateTime ZDT_19790901 = ZonedDateTime.of(
+            LocalDate.of(1979, 9, 1),
+            LocalTime.of(0, 0),
+            ZoneOffset.UTC);
+    private static final EclipticToEquatorialConversion ECLIPTIC_TO_EQUATORIAL_CONVERSION_19790901 =
+            new EclipticToEquatorialConversion(ZDT_19790901);
+    private static final Moon MOON_1979 = MoonModel.MOON.at(Epoch.J2010.daysUntil(ZDT_19790901), ECLIPTIC_TO_EQUATORIAL_CONVERSION_19790901);
 
     @Test
     void atWorks() {
-        // Book p.166: The position of the Moon on 1 September 2003 at 0h UT
-        Moon moon2003 = MoonModel.MOON.at(-2313.0, eclipticToEquatorialConversion);
-
         /*
         M0 = 23 6.64240680253826 degrees
         lambda0 = 158.1 559834896293 degrees
@@ -40,20 +52,28 @@ class MyMoonModelTest {
         betaM = 1.716 257424835272 degrees
          */
 
-        // Expected lambda (correction) : lambda = 214.86251 5          degrees
+        // Expected lambda (correction) : lambda = 214.86251 5         degrees
         // Actual lambda :                lambda = 214.86251 480609556 degrees
 
-        // Expected beta (correction) : beta = 1.716257            degrees
+        // Expected beta (correction) : beta = 1.716257           degrees
         // Actual beta :                beta = 1.716257 424835272 degrees
 
-        // Expected alpha (book) : alpha = 14.211 666666666666h
-        // Actual alpha :          alpha = 14.211 45645783 6277h
-        //                                 14.211 45645783 5897h
-        assertEquals(14.0 + 12.0 / 60.0 + 42.0 / 3600.0, moon2003.equatorialPos().raHr(), 1.0 / 3600.0);
+        // Expected alpha (book) : alpha = 14.211 666666666666 h
+        // Actual alpha :          alpha = 14.211 456457836277 h
+        assertEquals(14.0 + 12.0 / 60.0 + 42.0 / 3600.0, MOON_2003.equatorialPos().raHr(), 1.0 / 3600.0);
 
         // Expected delta (book) : delta = -0.2011 8798138683525 radians
         // Actual delta :          delta = -0.2011 4171346019355 radians
-        assertEquals(-Angle.ofDMS(11, 31, 38), moon2003.equatorialPos().dec(), 1e-4);
+        assertEquals(-Angle.ofDMS(11, 31, 38), MOON_2003.equatorialPos().dec(), 1e-4);
+    }
 
+    @Test
+    void angularSize(){
+        assertEquals(0.009225908666849136, MOON_1979.angularSize());
+    }
+
+    @Test
+    void infoWorks(){
+        assertEquals("Lune (22.5%)", MOON_2003.info());
     }
 }

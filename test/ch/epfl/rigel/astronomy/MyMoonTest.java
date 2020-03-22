@@ -17,7 +17,7 @@ class MyMoonTest {
         assertThrows(IllegalArgumentException.class, () -> {
             new Moon(EquatorialCoordinates.of(0, 0), -0.0000001f, 0, 0.3752f);
         });
-            }
+    }
 
     @Test
     void equatorialPosReturnsCorrectCoordinates(){
@@ -36,6 +36,7 @@ class MyMoonTest {
             assertEquals(hr[i], new Moon(e, 0.5f, 0, 0).equatorialPos().toString());
         }
     }
+
     @Test
     void info() {
         assertEquals("Lune (37.5%)", new Moon(EquatorialCoordinates.of(0, 0), 0.5f, 0.1f,  0.3752f).toString());

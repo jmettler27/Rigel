@@ -37,7 +37,7 @@ public final class RightOpenInterval extends Interval {
      */
     public static RightOpenInterval of(double low, double high) {
         if(!(low < high)){
-            throw new IllegalArgumentException("low bound < high bound");
+            throw new IllegalArgumentException("The high bound must be strictly greater than the low bound.");
         }
         return new RightOpenInterval(low, high);
     }
@@ -54,7 +54,7 @@ public final class RightOpenInterval extends Interval {
      */
     public static RightOpenInterval symmetric(double size) {
         if(!(size > 0)){
-            throw new IllegalArgumentException("size <= 0");
+            throw new IllegalArgumentException("The size of the interval must be > 0");
         }
         return new RightOpenInterval(-size / 2.0, size / 2.0);
     }

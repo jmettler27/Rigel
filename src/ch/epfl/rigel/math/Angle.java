@@ -62,7 +62,7 @@ public final class Angle {
      */
     public static double ofDMS(int deg, int min, double sec) {
         if (!(DMS_INTERVAL.contains(min) && DMS_INTERVAL.contains(sec))) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("The minutes and seconds must be contained in [0, 60[.");
         }
         return Math.toRadians((double) deg + (double) min / 60 + sec / 3600);
     }

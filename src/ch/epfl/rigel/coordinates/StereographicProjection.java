@@ -133,7 +133,7 @@ public final class StereographicProjection implements Function<HorizontalCoordin
 
     @Override
     public String toString() {
-        return "StereographicProjection centered in " + center.toString();
+        return "StereographicProjection centered in " + center;
     }
 
     @Override
