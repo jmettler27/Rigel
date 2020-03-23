@@ -1,5 +1,6 @@
 package ch.epfl.rigel.astronomy;
 
+import ch.epfl.rigel.Preconditions;
 import ch.epfl.rigel.coordinates.EquatorialCoordinates;
 import ch.epfl.rigel.math.ClosedInterval;
 
@@ -10,7 +11,6 @@ import java.util.Locale;
  *
  * @author Mathias Bouilloud (309979)
  * @author Julien Mettler (309999)
- * 
  */
 public final class Moon extends CelestialObject {
 
@@ -41,10 +41,7 @@ public final class Moon extends CelestialObject {
     public Moon(EquatorialCoordinates equatorialPos, float angularSize, float magnitude, float phase) {
         super("Lune", equatorialPos, angularSize, magnitude);
 
-        if (!(PHASE_INTERVAL.contains(phase))) {
-            throw new IllegalArgumentException( "The phase must be contained in " + PHASE_INTERVAL + ".");
-        }
-        this.phase = phase;
+        this.phase = (float) Preconditions.checkInInterval(PHASE_INTERVAL, phase);
     }
 
     @Override

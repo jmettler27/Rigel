@@ -3,12 +3,10 @@ package ch.epfl.rigel;
 import ch.epfl.rigel.math.Interval;
 
 /**
- * The conditions that must be satisfied by the arguments of the method before
- * the latter is called.
+ * The conditions that must be satisfied by the arguments of the method before the latter is called.
  * 
  * @author Mathias Bouilloud (309979)
  * @author Julien Mettler (309999)
- * 
  */
 public final class Preconditions {
 
@@ -48,10 +46,7 @@ public final class Preconditions {
     public static double checkInInterval(Interval interval, double value) {
         if (!interval.contains(value)) {
             throw new IllegalArgumentException();
-        } else {
-            return value;
         }
-
+        return value;
     }
-
 }

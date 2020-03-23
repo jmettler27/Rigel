@@ -14,14 +14,13 @@ import static java.lang.Math.*;
  *
  * @author Mathias Bouilloud (309979)
  * @author Julien Mettler (309999)
- * 
  */
 public final class EquatorialToHorizontalConversion implements Function<EquatorialCoordinates, HorizontalCoordinates> {
 
     private final ZonedDateTime when; // The astronomical epoch of the conversion
     private final GeographicCoordinates where; // The location of the conversion
 
-    private final double cosPhi, sinPhi; // The cosine and sine of the observer's latitude
+    private final double cosLat, sinLat; // The cosine and sine of the observer's latitude
 
     /**
      * Constructs a change of coordinate system between equatorial and horizontal coordinates
@@ -36,26 +35,26 @@ public final class EquatorialToHorizontalConversion implements Function<Equatori
         this.when = when;
         this.where = where;
 
-        double phi = where.lat(); // The observer's latitude
-        cosPhi = cos(phi);
-        sinPhi = sin(phi);
+        double latitude = where.lat(); // The observer's latitude
+        cosLat = cos(latitude);
+        sinLat = sin(latitude);
     }
 
     @Override
     public HorizontalCoordinates apply(EquatorialCoordinates equ) {
-        double alpha = equ.ra(); // The right ascension
-        double delta = equ.dec(); // The declination
+        double ra = equ.ra(); // The right ascension
+        double dec = equ.dec(); // The declination
 
         // The hour angle. Is equal to 0 if the astronomical object lies due south
-        double hourAngle = SiderealTime.local(when, where) - alpha; // hour angle
+        double hourAngle = SiderealTime.local(when, where) - ra; // hour angle
 
         // Derivation of the altitude (The second horizontal coordinate) :
-        double tempAltitude = sin(delta) * sinPhi + cos(delta) * cosPhi * cos(hourAngle);
+        double tempAltitude = sin(dec) * sinLat + cos(dec) * cosLat * cos(hourAngle);
         double alt = asin(tempAltitude); // The altitude, in its valid range [-PI/2, PI/2]
 
         // Derivation of the azimuth (the first horizontal coordinate) :
-        double numeratorAz = -cos(delta) * cosPhi * sin(hourAngle);
-        double denominatorAz = sin(delta) - sinPhi * sin(alt);
+        double numeratorAz = -cos(dec) * cosLat * sin(hourAngle);
+        double denominatorAz = sin(dec) - sinLat * sin(alt);
 
         // The azimuth, normalized in its valid interval [0, 2*PI[
         // (The method atan2 returns an angle in the range [-PI, PI])

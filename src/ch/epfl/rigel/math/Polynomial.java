@@ -1,11 +1,12 @@
 package ch.epfl.rigel.math;
 
+import ch.epfl.rigel.Preconditions;
+
 /**
  * A polynomial function.
  *
  * @author Mathias Bouilloud (309979)
  * @author Julien Mettler (309999)
- *
  */
 public final class Polynomial {
     private final double[] coeffs;
@@ -39,9 +40,8 @@ public final class Polynomial {
      *             if the highest-degree coefficient is 0
      */
     public static Polynomial of(double coefficientN, double... coefficients) {
-        if (coefficientN == 0) {
-            throw new IllegalArgumentException();
-        }
+        Preconditions.checkArgument(coefficientN != 0);
+
         double[] coeffsWithoutN = new double[coefficients.length];
         System.arraycopy(coefficients, 0, coeffsWithoutN, 0, coefficients.length);
 
@@ -80,7 +80,6 @@ public final class Polynomial {
                 }
             }
 
-            // Polynomial of degree 1
             value += c0;
 
             return value;

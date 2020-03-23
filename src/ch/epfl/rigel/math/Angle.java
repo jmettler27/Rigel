@@ -1,11 +1,12 @@
 package ch.epfl.rigel.math;
 
+import ch.epfl.rigel.Preconditions;
+
 /**
  * The methods and constants allowing to work on angles.
  *
  * @author Mathias Bouilloud (309979)
  * @author Julien Mettler (309999)
- *
  */
 public final class Angle {
 
@@ -61,10 +62,10 @@ public final class Angle {
      *             or the number of seconds
      */
     public static double ofDMS(int deg, int min, double sec) {
-        if (!(DMS_INTERVAL.contains(min) && DMS_INTERVAL.contains(sec))) {
-            throw new IllegalArgumentException("The minutes and seconds must be contained in [0, 60[.");
-        }
-        return Math.toRadians((double) deg + (double) min / 60 + sec / 3600);
+        double correctMin = Preconditions.checkInInterval(DMS_INTERVAL, min);
+        double correctSec = Preconditions.checkInInterval(DMS_INTERVAL, sec);
+
+        return Math.toRadians((double) deg + (double) correctMin / 60 + correctSec / 3600);
     }
 
     /**

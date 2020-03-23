@@ -5,7 +5,6 @@ package ch.epfl.rigel.math;
  * 
  * @author Mathias Bouilloud (309979)
  * @author Julien Mettler (309999)
- *
  */
 public abstract class Interval {
 

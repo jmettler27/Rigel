@@ -9,7 +9,6 @@ import java.util.*;
  *
  * @author Mathias Bouilloud (309979)
  * @author Julien Mettler (309999)
- *
  */
 public final class StarCatalogue {
 
@@ -100,6 +99,7 @@ public final class StarCatalogue {
      *             if the given asterism is not part of the catalogue
      */
     public List<Integer> asterismIndices(Asterism asterism) {
+
         if (!(asterisms().contains(asterism))) {
             throw new IllegalArgumentException("The given asterism is not in the catalogue");
         }
@@ -111,7 +111,6 @@ public final class StarCatalogue {
      *
      * @author Mathias Bouilloud (309979)
      * @author Julien Mettler (309999)
-     *
      */
     public final static class Builder {
 
@@ -205,7 +204,6 @@ public final class StarCatalogue {
      *
      * @author Mathias Bouilloud (309979)
      * @author Julien Mettler (309999)
-     *
      */
     public interface Loader {
 

@@ -18,7 +18,7 @@ public final class StereographicProjection implements Function<HorizontalCoordin
     private final HorizontalCoordinates center;
 
     // The cosine and sine of the center's latitude
-    private final double cosPhi1, sinPhi1;
+    private final double cosCenterAlt, sinCenterAlt;
 
     /**
      * Constructs a stereographic projection centered in the given center point.
@@ -28,8 +28,8 @@ public final class StereographicProjection implements Function<HorizontalCoordin
      */
     public StereographicProjection(HorizontalCoordinates center) {
         this.center = center;
-        this.cosPhi1 = cos(center.alt());
-        this.sinPhi1 = sin(center.alt());
+        this.cosCenterAlt = cos(center.alt());
+        this.sinCenterAlt = sin(center.alt());
     }
 
     /**
@@ -43,10 +43,10 @@ public final class StereographicProjection implements Function<HorizontalCoordin
      */
     public CartesianCoordinates circleCenterForParallel(HorizontalCoordinates hor) {
         // The given point's altitude, i.e. the latitude of the parallel
-        double phi = hor.alt();
+        double latitude = hor.alt();
 
         // The ordinate of the center of the circle (may be infinite)
-        double centerY = cosPhi1 / (sin(phi) + sinPhi1);
+        double centerY = cosCenterAlt / (sin(latitude) + sinCenterAlt);
 
         return CartesianCoordinates.of(0, centerY);
     }
@@ -61,9 +61,9 @@ public final class StereographicProjection implements Function<HorizontalCoordin
      * @return the radius of the circle (may be infinite)
      */
     public double circleRadiusForParallel(HorizontalCoordinates parallel) {
-        double phi = parallel.alt();
+        double parallelAltitude = parallel.alt();
 
-        return cos(phi) / (sin(phi) + sinPhi1);
+        return cos(parallelAltitude) / (sin(parallelAltitude) + sinCenterAlt);
     }
 
     /**
@@ -82,17 +82,17 @@ public final class StereographicProjection implements Function<HorizontalCoordin
     @Override
     public CartesianCoordinates apply(HorizontalCoordinates azAlt) {
         // The longitude of the center of the projection
-        double lambda0 = center.az();
+        double centerLon = center.az();
 
         // The azimuth (lambda) and the altitude (phi) of the point to be projected
-        double lambda = azAlt.az();
-        double phi = azAlt.alt();
+        double az = azAlt.az();
+        double alt = azAlt.alt();
 
-        double lambdaDelta = lambda - lambda0;
-        double d = 1.0 / (1.0 + sin(phi) * sinPhi1 + cos(phi) * cosPhi1 * cos(lambdaDelta));
+        double lambdaDelta = az - centerLon;
+        double d = 1.0 / (1.0 + sin(alt) * sinCenterAlt + cos(alt) * cosCenterAlt * cos(lambdaDelta));
 
-        double x = d * cos(phi) * sin(lambdaDelta);
-        double y = d * (sin(phi) * cosPhi1 - cos(phi) * sinPhi1 * cos(lambdaDelta));
+        double x = d * cos(alt) * sin(lambdaDelta);
+        double y = d * (sin(alt) * cosCenterAlt - cos(alt) * sinCenterAlt * cos(lambdaDelta));
 
         return CartesianCoordinates.of(x, y);
     }
@@ -120,13 +120,13 @@ public final class StereographicProjection implements Function<HorizontalCoordin
 
         // Derivation of the azimuth (the first horizontal coordinate):
         double numeratorAz = x * sinC;
-        double denominatorAz = radius * cosPhi1 * cosC - y * sinPhi1 * sinC;
+        double denominatorAz = radius * cosCenterAlt * cosC - y * sinCenterAlt * sinC;
 
         // The azimuth, normalized in its valid interval [0, 2*PI[
         double az = Angle.normalizePositive(atan2(numeratorAz, denominatorAz) + centerLon);
 
         // The second horizontal coordinates, the altitude, in its valid interval [-PI/2, PI/2]
-        double alt = asin(cosC * sinPhi1 + (y * sinC * cosPhi1) / radius);
+        double alt = asin(cosC * sinCenterAlt + (y * sinC * cosCenterAlt) / radius);
 
         return HorizontalCoordinates.of(az, alt);
     }

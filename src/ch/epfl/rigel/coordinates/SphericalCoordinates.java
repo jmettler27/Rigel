@@ -7,7 +7,6 @@ import ch.epfl.rigel.math.Angle;
  * 
  * @author Mathias Bouilloud (309979)
  * @author Julien Mettler (309999)
- * 
  */
 abstract class SphericalCoordinates {
 

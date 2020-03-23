@@ -2,6 +2,7 @@ package ch.epfl.rigel.coordinates;
 
 import java.util.Locale;
 
+import ch.epfl.rigel.Preconditions;
 import ch.epfl.rigel.math.Angle;
 import ch.epfl.rigel.math.ClosedInterval;
 import ch.epfl.rigel.math.RightOpenInterval;
@@ -11,7 +12,6 @@ import ch.epfl.rigel.math.RightOpenInterval;
  * 
  * @author Mathias Bouilloud (309979)
  * @author Julien Mettler (309999)
- * 
  */
 public final class EclipticCoordinates extends SphericalCoordinates {
 
@@ -44,11 +44,10 @@ public final class EclipticCoordinates extends SphericalCoordinates {
      * @return the ecliptic coordinates (longitude and latitude) in radians
      */
     public static EclipticCoordinates of(double lon, double lat) {
-        if(!(LON_INTERVAL_RAD.contains(lon) && LAT_INTERVAL_RAD.contains(lat))){
-            throw new IllegalArgumentException( "The longitude (in radians) must be contained in " + LON_INTERVAL_RAD
-                    + " and the latitude (in radians) must be contained in " + LAT_INTERVAL_RAD + ".");
-        }
-        return new EclipticCoordinates(lon, lat);
+        double correctLonRad = Preconditions.checkInInterval(LON_INTERVAL_RAD, lon);
+        double correctLatRad = Preconditions.checkInInterval(LAT_INTERVAL_RAD, lat);
+
+        return new EclipticCoordinates(correctLonRad, correctLatRad);
     }
 
     /**

@@ -8,7 +8,6 @@ import java.time.temporal.ChronoUnit;
  *
  * @author Mathias Bouilloud (309979)
  * @author Julien Mettler (309999)
- *
  */
 public enum Epoch {
 

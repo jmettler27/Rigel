@@ -2,6 +2,7 @@ package ch.epfl.rigel.coordinates;
 
 import java.util.Locale;
 
+import ch.epfl.rigel.Preconditions;
 import ch.epfl.rigel.math.Angle;
 import ch.epfl.rigel.math.ClosedInterval;
 import ch.epfl.rigel.math.RightOpenInterval;
@@ -11,7 +12,6 @@ import ch.epfl.rigel.math.RightOpenInterval;
  *
  * @author Mathias Bouilloud (309979)
  * @author Julien Mettler (309999)
- * 
  */
 public final class EquatorialCoordinates extends SphericalCoordinates {
 
@@ -47,11 +47,10 @@ public final class EquatorialCoordinates extends SphericalCoordinates {
      *             if at least one of the coordinates is not contained in its valid interval
      */
     public static EquatorialCoordinates of(double ra, double dec) {
-        if(!((RA_INTERVAL_RAD.contains(ra) && DEC_INTERVAL_RAD.contains(dec)))){
-            throw new IllegalArgumentException("The right ascension (in radians) must be contained in " + RA_INTERVAL_RAD
-                    + " and the declination (in radians) must be contained in "  + DEC_INTERVAL_RAD + ".");
-        }
-        return new EquatorialCoordinates(ra, dec);
+        double correctRaRad = Preconditions.checkInInterval(RA_INTERVAL_RAD, ra);
+        double correctDecRad = Preconditions.checkInInterval(DEC_INTERVAL_RAD, dec);
+
+        return new EquatorialCoordinates(correctRaRad, correctDecRad);
     }
 
     /**

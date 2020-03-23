@@ -2,6 +2,7 @@ package ch.epfl.rigel.coordinates;
 
 import java.util.Locale;
 
+import ch.epfl.rigel.Preconditions;
 import ch.epfl.rigel.math.Angle;
 import ch.epfl.rigel.math.ClosedInterval;
 import ch.epfl.rigel.math.RightOpenInterval;
@@ -11,7 +12,6 @@ import ch.epfl.rigel.math.RightOpenInterval;
  *
  * @author Mathias Bouilloud (309979)
  * @author Julien Mettler (309999)
- * 
  */
 public final class GeographicCoordinates extends SphericalCoordinates {
 
@@ -48,6 +48,7 @@ public final class GeographicCoordinates extends SphericalCoordinates {
      *             if at least one of the coordinates is not contained in its valid right open interval
      */
     public static GeographicCoordinates ofDeg(double longDeg, double latDeg) {
+
         if(!(isValidLonDeg(longDeg) && isValidLatDeg(latDeg))){
             throw new IllegalArgumentException("The longitude (in degrees) must be contained in " + LON_INTERVAL_DEG
                             + " and the latitude (in degrees) must be contained in " + LAT_INTERVAL_DEG + ".");

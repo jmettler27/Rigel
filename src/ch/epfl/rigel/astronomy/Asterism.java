@@ -7,7 +7,6 @@ import java.util.List;
  *
  * @author Mathias Bouilloud (309979)
  * @author Julien Mettler (309999)
- *
  */
 public final class Asterism {
 

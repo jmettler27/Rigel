@@ -8,7 +8,6 @@ import ch.epfl.rigel.coordinates.EclipticToEquatorialConversion;
  *
  * @author Mathias Bouilloud (309979)
  * @author Julien Mettler (309999)
- *
  */
 public interface CelestialObjectModel<O> {
 

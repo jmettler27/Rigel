@@ -11,7 +11,6 @@ import static java.lang.Math.*;
  *
  * @author Mathias Bouilloud (309979)
  * @author Julien Mettler (309999)
- *
  */
 public enum SunModel implements CelestialObjectModel<Sun> {
     SUN();

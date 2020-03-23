@@ -14,7 +14,6 @@ import static java.lang.Math.*;
  *
  * @author Mathias Bouilloud (309979)
  * @author Julien Mettler (309999)
- *
  */
 public enum PlanetModel implements CelestialObjectModel<Planet> {
 
@@ -44,9 +43,8 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
     // The planets of the solar system, following elliptical orbits around the Sun
     public final static List<PlanetModel> ALL = List.of(MERCURY, VENUS, EARTH,MARS, JUPITER, SATURN, URANUS, NEPTUNE);
 
-    private final static List<PlanetModel>
-            INNER_PLANETS = ALL.subList(0, 2), // The planets that orbit closer to the Sun than the Earth
-            OUTER_PLANETS = ALL.subList(3, 8); // The planets that orbit further to the Sun than the Earth
+    // The planets that orbit closer to the Sun than the Earth (i.e. Mercury and Venus)
+    private final static List<PlanetModel> INNER_PLANETS = ALL.subList(0, 2);
 
     /**
      * Constructs the model of a planet through planetary constants.
@@ -144,8 +142,8 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
         // The planet's angular size (in radians)
         double angularSize = angularSize1AU / earthPlanetDistance;
 
-        // The planet's phase, i.e. the illuminated percentage of the planet's
-        // "disc" illuminated by the Sun, as seen from the Earth
+        // The planet's phase, i.e. the illuminated percentage of the planet's "disc" illuminated by the Sun,
+        // as seen from the Earth
         double phase = (1.0 + cos(eclipticCoordinates.lon() - helioLon)) / 2.0;
 
         // The planet's magnitude (unitless)
@@ -230,8 +228,7 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
         double denominatorLat = earthOrbitalRadius * sin(helioEclipticLon - earthOrbitalLon);
 
         // The planet's geocentric ecliptic latitude, in [-PI/2, PI/2]
-        // Note : We use here the method atan since it returns an angle in the range [-PI/2, PI/2], which is
-        // the valid latitude range
+        // Note : The method atan returns an angle in the range [-PI/2, PI/2], which is the valid latitude range
         double geoEclipticLat = atan(numeratorLat / denominatorLat);
 
         return EclipticCoordinates.of(geoEclipticLon, geoEclipticLat);
