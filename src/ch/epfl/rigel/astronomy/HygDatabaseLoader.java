@@ -13,6 +13,7 @@ import java.nio.charset.StandardCharsets;
  *
  * @author Mathias Bouilloud (309979)
  * @author Julien Mettler (309999)
+ *
  */
 public enum HygDatabaseLoader implements StarCatalogue.Loader {
     INSTANCE();
@@ -29,48 +30,51 @@ public enum HygDatabaseLoader implements StarCatalogue.Loader {
 
     @Override
     public void load(InputStream inputStream, StarCatalogue.Builder builder) throws IOException {
+
         // The buffered reader of the given input stream (i.e. the HYG database, encoded in ASCII)
-        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.US_ASCII));
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.US_ASCII))) {
 
-        // The header line, giving the names of the column (which is thus unusable for this loader)
-        reader.readLine();
+            reader.readLine(); // The header line, giving the names of the columns (which is thus unusable, and skipped)
 
-        String line;
+            String line; // The current line (i.e. the current star in the HYG catalogue)
+            while ((line = reader.readLine()) != null) {
 
-        while ((line = reader.readLine()) != null) {
-            // Array of 37 columns resulting from the split of the current line of the database
-            String[] columns = line.split(",");
+                String[] columns = line.split(","); // The 37 informations of the current star
 
-            // The star's Hipparcos identification number (0 by default)
-            int hipparcosId = columns[HIP - 1].equals("") ? 0 : Integer.parseInt(columns[HIP - 1]);
+                // The star's Hipparcos identification number (0 by default)
+                int hipparcosId = columns[HIP - 1].equals("") ? 0 : Integer.parseInt(columns[HIP - 1]);
 
-            // The star's name
-            String name;
+                // The star's name
+                String name;
 
-            if (columns[PROPER - 1].equals("")) {
-                StringBuilder nameBuilder = new StringBuilder();
-                if (columns[BAYER - 1].equals("")) {
-                    nameBuilder.append("?");
+                if (columns[PROPER - 1].equals("")) {
+                    StringBuilder nameBuilder = new StringBuilder();
+                    if (columns[BAYER - 1].equals("")) {
+                        nameBuilder.append("?");
+                    } else {
+                        nameBuilder.append(columns[BAYER - 1]);
+                    }
+                    nameBuilder.append(" ").append(columns[CON - 1]);
+                    name = nameBuilder.toString();
                 } else {
-                    nameBuilder.append(columns[BAYER - 1]);
+                    name = columns[PROPER - 1];
                 }
-                nameBuilder.append(" ").append(columns[CON - 1]);
-                name = nameBuilder.toString();
-            } else {
-                name = columns[PROPER - 1];
+
+                // The star's right ascension and declination (in radians)
+                double raRad = Double.parseDouble(columns[RARAD - 1]);
+                double decRad = Double.parseDouble(columns[DECRAD - 1]);
+
+                // The star's equatorial position (in radians)
+                EquatorialCoordinates equatorialCoordinates = EquatorialCoordinates.of(raRad, decRad);
+
+                // The star's magnitude (0 by default)
+                float magnitude = columns[MAG - 1].equals("") ? 0f : (float) Double.parseDouble(columns[MAG - 1]);
+
+                // The star's color index (0 by default)
+                float colorIndex = columns[CI - 1].equals("") ? 0f : (float) Double.parseDouble(columns[CI - 1]);
+
+                builder.addStar(new Star(hipparcosId, name, equatorialCoordinates, magnitude, colorIndex));
             }
-
-            // The star's equatorial position
-            EquatorialCoordinates equatorialCoordinates = EquatorialCoordinates.of(Double.parseDouble(columns[RARAD - 1]), Double.parseDouble(columns[DECRAD - 1]));
-
-            // The star's magnitude (0 by default)
-            float magnitude = columns[MAG - 1].equals("") ? 0f : (float) Double.parseDouble(columns[MAG - 1]);
-
-            // The star's color index (0 by default)
-            float colorIndex = columns[CI - 1].equals("") ? 0f : (float) Double.parseDouble(columns[CI - 1]);
-
-            builder.addStar(new Star(hipparcosId, name, equatorialCoordinates, magnitude, colorIndex));
-
         }
     }
 }

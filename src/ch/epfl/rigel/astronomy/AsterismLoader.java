@@ -13,35 +13,39 @@ import java.util.List;
  *
  * @author Mathias Bouilloud (309979)
  * @author Julien Mettler (309999)
+ *
  */
 public enum AsterismLoader implements StarCatalogue.Loader {
     INSTANCE();
 
     @Override
     public void load(InputStream inputStream, StarCatalogue.Builder builder) throws IOException {
-        List<Star> stars = builder.stars();
 
         // The buffered reader of the given input stream (i.e. the catalogue of stars, encoded in ASCII)
-        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.US_ASCII));
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.US_ASCII))) {
 
-        String line;
+            List<Star> stars = builder.stars();
 
-        while ((line = reader.readLine()) != null) {
-            // Array of 37 columns resulting from the split of the current line of the database
-            String[] columns = line.split(",");
+            String line; // The current line (i.e. the current asterism in the catalogue)
+            while ((line = reader.readLine()) != null) {
 
-            List<Star> starsAsterism = new ArrayList<>();
+                String[] columns = line.split(","); // The Hipparcos numbers of of the current asterism's stars
 
-            for (String column : columns) {
-                int hipparcosID = Integer.parseInt(column);
+                // The list of stars of the current asterism
+                List<Star> asterismStars = new ArrayList<>();
 
-                for (Star s : stars) {
-                    if (s.hipparcosId() == hipparcosID) {
-                        starsAsterism.add(s);
+                // Adds the stars of each asterism if they are present in the list of stars of the catalogue's builder
+                for (String col : columns) {
+                    int hipparcosID = Integer.parseInt(col);
+
+                    for (Star s : stars) {
+                        if (s.hipparcosId() == hipparcosID) {
+                            asterismStars.add(s);
+                        }
                     }
                 }
+                builder.addAsterism(new Asterism(asterismStars));
             }
-            builder.addAsterism(new Asterism(starsAsterism));
         }
     }
 }

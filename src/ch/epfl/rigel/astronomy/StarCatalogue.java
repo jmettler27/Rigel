@@ -160,12 +160,6 @@ public final class StarCatalogue {
          * @return the builder of the catalogue under construction
          */
         public Builder addAsterism(Asterism asterism) {
-            // Adds the stars of the given asterism in the list of stars if they are not already in it
-            for(Star s : asterism.stars()){
-                if(!(stars.contains(s))){
-                    addStar(s);
-                }
-            }
             asterisms.add(asterism);
             return this;
         }
