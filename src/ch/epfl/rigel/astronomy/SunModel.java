@@ -37,10 +37,10 @@ public enum SunModel implements CelestialObjectModel<Sun> {
         // The geocentric ecliptic longitude of the Sun
         double geoEclipticLon = Angle.normalizePositive(trueAnomaly + LONGITUDE_PERIGEE);
 
-        double angSizeTemp = (1.0 + ECCENTRICITY * cos(trueAnomaly)) / (1.0 - ECCENTRICITY * ECCENTRICITY);
+        double tempAngularSize = (1.0 + ECCENTRICITY * cos(trueAnomaly)) / (1.0 - ECCENTRICITY * ECCENTRICITY);
 
         // The Sun's angular size (as seen from Earth)
-        double angularSize = ANGULAR_SIZE_1AU * angSizeTemp;
+        double angularSize = ANGULAR_SIZE_1AU * tempAngularSize;
 
         // The approximate position of the Sun in geocentric ecliptic coordinates at the given epoch.
         // The reference plane is the ecliptic in which the Earth and the Sun are located.

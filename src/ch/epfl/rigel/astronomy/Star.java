@@ -34,7 +34,7 @@ public final class Star extends CelestialObject {
      * 
      * @throws IllegalArgumentException
      *             if the angular size is strictly negative,
-     *             and/or if the Hipparcos ID is strictly negative,
+     *             and/or if the Hipparcos ID is < 0,
      *             and/or if the color index is not contained in [-0.5, 5.5]
      * 
      * @throws NullPointerException
@@ -44,7 +44,8 @@ public final class Star extends CelestialObject {
         super(name, equatorialPos, 0, magnitude);
 
         if (!(hipparcosId >= 0 && COLOR_INDEX_INTERVAL.contains(colorIndex))) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("The Hipparcos ID must be >= 0 and the color index must be contained in "
+                    + COLOR_INDEX_INTERVAL + ".");
         }
         this.hipparcosId = hipparcosId;
         this.colorIndex = colorIndex;

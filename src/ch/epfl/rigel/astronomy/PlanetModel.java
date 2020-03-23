@@ -129,7 +129,7 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
         // The Earth's orbital radius (in AU)
         double earthOrbitalRadius = EARTH.orbitalRadius(earthTrueAnomaly);
 
-        // The Earth's orbital longitude (in radians, in the interval [0, 2*PI[)
+        // The Earth's heliocentric longitude (in radians, in the interval [0, 2*PI[)
         double earthHelioLon = Angle.normalizePositive(EARTH.heliocentricLongitude(earthTrueAnomaly));
 
         // 4th step : The position of the Earth and the planet are combined to obtain the position of the planet
@@ -144,9 +144,10 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
         // The planet's equatorial coordinates
         EquatorialCoordinates equatorialCoordinates = eclipticToEquatorialConversion.apply(eclipticCoordinates);
 
+        double tempDistance = 2.0 * earthOrbitalRadius * orbitalRadius * cos(helioLon - earthHelioLon) * cos(helioEclipticLat);
+
         // The distance between the planet and the Earth (in AU)
-        double earthPlanetDistance = sqrt(earthOrbitalRadius * earthOrbitalRadius + orbitalRadius * orbitalRadius
-                        - 2.0 * earthOrbitalRadius * orbitalRadius * cos(helioLon - earthHelioLon) * cos(helioEclipticLat));
+        double earthPlanetDistance = sqrt(earthOrbitalRadius * earthOrbitalRadius + orbitalRadius * orbitalRadius - tempDistance);
 
         // The planet's angular size (in radians)
         double angularSize = angularSize1AU / earthPlanetDistance;
@@ -189,9 +190,9 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
      * @return the planet's orbital radius (in AU)
      */
     private double orbitalRadius(double trueAnomaly) {
-        double orbitalRadiusNumerator = axis * (1.0 - eccentricity * eccentricity);
-        double orbitalRadiusDenominator = 1.0 + eccentricity * cos(trueAnomaly);
-        return orbitalRadiusNumerator / orbitalRadiusDenominator;
+        double numeratorRadius = axis * (1.0 - eccentricity * eccentricity);
+        double denominatorRadius = 1.0 + eccentricity * cos(trueAnomaly);
+        return numeratorRadius / denominatorRadius;
     }
 
     /**
@@ -233,13 +234,13 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
         double geoEclipticLon = Angle.normalizePositive(PI + earthOrbitalLon + atan2(numeratorLon, denominatorLon));
 
         // Derivation of the planet's geocentric ecliptic latitude:
-        double numeratorBeta = eclipticRadius * tan(helioEclipticLat) * sin(geoEclipticLon - helioEclipticLon);
-        double denominatorBeta = earthOrbitalRadius * sin(helioEclipticLon - earthOrbitalLon);
+        double numeratorLat = eclipticRadius * tan(helioEclipticLat) * sin(geoEclipticLon - helioEclipticLon);
+        double denominatorLat = earthOrbitalRadius * sin(helioEclipticLon - earthOrbitalLon);
 
         // The planet's geocentric ecliptic latitude, in [-PI/2, PI/2]
         // Note : We use here the method atan since it returns an angle in the range [-PI/2, PI/2], which is
         // the valid latitude range
-        double geoEclipticLat = atan(numeratorBeta / denominatorBeta);
+        double geoEclipticLat = atan(numeratorLat / denominatorLat);
 
         return EclipticCoordinates.of(geoEclipticLon, geoEclipticLat);
     }
