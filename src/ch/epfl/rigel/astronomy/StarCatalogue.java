@@ -1,5 +1,7 @@
 package ch.epfl.rigel.astronomy;
 
+import ch.epfl.rigel.Preconditions;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
@@ -30,11 +32,7 @@ public final class StarCatalogue {
     public StarCatalogue(List<Star> stars, List<Asterism> asterisms) {
         for (Asterism asterism : asterisms) {
             for (Star s : asterism.stars()) {
-                if (!(stars.contains(s))) {
-                    throw new IllegalArgumentException(
-                            "Invalid asterism(s): At least one asterism contains a star that is not on " +
-                                    "the given list of stars");
-                }
+                Preconditions.checkArgument(stars.contains(s));
             }
         }
         this.stars = List.copyOf(stars); // Immutable list of stars
@@ -99,10 +97,7 @@ public final class StarCatalogue {
      *             if the given asterism is not part of the catalogue
      */
     public List<Integer> asterismIndices(Asterism asterism) {
-
-        if (!(asterisms().contains(asterism))) {
-            throw new IllegalArgumentException("The given asterism is not in the catalogue");
-        }
+        Preconditions.checkArgument(asterisms().contains(asterism));
         return List.copyOf(asterismsWithIndices.get(asterism));
     }
 

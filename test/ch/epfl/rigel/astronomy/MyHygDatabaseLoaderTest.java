@@ -31,4 +31,21 @@ class MyHygDatabaseLoaderTest {
             assertNotNull(rigel);
         }
     }
+
+    @Test
+    void emptyString() throws IOException{
+        try (InputStream hygStream = getClass().getResourceAsStream(HYG_CATALOGUE_NAME)) {
+            StarCatalogue.Builder builder = new StarCatalogue.Builder()
+                    .loadFrom(hygStream, HygDatabaseLoader.INSTANCE);
+
+            int i = 0;
+            for(Star star : builder.stars()) {
+                if (star.name().charAt(0) == '?') {
+                    i = 1;
+                    assertEquals(' ', star.name().charAt(1));
+                }
+            }
+            assertEquals(1,i);
+        }
+    }
 }

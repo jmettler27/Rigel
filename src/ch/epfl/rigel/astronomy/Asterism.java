@@ -1,5 +1,7 @@
 package ch.epfl.rigel.astronomy;
 
+import ch.epfl.rigel.Preconditions;
+
 import java.util.List;
 
 /**
@@ -22,9 +24,7 @@ public final class Asterism {
      *             if the list contains no stars
      */
     public Asterism(List<Star> stars) {
-        if (stars.isEmpty()) {
-            throw new IllegalArgumentException("The list of stars is empty.");
-        }
+        Preconditions.checkArgument(!stars.isEmpty());
         this.stars = List.copyOf(stars); // Immutable list of stars
     }
 

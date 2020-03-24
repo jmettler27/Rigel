@@ -47,10 +47,10 @@ public final class EquatorialCoordinates extends SphericalCoordinates {
      *             if at least one of the coordinates is not contained in its valid interval
      */
     public static EquatorialCoordinates of(double ra, double dec) {
-        double correctRaRad = Preconditions.checkInInterval(RA_INTERVAL_RAD, ra);
-        double correctDecRad = Preconditions.checkInInterval(DEC_INTERVAL_RAD, dec);
+        double validRaRad = Preconditions.checkInInterval(RA_INTERVAL_RAD, ra);
+        double validDecRad = Preconditions.checkInInterval(DEC_INTERVAL_RAD, dec);
 
-        return new EquatorialCoordinates(correctRaRad, correctDecRad);
+        return new EquatorialCoordinates(validRaRad, validDecRad);
     }
 
     /**

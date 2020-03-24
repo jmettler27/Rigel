@@ -46,10 +46,12 @@ class MyPlanetModelTest {
 
         // Expected alpha (book) : alpha = 11h 11m 14                 s ; 11.187 222222222223 h
         // Actual alpha :          alpha = 11h 11m 13.757764954840788 s ; 11.187 154934709678 h
+        //                                                                11.187 15493470968  h
         assertEquals((11.0 + 11.0 / 60.0 + 14.0 / 3600.0), jupiter2003.equatorialPos().raHr(), 1.0 / 3600.0);
 
         // Expected delta (book): delta = 06◦ 21' 2 5                '' ; delta = 6.35 9615384615385 degrees
         // Actual delta :         delta = 06◦ 21' 2 3.887824068722622'' ; delta = 6.35 6635506685756 degrees
+        //                                                                        6.35 663550668575  degrees
         assertEquals(Angle.ofDMS(6, 21, 25), jupiter2003.equatorialPos().dec(), 1e-5);
 
         assertEquals(35.1114118536277, Angle.toDeg(jupiter2003.angularSize() * 3600), 1e-13);
@@ -77,12 +79,14 @@ class MyPlanetModelTest {
          * beta = -2.044057 4677547683 degrees  ==> correct
          */
 
-        // Expected alpha (book) : alpha = 16h 49m 12             s ; 16.82               h
-        // Actual alpha :          alpha = 16h 49m 12.26843722986 s ; 16.82 0074565897194 h
+        // Expected alpha (book) : alpha = 16h 49m 12             s ; 16.82                h
+        // Actual alpha :          alpha = 16h 49m 12.26843722986 s ; 16.82 00745658971 94 h
+        //                                                            16.82 00745658971    h
         assertEquals((16.0 + 49.0 / 60.0 + 12.0 / 3600.0), mercury2003.equatorialPos().raHr(), 1.0 / 3600.0);
 
-        // Expected delta (book): delta = -24◦ 30' 0 9               '' ; delta = -24.50 25            degrees
-        // Actual delta :         delta = -24◦ 30' 0 3.14086630058628'' ; delta = -24.50 0872462861274 degrees
+        // Expected delta (book): delta = -24◦ 30' 0 9               '' ; delta = -24.50 25             degrees
+        // Actual delta :         delta = -24◦ 30' 0 3.14086630058628'' ; delta = -24.50 0872462861 274 degrees
+        //                                                                        -24.50 0872462861     degrees
         assertEquals(Angle.ofDMS(-24, 30, 9), mercury2003.equatorialPos().dec(), 1e-1);
     }
 }

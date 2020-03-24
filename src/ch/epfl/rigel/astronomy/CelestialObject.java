@@ -41,10 +41,12 @@ public abstract class CelestialObject {
      *             if the name and/or the equatorial position are null
      */
     CelestialObject(String name, EquatorialCoordinates equatorialPos, float angularSize, float magnitude) {
-        Preconditions.checkArgument(angularSize >= 0);
         this.name = Objects.requireNonNull(name);
         this.equatorialPos = Objects.requireNonNull(equatorialPos);
+
+        Preconditions.checkArgument(angularSize >= 0);
         this.angularSize = angularSize;
+
         this.magnitude = magnitude;
     }
 

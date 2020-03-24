@@ -75,10 +75,10 @@ public final class HorizontalCoordinates extends SphericalCoordinates {
      *             if at least one of the coordinates is not contained in its valid interval
      */
     public static HorizontalCoordinates of(double az, double alt) {
-        double correctAzRad = Preconditions.checkInInterval(AZ_INTERVAL_RAD, az);
-        double correctAltRad = Preconditions.checkInInterval(ALT_INTERVAL_RAD, alt);
+        double validAzRad = Preconditions.checkInInterval(AZ_INTERVAL_RAD, az);
+        double validAltRad = Preconditions.checkInInterval(ALT_INTERVAL_RAD, alt);
 
-        return new HorizontalCoordinates(correctAzRad, correctAltRad);
+        return new HorizontalCoordinates(validAzRad, validAltRad);
     }
 
     /**

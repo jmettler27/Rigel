@@ -44,10 +44,10 @@ public final class EclipticCoordinates extends SphericalCoordinates {
      * @return the ecliptic coordinates (longitude and latitude) in radians
      */
     public static EclipticCoordinates of(double lon, double lat) {
-        double correctLonRad = Preconditions.checkInInterval(LON_INTERVAL_RAD, lon);
-        double correctLatRad = Preconditions.checkInInterval(LAT_INTERVAL_RAD, lat);
+        double validLonRad = Preconditions.checkInInterval(LON_INTERVAL_RAD, lon);
+        double validLatRad = Preconditions.checkInInterval(LAT_INTERVAL_RAD, lat);
 
-        return new EclipticCoordinates(correctLonRad, correctLatRad);
+        return new EclipticCoordinates(validLonRad, validLatRad);
     }
 
     /**
