@@ -62,7 +62,6 @@ public final class StereographicProjection implements Function<HorizontalCoordin
      */
     public double circleRadiusForParallel(HorizontalCoordinates parallel) {
         double parallelAltitude = parallel.alt();
-
         return cos(parallelAltitude) / (sin(parallelAltitude) + sinCenterAlt);
     }
 
@@ -123,12 +122,12 @@ public final class StereographicProjection implements Function<HorizontalCoordin
         double denominatorAz = radius * cosCenterAlt * cosC - y * sinCenterAlt * sinC;
 
         // The azimuth, normalized in its valid interval [0, 2*PI[
-        double az = Angle.normalizePositive(atan2(numeratorAz, denominatorAz) + centerLon);
+        double azRad = Angle.normalizePositive(atan2(numeratorAz, denominatorAz) + centerLon);
 
         // The second horizontal coordinates, the altitude, in its valid interval [-PI/2, PI/2]
-        double alt = asin(cosC * sinCenterAlt + (y * sinC * cosCenterAlt) / radius);
+        double altRad = asin(cosC * sinCenterAlt + (y * sinC * cosCenterAlt) / radius);
 
-        return HorizontalCoordinates.of(az, alt);
+        return HorizontalCoordinates.of(azRad, altRad);
     }
 
     @Override

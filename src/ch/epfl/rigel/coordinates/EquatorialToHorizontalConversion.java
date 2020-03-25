@@ -35,32 +35,31 @@ public final class EquatorialToHorizontalConversion implements Function<Equatori
         this.when = when;
         this.where = where;
 
-        double latitude = where.lat(); // The observer's latitude
+        double latitude = where.lat(); // The observer's latitude (in radians)
         cosLat = cos(latitude);
         sinLat = sin(latitude);
     }
 
     @Override
     public HorizontalCoordinates apply(EquatorialCoordinates equ) {
-        double ra = equ.ra(); // The right ascension
-        double dec = equ.dec(); // The declination
+        double raRad = equ.ra(); // The right ascension (in radians)
+        double decRad = equ.dec(); // The declination (in radians)
 
         // The hour angle. Is equal to 0 if the astronomical object lies due south
-        double hourAngle = SiderealTime.local(when, where) - ra; // hour angle
+        double hourAngle = SiderealTime.local(when, where) - raRad;
 
         // Derivation of the altitude (The second horizontal coordinate) :
-        double tempAltitude = sin(dec) * sinLat + cos(dec) * cosLat * cos(hourAngle);
-        double alt = asin(tempAltitude); // The altitude, in its valid range [-PI/2, PI/2]
+        double tempAltitude = sin(decRad) * sinLat + cos(decRad) * cosLat * cos(hourAngle);
+        double altRad = asin(tempAltitude); // The altitude, in its valid range [-PI/2, PI/2]
 
         // Derivation of the azimuth (the first horizontal coordinate) :
-        double numeratorAz = -cos(dec) * cosLat * sin(hourAngle);
-        double denominatorAz = sin(dec) - sinLat * sin(alt);
+        double numeratorAz = -cos(decRad) * cosLat * sin(hourAngle);
+        double denominatorAz = sin(decRad) - sinLat * sin(altRad);
 
         // The azimuth, normalized in its valid interval [0, 2*PI[
-        // (The method atan2 returns an angle in the range [-PI, PI])
-        double az = Angle.normalizePositive(atan2(numeratorAz, denominatorAz));
+        double azRad = Angle.normalizePositive(atan2(numeratorAz, denominatorAz));
 
-        return HorizontalCoordinates.of(az, alt);
+        return HorizontalCoordinates.of(azRad, altRad);
     }
 
     @Override

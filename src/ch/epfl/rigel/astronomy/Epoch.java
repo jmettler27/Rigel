@@ -17,9 +17,13 @@ public enum Epoch {
 
     private final ZonedDateTime zonedDateTime; // The date/time pair associated to its time-zone
 
+    // The number of milliseconds per day and the number of days per Julian century
+    private static final double MILLIS_PER_DAY = 1000.0 * 3600 * 24.0, DAYS_PER_JULIAN_CENTURY = 36525.0;
+
+
     /**
      * Constructs an astronomical epoch through its time and spatial informations.
-     * 
+     *
      * @param year
      *            The year of the reference time
      * @param month
@@ -48,8 +52,7 @@ public enum Epoch {
     public double daysUntil(ZonedDateTime when) {
         // The number of milliseconds between this epoch and the given epoch
         double nbMillis = zonedDateTime.until(when, ChronoUnit.MILLIS);
-
-        return ((nbMillis / 1000.0) / 3600.0) / 24.0;
+        return nbMillis / MILLIS_PER_DAY;
     }
 
     /**
@@ -63,8 +66,6 @@ public enum Epoch {
     public double julianCenturiesUntil(ZonedDateTime when) {
         // The number of days between this epoch and the given epoch
         double nbDays = daysUntil(when);
-        double JULIAN_CENTURIES_DAYS = 36525.0;
-
-        return (nbDays / JULIAN_CENTURIES_DAYS);
+        return nbDays / DAYS_PER_JULIAN_CENTURY;
     }
 }

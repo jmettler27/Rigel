@@ -41,10 +41,10 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
     private final static double ANGULAR_VELOCITY = Angle.TAU / 365.242191;
 
     // The planets of the solar system, following elliptical orbits around the Sun
-    public final static List<PlanetModel> ALL = List.of(MERCURY, VENUS, EARTH,MARS, JUPITER, SATURN, URANUS, NEPTUNE);
+    public final static List<PlanetModel> ALL = List.of(values());
 
     // The planets that orbit closer to the Sun than the Earth (i.e. Mercury and Venus)
-    private final static List<PlanetModel> INNER_PLANETS = ALL.subList(0, 2);
+    private final static List<PlanetModel> INNER_PLANETS = ALL.subList(MERCURY.ordinal(), EARTH.ordinal());
 
     /**
      * Constructs the model of a planet through planetary constants.

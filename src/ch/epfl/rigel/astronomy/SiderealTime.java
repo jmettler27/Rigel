@@ -18,6 +18,16 @@ import java.time.temporal.ChronoUnit;
  */
 public final class SiderealTime {
 
+    // The number of milliseconds per hour
+    private static final double MILLIS_PER_HOUR = 1000.0 * 3600.0;
+
+    private static final Polynomial
+            POLYNOMIAL_S0 = Polynomial.of(0.000025862, 2400.051336, 6.697374558),
+            POLYNOMIAL_S1 = Polynomial.of(1.002737909, 0);
+
+    // Used for the normalization of values to the hours of a day ([0h, 24h[)
+    private static final RightOpenInterval DAY_NORMALIZATION = RightOpenInterval.of(0,24);
+
     /**
      * Default constructor.
      */
@@ -44,24 +54,21 @@ public final class SiderealTime {
 
         // The number of milliseconds between the beginning of the day containing the moment and the moment itself.
         double nbMillis = dayStart.until(whenUTC, ChronoUnit.MILLIS);
-        // The previous result in hours
-        double nbMillis_hr = (nbMillis / 1000.0) / 3600.0;
 
-        double S0 = Polynomial.of(0.000025862, 2400.051336, 6.697374558).at(nbJulianCenturies);
-        double S1 = Polynomial.of(1.002737909, 0).at(nbMillis_hr);
+        // The previous result in hours
+        double nbMillis_hr = nbMillis / MILLIS_PER_HOUR;
+
+        // S0 and S1 (in hours)
+        double S0 = POLYNOMIAL_S0.at(nbJulianCenturies), S1 = POLYNOMIAL_S1.at(nbMillis_hr);
 
         // S0 and S1 (in hours) normalized to to [0, 24h[
-        double normalized_S0 = RightOpenInterval.of(0, 24).reduce(S0);
-        double normalized_S1 = RightOpenInterval.of(0, 24).reduce(S1);
-
-        // The Greenwich sidereal time (in hours)
-        double siderealGreenwich_hr = normalized_S0 + normalized_S1;
+        double normalized_S0 = DAY_NORMALIZATION.reduce(S0), normalized_S1 = DAY_NORMALIZATION.reduce(S1);
 
         // The Greenwich sidereal time (in hours) normalized to [0, 24h[
-        double normalizedSg_hr = RightOpenInterval.of(0, 24).reduce(siderealGreenwich_hr);
+        double siderealGreenwich_hr = DAY_NORMALIZATION.reduce(normalized_S0 + normalized_S1);
 
         // The Greenwich sidereal time (in radians)
-        double siderealGreenwich_rad = Angle.ofHr(normalizedSg_hr);
+        double siderealGreenwich_rad = Angle.ofHr(siderealGreenwich_hr);
 
         // The Greenwich sidereal time (in radians) normalized to [0,2*PI[
         return Angle.normalizePositive(siderealGreenwich_rad);

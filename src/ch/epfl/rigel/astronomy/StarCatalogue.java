@@ -30,8 +30,8 @@ public final class StarCatalogue {
      *             if at least one asterism contains a star that is not on the given list of stars
      */
     public StarCatalogue(List<Star> stars, List<Asterism> asterisms) {
-        for (Asterism asterism : asterisms) {
-            for (Star s : asterism.stars()) {
+        for (Asterism ast : asterisms) {
+            for (Star s : ast.stars()) {
                 Preconditions.checkArgument(stars.contains(s));
             }
         }
@@ -48,8 +48,8 @@ public final class StarCatalogue {
     /**
      * Additional method.
      *
-     * Constructs the list of the indices of the stars composing the given asterism (i.e. constructs the value
-     * associated to the given key, in the map).
+     * Constructs the list of the indices of the stars composing the given asterism (i.e. associates the value to the
+     * given key, in the map).
      * Note : the given asterism is assumed to be contained in the catalogue since this method is used in the constructor.
      *
      * @param a
