@@ -31,12 +31,10 @@ public final class Star extends CelestialObject {
      *            The star's magnitude (unitless)
      * @param colorIndex
      *            The star's B-V color index
-     * 
      * @throws IllegalArgumentException
      *             if the angular size is strictly negative,
      *             and/or if the Hipparcos ID is < 0,
      *             and/or if the color index is not contained in [-0.5, 5.5]
-     * 
      * @throws NullPointerException
      *             if the name and/or the equatorial position are null
      */
@@ -51,7 +49,6 @@ public final class Star extends CelestialObject {
 
     /**
      * Returns the identification number in the Hipparcos catalogue.
-     * 
      * @return the identification number in the Hipparcos catalogue
      */
     public int hipparcosId() {
@@ -60,7 +57,6 @@ public final class Star extends CelestialObject {
 
     /**
      * Returns the color temperature (in degrees Kelvin).
-     * 
      * @return the color temperature (in degrees Kelvin)
      */
     public int colorTemperature() {

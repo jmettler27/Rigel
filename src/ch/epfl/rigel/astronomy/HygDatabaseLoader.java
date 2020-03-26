@@ -27,6 +27,9 @@ public enum HygDatabaseLoader implements StarCatalogue.Loader {
             BAYER = 28, // Index of the star's Bayer designation
             CON = 30; // Index of the short name of the constellation
 
+    /**
+     * @see StarCatalogue.Loader#load(InputStream, StarCatalogue.Builder)
+     */
     @Override
     public void load(InputStream inputStream, StarCatalogue.Builder builder) throws IOException {
 

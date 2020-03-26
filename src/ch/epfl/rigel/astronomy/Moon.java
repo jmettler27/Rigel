@@ -31,7 +31,6 @@ public final class Moon extends CelestialObject {
      *            The Moon's magnitude
      * @param phase
      *            The Moon's phase
-     * 
      * @throws IllegalArgumentException
      *             if the angular size is strictly negative
      *             and/or the phase is contained in [0,1]
@@ -43,6 +42,9 @@ public final class Moon extends CelestialObject {
         this.phase = (float) Preconditions.checkInInterval(PHASE_INTERVAL, phase);
     }
 
+    /**
+     * @see CelestialObject#info()
+     */
     @Override
     public String info() {
         return super.info() + String.format(Locale.ROOT, " (%.1f", phase * 100.0) + "%)";

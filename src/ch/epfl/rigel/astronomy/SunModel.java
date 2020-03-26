@@ -24,6 +24,9 @@ public enum SunModel implements CelestialObjectModel<Sun> {
             ANGULAR_SIZE_1AU = Angle.ofDeg(0.533128), // The angular size (in radians) of the Sun at a distance of 1 AU
             ANGULAR_VELOCITY = Angle.TAU / TROPICAL_YEAR; // The average angular velocity of the Earth's rotation around the Sun
 
+    /**
+     * @see CelestialObjectModel#at(double, EclipticToEquatorialConversion)
+     */
     @Override
     public Sun at(double daysSinceJ2010, EclipticToEquatorialConversion eclipticToEquatorialConversion) {
 

@@ -16,7 +16,6 @@ public final class Polynomial {
      *
      * @param coefficientN
      *             The n-th degree coefficient
-     *
      * @param coefficients
      *             The array of coefficients (from degree n-1 to 0) of this polynomial
      */
@@ -33,11 +32,9 @@ public final class Polynomial {
      *            The N-th coefficient of the polynomial, of degree N
      * @param coefficients
      *            The other coefficients, of smaller degree
-     *
-     * @return a polynomial of degree N with the given coefficients
-     *
      * @throws IllegalArgumentException
      *             if the highest-degree coefficient is 0
+     * @return a polynomial of degree N with the given coefficients
      */
     public static Polynomial of(double coefficientN, double... coefficients) {
         Preconditions.checkArgument(coefficientN != 0);
@@ -53,7 +50,6 @@ public final class Polynomial {
      *
      * @param x
      *            The given argument
-     *
      * @return the value of the polynomial function for the given argument
      */
     public double at(double x) {
@@ -86,6 +82,9 @@ public final class Polynomial {
         }
     }
 
+    /**
+     * @see Object#toString()
+     */
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
@@ -168,11 +167,17 @@ public final class Polynomial {
         return builder.toString();
     }
 
+    /**
+     * @see Object#hashCode()
+     */
     @Override
     public final int hashCode() {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * @see Object#equals(Object)
+     */
     @Override
     public final boolean equals(Object obj) {
         throw new UnsupportedOperationException();

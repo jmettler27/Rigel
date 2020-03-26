@@ -40,7 +40,6 @@ public final class EclipticCoordinates extends SphericalCoordinates {
      *            The longitude (in radians)
      * @param lat
      *            The latitude (in radians)
-     *
      * @return the ecliptic coordinates (longitude and latitude) in radians
      */
     public static EclipticCoordinates of(double lon, double lat) {
@@ -52,7 +51,6 @@ public final class EclipticCoordinates extends SphericalCoordinates {
 
     /**
      * Returns the longitude, in radians.
-     * 
      * @return the longitude, in radians
      */
     public double lon() {
@@ -61,7 +59,6 @@ public final class EclipticCoordinates extends SphericalCoordinates {
 
     /**
      * Returns the longitude, in degrees.
-     * 
      * @return the longitude, in degrees
      */
     public double lonDeg() {
@@ -70,7 +67,6 @@ public final class EclipticCoordinates extends SphericalCoordinates {
 
     /**
      * Returns the latitude, in radians.
-     * 
      * @return the latitude, in radians
      */
     public double lat() {
@@ -79,16 +75,17 @@ public final class EclipticCoordinates extends SphericalCoordinates {
 
     /**
      * Returns the latitude, in degrees.
-     * 
      * @return the latitude, in degrees
      */
     public double latDeg() {
         return super.latDeg();
     }
 
+    /**
+     * @see SphericalCoordinates#toString()
+     */
     @Override
     public String toString() {
         return String.format(Locale.ROOT, "(λ=%.4f°, β=%.4f°)", lonDeg(),latDeg());
     }
-
 }

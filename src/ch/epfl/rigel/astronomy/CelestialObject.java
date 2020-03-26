@@ -34,7 +34,6 @@ public abstract class CelestialObject {
      *            The object's angular size (in radians)
      * @param magnitude
      *            The object's magnitude (unitless)
-     *
      * @throws IllegalArgumentException
      *             if the angular size is strictly negative
      * @throws NullPointerException
@@ -52,7 +51,6 @@ public abstract class CelestialObject {
 
     /**
      * Returns the name.
-     *
      * @return the name
      */
     public String name() {
@@ -61,7 +59,6 @@ public abstract class CelestialObject {
 
     /**
      * Returns the angular size.
-     *
      * @return the angular size
      */
     public double angularSize() {
@@ -70,7 +67,6 @@ public abstract class CelestialObject {
 
     /**
      * Returns the magnitude.
-     *
      * @return the magnitude
      */
     public double magnitude() {
@@ -79,7 +75,6 @@ public abstract class CelestialObject {
 
     /**
      * Returns the equatorial position.
-     *
      * @return the equatorial position
      */
     public EquatorialCoordinates equatorialPos() {
@@ -88,16 +83,17 @@ public abstract class CelestialObject {
 
     /**
      * Returns an informative text about the object.
-     *
      * @return an informative text about the object
      */
     public String info() {
         return name();
     }
 
+    /**
+     * @see Object#toString()
+     */
     @Override
     public final String toString() {
         return info();
     }
-
 }

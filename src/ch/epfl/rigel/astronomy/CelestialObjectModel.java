@@ -20,7 +20,6 @@ public interface CelestialObjectModel<O> {
      *            of the celestial object (may be negative).
      * @param eclipticToEquatorialConversion
      *            The conversion from ecliptic to equatorial coordinates of the celestial object
-     * 
      * @return the celestial object modeled by this model
      */
     O at(double daysSinceJ2010, EclipticToEquatorialConversion eclipticToEquatorialConversion);

@@ -17,6 +17,9 @@ import java.util.List;
 public enum AsterismLoader implements StarCatalogue.Loader {
     INSTANCE();
 
+    /**
+     * @see StarCatalogue.Loader#load(InputStream, StarCatalogue.Builder)
+     */
     @Override
     public void load(InputStream inputStream, StarCatalogue.Builder builder) throws IOException {
 

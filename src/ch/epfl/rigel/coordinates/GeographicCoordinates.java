@@ -34,31 +34,24 @@ public final class GeographicCoordinates extends SphericalCoordinates {
     }
 
     /**
-     * Returns the geographic coordinates (in radians) with the given longitude
-     * and latitude (in degrees).
+     * Returns the geographic coordinates (in radians) with the given longitude and latitude (in degrees).
      *
      * @param longDeg
      *            The longitude (in degrees)
      * @param latDeg
      *            The latitude (in degrees)
-     *
-     * @return the geographic coordinates (longitude and latitude) in radians
-     *
      * @throws IllegalArgumentException
      *             if at least one of the coordinates is not contained in its valid right open interval
+     * @return the geographic coordinates (longitude and latitude) in radians
      */
     public static GeographicCoordinates ofDeg(double longDeg, double latDeg) {
+        Preconditions.checkArgument(isValidLonDeg(longDeg) && isValidLatDeg(latDeg));
 
-        if(!(isValidLonDeg(longDeg) && isValidLatDeg(latDeg))){
-            throw new IllegalArgumentException("The longitude (in degrees) must be contained in " + LON_INTERVAL_DEG
-                            + " and the latitude (in degrees) must be contained in " + LAT_INTERVAL_DEG + ".");
-        }
         return new GeographicCoordinates(Angle.ofDeg(longDeg), Angle.ofDeg(latDeg));
     }
 
     /**
-     * Checks if the given longitude (in degrees) is contained in the valid
-     * right open interval.
+     * Checks if the given longitude (in degrees) is contained in the valid right open interval.
      *
      * @param lonDeg
      *            The checked longitude
@@ -69,8 +62,7 @@ public final class GeographicCoordinates extends SphericalCoordinates {
     }
 
     /**
-     * Checks if the given latitude (in degrees) is contained in the valid
-     * closed interval.
+     * Checks if the given latitude (in degrees) is contained in the valid closed interval.
      *
      * @param latDeg
      *            The checked latitude
@@ -82,7 +74,6 @@ public final class GeographicCoordinates extends SphericalCoordinates {
 
     /**
      * Returns the longitude, in radians.
-     *
      * @return the longitude, in radians
      */
     public double lon() {
@@ -91,7 +82,6 @@ public final class GeographicCoordinates extends SphericalCoordinates {
 
     /**
      * Returns the longitude, in degrees.
-     *
      * @return the longitude, in degrees
      */
     public double lonDeg() {
@@ -100,7 +90,6 @@ public final class GeographicCoordinates extends SphericalCoordinates {
 
     /**
      * Returns the latitude, in radians.
-     *
      * @return the latitude, in radians
      */
     public double lat() {
@@ -109,13 +98,15 @@ public final class GeographicCoordinates extends SphericalCoordinates {
 
     /**
      * Returns the latitude, in degrees.
-     *
      * @return the latitude, in degrees
      */
     public double latDeg() {
         return super.latDeg();
     }
 
+    /**
+     * @see SphericalCoordinates#toString()
+     */
     @Override
     public String toString() {
         return String.format(Locale.ROOT, "(lon=%.4f°, lat=%.4f°)", lonDeg(), latDeg());

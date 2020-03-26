@@ -25,7 +25,6 @@ public abstract class Interval {
 
     /**
      * Returns the low bound of this interval.
-     * 
      * @return the low bound of this interval
      */
     public double low() {
@@ -34,7 +33,6 @@ public abstract class Interval {
 
     /**
      * Returns the high bound of this interval.
-     * 
      * @return the high bound of this interval
      */
     public double high() {
@@ -43,7 +41,6 @@ public abstract class Interval {
 
     /**
      * Returns the size of this interval.
-     * 
      * @return the size of this interval
      */
     public double size() {
@@ -59,11 +56,17 @@ public abstract class Interval {
      */
     public abstract boolean contains(double v);
 
+    /**
+     * @see Object#hashCode()
+     */
     @Override
     public final int hashCode() {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * @see Object#equals(Object)
+     */
     @Override
     public final boolean equals(Object obj) {
         throw new UnsupportedOperationException();

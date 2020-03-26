@@ -21,7 +21,6 @@ public final class Planet extends CelestialObject {
      *            The planet's angular size (in radians)
      * @param magnitude
      *            The object's magnitude (unitless)
-     * 
      * @throws IllegalArgumentException
      *             if the angular size is strictly negative
      * @throws NullPointerException

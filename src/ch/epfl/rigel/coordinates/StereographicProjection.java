@@ -38,7 +38,6 @@ public final class StereographicProjection implements Function<HorizontalCoordin
      *
      * @param hor
      *            The point on the parallel
-     *
      * @return the Cartesian coordinates of the center of the circle
      */
     public CartesianCoordinates circleCenterForParallel(HorizontalCoordinates hor) {
@@ -57,11 +56,11 @@ public final class StereographicProjection implements Function<HorizontalCoordin
      *
      * @param parallel
      *            The point on the parallel
-     *
      * @return the radius of the circle (may be infinite)
      */
     public double circleRadiusForParallel(HorizontalCoordinates parallel) {
         double parallelAltitude = parallel.alt();
+
         return cos(parallelAltitude) / (sin(parallelAltitude) + sinCenterAlt);
     }
 
@@ -71,13 +70,15 @@ public final class StereographicProjection implements Function<HorizontalCoordin
      *
      * @param rad
      *            The angular size of the sphere, i.e. its apparent diameter
-     *
      * @return the projected diameter of the sphere
      */
     public double applyToAngle(double rad) {
         return 2.0 * tan(rad / 4.0);
     }
 
+    /**
+     * @see Function#apply(Object)
+     */
     @Override
     public CartesianCoordinates apply(HorizontalCoordinates azAlt) {
         // The longitude of the center of the projection
@@ -101,7 +102,6 @@ public final class StereographicProjection implements Function<HorizontalCoordin
      *
      * @param xy
      *            The Cartesian coordinate point, i.e. the projection
-     *
      * @return the horizontal coordinates of the corresponding point, before projection
      */
     public HorizontalCoordinates inverseApply(CartesianCoordinates xy) {
@@ -130,16 +130,25 @@ public final class StereographicProjection implements Function<HorizontalCoordin
         return HorizontalCoordinates.of(azRad, altRad);
     }
 
+    /**
+     * @see Object#toString()
+     */
     @Override
     public String toString() {
         return "StereographicProjection centered in " + center;
     }
 
+    /**
+     * @see Object#hashCode()
+     */
     @Override
     public final int hashCode() {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * @see Object#equals(Object)
+     */
     @Override
     public final boolean equals(Object obj) {
         throw new UnsupportedOperationException();

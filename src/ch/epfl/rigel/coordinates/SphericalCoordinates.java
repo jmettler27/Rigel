@@ -36,7 +36,6 @@ abstract class SphericalCoordinates {
 
     /**
      * Returns the longitude, in degrees.
-     * 
      * @return the longitude, in degrees
      */
     double lonDeg() {
@@ -45,7 +44,6 @@ abstract class SphericalCoordinates {
 
     /**
      * Returns the latitude, in radians.
-     * 
      * @return the latitude, in radians
      */
     double lat() {
@@ -54,18 +52,23 @@ abstract class SphericalCoordinates {
 
     /**
      * Returns the latitude, in degrees.
-     * 
      * @return the latitude, in degrees
      */
     double latDeg() {
         return Angle.toDeg(latitude);
     }
 
+    /**
+     * @see Object#hashCode()
+     */
     @Override
     public final int hashCode() {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * @see Object#equals(Object)
+     */
     @Override
     public final boolean equals(Object obj) {
         throw new UnsupportedOperationException();

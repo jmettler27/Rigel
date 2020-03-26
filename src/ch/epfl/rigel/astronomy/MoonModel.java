@@ -36,6 +36,9 @@ public enum MoonModel implements CelestialObjectModel<Moon> {
             ANGLE__MEAN_LON = Angle.ofDeg(0.0529539),
             ANGLE_CORRECTED_LON = Angle.ofDeg(0.16);
 
+    /**
+     * @see CelestialObjectModel#at(double, EclipticToEquatorialConversion)
+     */
     @Override
     public Moon at(double daysSinceJ2010, EclipticToEquatorialConversion eclipticToEquatorialConversion) {
 

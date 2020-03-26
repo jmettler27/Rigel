@@ -33,7 +33,6 @@ public final class CartesianCoordinates {
      *            The abscissa (unitless)
      * @param y
      *            The ordinate (unitless)
-     *
      * @return the Cartesian coordinates of abscissa x and ordinate y
      */
     public static CartesianCoordinates of(double x, double y) {
@@ -42,7 +41,6 @@ public final class CartesianCoordinates {
 
     /**
      * Returns the abscissa.
-     *
      * @return the abscissa
      */
     public double x() {
@@ -51,23 +49,31 @@ public final class CartesianCoordinates {
 
     /**
      * Returns the ordinate.
-     *
      * @return the ordinate
      */
     public double y() {
         return y;
     }
 
+    /**
+     * @see Object#toString()
+     */
     @Override
     public String toString() {
         return String.format(Locale.ROOT, "(x=%.4f, y=%.4f)", x, y);
     }
 
+    /**
+     * @see Object#hashCode()
+     */
     @Override
     public final int hashCode() {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * @see Object#equals(Object)
+     */
     @Override
     public final boolean equals(Object obj) {
         throw new UnsupportedOperationException();

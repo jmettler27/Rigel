@@ -42,6 +42,9 @@ public final class EclipticToEquatorialConversion implements Function<EclipticCo
         sinObliquity = sin(obliquity);
     }
 
+    /**
+     * @see Function#apply(Object)
+     */
     @Override
     public EquatorialCoordinates apply(EclipticCoordinates ecl) {
         double eclipticLon = ecl.lon(); // The ecliptic longitude
@@ -65,11 +68,17 @@ public final class EclipticToEquatorialConversion implements Function<EclipticCo
         return EquatorialCoordinates.of(raRad, decRad);
     }
 
+    /**
+     * @see Object#hashCode()
+     */
     @Override
     public final int hashCode() {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * @see Object#equals(Object)
+     */
     @Override
     public final boolean equals(Object obj) {
         throw new UnsupportedOperationException();

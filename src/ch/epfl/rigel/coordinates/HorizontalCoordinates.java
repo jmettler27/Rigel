@@ -48,11 +48,9 @@ public final class HorizontalCoordinates extends SphericalCoordinates {
      *            The azimuth (in degrees)
      * @param altDeg
      *            The altitude (in degrees)
-     *
-     * @return the horizontal coordinates (azimuth and altitude) in radians
-     *
      * @throws IllegalArgumentException
      *             if at least one of the coordinates is not contained in its valid interval
+     * @return the horizontal coordinates (azimuth and altitude) in radians
      */
     public static HorizontalCoordinates ofDeg(double azDeg, double altDeg) {
         double correctAzDeg = Preconditions.checkInInterval(AZ_INTERVAL_DEG, azDeg);
@@ -68,11 +66,9 @@ public final class HorizontalCoordinates extends SphericalCoordinates {
      *            The azimuth (in radians)
      * @param alt
      *            The altitude (in radians)
-     *
-     * @return the horizontal coordinates (azimuth and altitude) in radians
-     *
      * @throws IllegalArgumentException
      *             if at least one of the coordinates is not contained in its valid interval
+     * @return the horizontal coordinates (azimuth and altitude) in radians
      */
     public static HorizontalCoordinates of(double az, double alt) {
         double validAzRad = Preconditions.checkInInterval(AZ_INTERVAL_RAD, az);
@@ -83,7 +79,6 @@ public final class HorizontalCoordinates extends SphericalCoordinates {
 
     /**
      * Returns the azimuth, in radians.
-     *
      * @return the azimuth, in radians
      */
     public double az() {
@@ -92,7 +87,6 @@ public final class HorizontalCoordinates extends SphericalCoordinates {
 
     /**
      * Returns the azimuth, in degrees.
-     *
      * @return the azimuth, in degrees
      */
     public double azDeg() {
@@ -111,7 +105,6 @@ public final class HorizontalCoordinates extends SphericalCoordinates {
      *            The south cardinal point
      * @param w
      *            The west cardinal point
-     *
      * @return the String representation of the octant
      */
     public String azOctantName(String n, String e, String s, String w) {
@@ -163,7 +156,6 @@ public final class HorizontalCoordinates extends SphericalCoordinates {
 
     /**
      * Returns the altitude, in radians.
-     *
      * @return the altitude, in radians
      */
     public double alt() {
@@ -172,7 +164,6 @@ public final class HorizontalCoordinates extends SphericalCoordinates {
 
     /**
      * Returns the altitude, in degrees.
-     *
      * @return the altitude, in degrees
      */
     public double altDeg() {
@@ -184,7 +175,6 @@ public final class HorizontalCoordinates extends SphericalCoordinates {
      *
      * @param that
      *            The given point
-     *
      * @return the angular distance (in radians) between the receiver and the given point
      */
     public double angularDistanceTo(HorizontalCoordinates that) {
@@ -200,6 +190,9 @@ public final class HorizontalCoordinates extends SphericalCoordinates {
         return acos(sin(alt1) * sin(alt2) + cos(alt1) * cos(alt2) * cos(az1 - az2));
     }
 
+    /**
+     * @see Object#toString()
+     */
     @Override
     public String toString() {
         return String.format(Locale.ROOT, "(az=%.4f°, alt=%.4f°)", azDeg(), altDeg());
@@ -213,11 +206,9 @@ public final class HorizontalCoordinates extends SphericalCoordinates {
      *
      * @param center
      *            The given center of the right open interval (in degrees)
-     *
-     * @return a right open interval centered in the given azimuth (in degrees)
-     *
      * @throws IllegalArgumentException
      *             if the interval is not valid
+     * @return a right open interval centered in the given azimuth (in degrees)
      */
     private RightOpenInterval centeredInterval(double center) {
         final double HALVED_SIZE = 45.0 / 2.0;

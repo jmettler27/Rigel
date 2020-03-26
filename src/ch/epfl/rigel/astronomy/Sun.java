@@ -28,7 +28,6 @@ public final class Sun extends CelestialObject {
      *            The Sun's angular size
      * @param meanAnomaly
      *            The Sun's mean anomaly
-     * 
      * @throws IllegalArgumentException
      *             if the angular size is strictly negative
      * @throws NullPointerException
@@ -43,7 +42,6 @@ public final class Sun extends CelestialObject {
 
     /**
      * Returns the ecliptic position.
-     * 
      * @return the ecliptic position
      */
     public EclipticCoordinates eclipticPos() {
@@ -52,7 +50,6 @@ public final class Sun extends CelestialObject {
 
     /**
      * Returns the mean anomaly.
-     * 
      * @return the mean anomaly
      */
     public double meanAnomaly() {

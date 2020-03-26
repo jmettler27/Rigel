@@ -46,12 +46,12 @@ public enum Epoch {
      *
      * @param when
      *            The given epoch
-     *
      * @return the number of days between this epoch and the given epoch
      */
     public double daysUntil(ZonedDateTime when) {
         // The number of milliseconds between this epoch and the given epoch
         double nbMillis = zonedDateTime.until(when, ChronoUnit.MILLIS);
+
         return nbMillis / MILLIS_PER_DAY;
     }
 
@@ -60,12 +60,12 @@ public enum Epoch {
      *
      * @param when
      *            The given epoch
-     *
      * @return the number of Julian centuries between this epoch and the given epoch
      */
     public double julianCenturiesUntil(ZonedDateTime when) {
         // The number of days between this epoch and the given epoch
         double nbDays = daysUntil(when);
+
         return nbDays / DAYS_PER_JULIAN_CENTURY;
     }
 }

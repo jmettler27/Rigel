@@ -38,6 +38,7 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
     private final double tropicalYear, lonJ2010, lonPerigee, eccentricity, axis, inclination, lonAscending,
             angularSize1AU, magnitude1AU;
 
+    // The average angular velocity of the Earth's rotation around the Sun
     private final static double ANGULAR_VELOCITY = Angle.TAU / 365.242191;
 
     // The planets of the solar system, following elliptical orbits around the Sun
@@ -85,6 +86,9 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
         this.magnitude1AU = magnitude1AU;
     }
 
+    /**
+     * @see CelestialObjectModel#at(double, EclipticToEquatorialConversion)
+     */
     @Override
     public Planet at(double daysSinceJ2010, EclipticToEquatorialConversion eclipticToEquatorialConversion) {
         // 1st step : The position of the planet in its own orbit
@@ -158,7 +162,6 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
      * @param daysSinceJ2010
      *            The number of days elapsed from the epoch J2010 to the epoch of the observed position
      *            of the celestial object (may be negative).
-     *
      * @return the planet's true anomaly (in radians)
      */
     private double trueAnomaly(double daysSinceJ2010) {
@@ -176,12 +179,12 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
      *
      * @param trueAnomaly
      *            The planet's true anomaly (in radians)
-     *
      * @return the planet's orbital radius (in AU)
      */
     private double orbitalRadius(double trueAnomaly) {
         double numeratorRadius = axis * (1.0 - eccentricity * eccentricity);
         double denominatorRadius = 1.0 + eccentricity * cos(trueAnomaly);
+
         return numeratorRadius / denominatorRadius;
     }
 
@@ -190,7 +193,6 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
      * 
      * @param trueAnomaly
      *            The planet's true anomaly (in radians)
-     *
      * @return the planet's heliocentric longitude (in radians)
      */
     private double heliocentricLongitude(double trueAnomaly) {
@@ -210,7 +212,6 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
      *            The planet's heliocentric ecliptic longitude (in radius)
      * @param helioEclipticLat
      *            The planet's heliocentric ecliptic latitude (in radians)
-     *
      * @return the geocentric ecliptic coordinates of an inner planet
      */
     private EclipticCoordinates innerPlanetsCoords(double earthOrbitalRadius, double earthOrbitalLon, double eclipticRadius,
@@ -247,7 +248,6 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
      *            The planet's heliocentric ecliptic longitude (in radius)
      * @param helioEclipticLat
      *            The planet's heliocentric ecliptic latitude (in radians)
-     *
      * @return the geocentric ecliptic coordinates of an outer planet
      */
     private EclipticCoordinates outerPlanetsCoords(double earthOrbitalRadius, double earthOrbitalLon, double eclipticRadius,

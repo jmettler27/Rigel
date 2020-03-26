@@ -25,7 +25,6 @@ public final class StarCatalogue {
      *            The stars of this catalogue
      * @param asterisms
      *            The asterisms of this catalogue
-     *
      * @throws IllegalArgumentException
      *             if at least one asterism contains a star that is not on the given list of stars
      */
@@ -54,7 +53,6 @@ public final class StarCatalogue {
      *
      * @param a
      *            The given asterism
-     *
      * @return the list of the indices of the stars composing the given asterism
      */
     private List<Integer> starsIndices(Asterism a) {
@@ -69,7 +67,6 @@ public final class StarCatalogue {
 
     /**
      * Returns the list of the stars of the catalogue.
-     *
      * @return the list of the stars of the catalogue
      */
     public List<Star> stars() {
@@ -78,7 +75,6 @@ public final class StarCatalogue {
 
     /**
      * Returns an immutable view on the set of the asterisms of the catalogue.
-     *
      * @return an immutable view on the set of the asterisms of the catalogue
      */
     public Set<Asterism> asterisms() {
@@ -90,11 +86,10 @@ public final class StarCatalogue {
      *
      * @param asterism
      *            The asterism of the catalogue
-     *
-     * @return an immutable list of the indices of the stars composing the given asterism
-     *
      * @throws IllegalArgumentException
      *             if the given asterism is not part of the catalogue
+     * @return an immutable list of the indices of the stars composing the given asterism
+
      */
     public List<Integer> asterismIndices(Asterism asterism) {
         Preconditions.checkArgument(asterisms().contains(asterism));
@@ -114,7 +109,6 @@ public final class StarCatalogue {
 
         /**
          * Default constructor.
-         *
          * Constructs a builder such that the catalogue under construction is initially empty.
          */
         public Builder() {
@@ -127,7 +121,6 @@ public final class StarCatalogue {
          *
          * @param star
          *            The star to be added to the catalogue
-         *
          * @return the builder of the catalogue under construction
          */
         public Builder addStar(Star star) {
@@ -137,9 +130,7 @@ public final class StarCatalogue {
 
         /**
          * Returns an unmodifiable view on the stars of the catalogue under construction.
-         *
-         * @return an unmodifiable view on the stars of the catalogue under
-         *         construction
+         * @return an unmodifiable view on the stars of the catalogue under construction
          */
         public List<Star> stars() {
             return Collections.unmodifiableList(stars);
@@ -150,7 +141,6 @@ public final class StarCatalogue {
          *
          * @param asterism
          *            The asterism to be added to the catalogue
-         *
          * @return the builder of the catalogue under construction
          */
         public Builder addAsterism(Asterism asterism) {
@@ -160,7 +150,6 @@ public final class StarCatalogue {
 
         /**
          * Returns an unmodifiable view on the asterisms of the catalogue under construction.
-         *
          * @return an unmodifiable view on the asterisms of the catalogue under construction
          */
         public List<Asterism> asterisms() {return Collections.unmodifiableList(asterisms);}
@@ -173,10 +162,8 @@ public final class StarCatalogue {
          *            The input stream
          * @param loader
          *            The loader
-         *
          * @throws IOException
          *             in case of input/output error
-         *
          * @return the builder of the catalogue under construction
          */
         public Builder loadFrom(InputStream inputStream, Loader loader) throws IOException {
@@ -186,7 +173,6 @@ public final class StarCatalogue {
 
         /**
          * Returns the catalogue of the stars and asterisms added so far to its builder.
-         *
          * @return the builded catalogue.
          */
         public StarCatalogue build() {
@@ -210,7 +196,6 @@ public final class StarCatalogue {
          *            The input stream
          * @param builder
          *            The builder of the catalogue of stars and asterisms
-         *
          * @throws IOException
          *             in case of input/output error
          */

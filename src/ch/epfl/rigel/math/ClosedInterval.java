@@ -31,10 +31,9 @@ public final class ClosedInterval extends Interval {
      *            The low bound of the interval
      * @param high
      *            The high bound of the interval
-     * @return the constructed closed interval
-     * 
      * @throws IllegalArgumentException
      *             if the low bound is not strictly smaller than the high bound
+     * @return the constructed closed interval
      */
     public static ClosedInterval of(double low, double high) {
         Preconditions.checkArgument(low < high);
@@ -46,10 +45,9 @@ public final class ClosedInterval extends Interval {
      * 
      * @param size
      *            The size of the interval
-     * @return the constructed closed interval
-     * 
      * @throws IllegalArgumentException
      *             if the size is not strictly positive
+     * @return the constructed closed interval
      */
     public static ClosedInterval symmetric(double size) {
         Preconditions.checkArgument(size > 0.0);
@@ -78,9 +76,11 @@ public final class ClosedInterval extends Interval {
         }
     }
 
+    /**
+     * @see Interval#toString()
+     */
     @Override
     public String toString() {
         return String.format(Locale.ROOT, "[%s,%s]", low(), high());
     }
-
 }

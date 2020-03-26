@@ -39,7 +39,6 @@ public final class SiderealTime {
      *
      * @param when
      *            The given date/time pair (a moment)
-     *
      * @return the Greenwich sidereal time (in radians)
      */
     public static double greenwich(ZonedDateTime when) {
@@ -82,7 +81,6 @@ public final class SiderealTime {
      *            The given date-time pair
      * @param where
      *            The given location's geographic coordinates
-     *
      * @return the local sidereal time (in radians) for the given date/time pair and specific to the given location
      */
     public static double local(ZonedDateTime when, GeographicCoordinates where) {

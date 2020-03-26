@@ -40,6 +40,9 @@ public final class EquatorialToHorizontalConversion implements Function<Equatori
         sinLat = sin(latitude);
     }
 
+    /**
+     * @see Function#apply(Object)
+     */
     @Override
     public HorizontalCoordinates apply(EquatorialCoordinates equ) {
         double raRad = equ.ra(); // The right ascension (in radians)
@@ -62,11 +65,17 @@ public final class EquatorialToHorizontalConversion implements Function<Equatori
         return HorizontalCoordinates.of(azRad, altRad);
     }
 
+    /**
+     * @see Object#hashCode()
+     */
     @Override
     public final int hashCode() {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * @see Object#equals(Object)
+     */
     @Override
     public final boolean equals(Object obj) {
         throw new UnsupportedOperationException();

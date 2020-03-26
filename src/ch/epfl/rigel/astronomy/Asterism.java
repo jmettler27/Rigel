@@ -16,10 +16,9 @@ public final class Asterism {
 
     /**
      * Constructs an asterism with the list of stars composing it.
-     * 
+     *
      * @param stars
      *            The list of stars composing this asterism
-     * 
      * @throws IllegalArgumentException
      *             if the list contains no stars
      */
@@ -30,11 +29,9 @@ public final class Asterism {
 
     /**
      * Returns the list of stars.
-     * 
      * @return the list of stars
      */
     public List<Star> stars() {
         return List.copyOf(stars);
     }
-
 }
