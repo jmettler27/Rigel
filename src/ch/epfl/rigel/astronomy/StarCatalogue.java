@@ -89,7 +89,6 @@ public final class StarCatalogue {
      * @throws IllegalArgumentException
      *             if the given asterism is not part of the catalogue
      * @return an immutable list of the indices of the stars composing the given asterism
-
      */
     public List<Integer> asterismIndices(Asterism asterism) {
         Preconditions.checkArgument(asterisms().contains(asterism));
