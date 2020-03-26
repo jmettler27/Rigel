@@ -28,6 +28,13 @@ class MySunModelTest {
 
     @Test
     void atWorks() {
+        assertEquals(5.9325494700300885, SunModel.SUN.at(27 + 31,
+                new EclipticToEquatorialConversion(ZonedDateTime.of(
+                        LocalDate.of(2010, Month.FEBRUARY, 27),
+                        LocalTime.of(0, 0),
+                        ZoneOffset.UTC)))
+                .equatorialPos().ra());
+
         // Expected ra (book) : 8h 23m 34s             = 8.392 777777777777h
         // Actual ra          : 8h 23m 33.65810987214h = 8.392 682808297806h
         //                                               8.392 6828082978  h
@@ -38,19 +45,11 @@ class MySunModelTest {
         assertEquals(Angle.ofDMS(19, 21, 10), SUN_2003.equatorialPos().dec(), Angle.ofDMS(0, 0, 1 / 2d));
 
         assertEquals(19.35288373097352, SUN_2003.equatorialPos().decDeg());
-    }
-
-    @Test
-    void atWorks1() {
-        assertEquals(5.9325494700300885, SunModel.SUN.at(27 + 31,
-                new EclipticToEquatorialConversion(
-                ZonedDateTime.of(LocalDate.of(2010, Month.FEBRUARY, 27),
-                        LocalTime.of(0, 0), ZoneOffset.UTC)))
-                .equatorialPos().ra());
-    }
-
-    @Test
-    void atWorks2(){
         assertEquals(0.3353207024580374, SUN_1988.equatorialPos().dec());
+    }
+
+    @Test
+    void angularSizeWorks(){
+        assertEquals(0.009162353351712227, SUN_1988.angularSize());
     }
 }

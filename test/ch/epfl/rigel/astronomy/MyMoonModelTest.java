@@ -15,18 +15,16 @@ class MyMoonModelTest {
             LocalDate.of(2003, Month.SEPTEMBER, 1),
             LocalTime.of(0, 0, 0, 0),
             ZoneOffset.UTC);
-    private static final EclipticToEquatorialConversion ECLIPTIC_TO_EQUATORIAL_CONVERSION_20030901 =
-            new EclipticToEquatorialConversion(ZDT_20030901);
-    private static final Moon MOON_2003 = MoonModel.MOON.at(Epoch.J2010.daysUntil(ZDT_20030901), ECLIPTIC_TO_EQUATORIAL_CONVERSION_20030901);
+
+    private static final Moon MOON_2003 = MoonModel.MOON.at(Epoch.J2010.daysUntil(ZDT_20030901), new EclipticToEquatorialConversion(ZDT_20030901));
 
     // The position of the Moon on 1 September 1979 at 0h UT
     private static final ZonedDateTime ZDT_19790901 = ZonedDateTime.of(
             LocalDate.of(1979, 9, 1),
             LocalTime.of(0, 0),
             ZoneOffset.UTC);
-    private static final EclipticToEquatorialConversion ECLIPTIC_TO_EQUATORIAL_CONVERSION_19790901 =
-            new EclipticToEquatorialConversion(ZDT_19790901);
-    private static final Moon MOON_1979 = MoonModel.MOON.at(Epoch.J2010.daysUntil(ZDT_19790901), ECLIPTIC_TO_EQUATORIAL_CONVERSION_19790901);
+
+    private static final Moon MOON_1979 = MoonModel.MOON.at(Epoch.J2010.daysUntil(ZDT_19790901), new EclipticToEquatorialConversion(ZDT_19790901));
 
     @Test
     void atWorks() {
@@ -60,7 +58,7 @@ class MyMoonModelTest {
 
         // Expected alpha (book) : alpha = 14.211 666666666666 h
         // Actual alpha :          alpha = 14.211 456457836277 h
-        //assertEquals(14.0 + 12.0 / 60.0 + 42.0 / 3600.0, MOON_2003.equatorialPos().raHr(), 1.0 / 3600.0);
+        assertEquals(14.0 + 12.0 / 60.0 + 42.0 / 3600.0, MOON_2003.equatorialPos().raHr(), 1.0 / 3600.0);
 
         // Expected delta (book) : delta = -0.2011 8798138683525 radians
         // Actual delta :          delta = -0.2011 4171346019355 radians
@@ -68,7 +66,7 @@ class MyMoonModelTest {
     }
 
     @Test
-    void angularSize(){
+    void angularSizeWorks(){
         assertEquals(0.009225908666849136, MOON_1979.angularSize());
     }
 
