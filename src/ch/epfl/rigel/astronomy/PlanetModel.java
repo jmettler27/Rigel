@@ -16,7 +16,6 @@ import static java.lang.Math.*;
  * @author Julien Mettler (309999)
  */
 public enum PlanetModel implements CelestialObjectModel<Planet> {
-
     MERCURY("Mercure", 0.24085, 75.5671, 77.612, 0.205627,0.387098, 7.0051,48.449, 6.74, -0.42),
 
     VENUS("Vénus", 0.615207, 272.30044, 131.54, 0.006812,0.723329, 3.3947,76.769, 16.92, -4.40),
@@ -124,7 +123,7 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
         double earthOrbitalRadius = EARTH.orbitalRadius(earthTrueAnomaly);
 
         // The Earth's heliocentric longitude (in radians, in the interval [0, 2*PI[)
-        double earthHelioLon = Angle.normalizePositive(EARTH.heliocentricLongitude(earthTrueAnomaly));
+        double earthHelioLon = EARTH.heliocentricLongitude(earthTrueAnomaly);
 
         // 4th step : The position of the Earth and the planet are combined to obtain the position of the planet
         // in geocentric ecliptic coordinates.
@@ -157,22 +156,21 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
     }
 
     /**
-     * Returns the planet's true anomaly (in radians, normalized to [0,2*PI[).
+     * Returns the planet's true anomaly (in radians).
      * 
      * @param daysSinceJ2010
      *            The number of days elapsed from the epoch J2010 to the epoch of the observed position
      *            of the celestial object (may be negative).
-     * @return the planet's true anomaly (in radians, normalized to [0,2*PI[)
+     * @return the planet's true anomaly (in radians)
      */
     private double trueAnomaly(double daysSinceJ2010) {
-        // Note : Some intermediate variables are normalized, as described on page 126 of the reference book.
-        double planetTemp = Angle.normalizePositive(ANGULAR_VELOCITY * (daysSinceJ2010 / tropicalYear));
+        double planetTemp = ANGULAR_VELOCITY * (daysSinceJ2010 / tropicalYear);
 
         // The planet's mean anomaly (in radians)
         double meanAnomaly = planetTemp + lonJ2010 - lonPerigee;
 
-        // The planet's true anomaly (in radians, normalized to [0,2*PI[)
-        return Angle.normalizePositive(meanAnomaly + 2.0 * eccentricity * sin(meanAnomaly));
+        // The planet's true anomaly (in radians)
+        return meanAnomaly + 2.0 * eccentricity * sin(meanAnomaly);
     }
 
     /**
@@ -197,7 +195,7 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
      * @return the planet's heliocentric longitude (in radians, normalized to [0,2*PI[)
      */
     private double heliocentricLongitude(double trueAnomaly) {
-        return Angle.normalizePositive(trueAnomaly + lonPerigee);
+        return trueAnomaly + lonPerigee;
     }
 
     /**

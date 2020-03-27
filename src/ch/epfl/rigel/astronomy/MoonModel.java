@@ -43,7 +43,7 @@ public enum MoonModel implements CelestialObjectModel<Moon> {
     public Moon at(double daysSinceJ2010, EclipticToEquatorialConversion eclipticToEquatorialConversion) {
 
         Sun sun = SunModel.SUN.at(daysSinceJ2010, eclipticToEquatorialConversion);
-        double sunMeanAnomaly = Angle.normalizePositive(sun.meanAnomaly()); // The Sun's mean anomaly
+        double sunMeanAnomaly = sun.meanAnomaly(); // The Sun's mean anomaly
         double sunLon = sun.eclipticPos().lon(); // The Sun's geocentric ecliptic longitude
 
         // Step 1 : Deriving the Moon's orbital longitude

@@ -31,7 +31,7 @@ public enum SunModel implements CelestialObjectModel<Sun> {
     public Sun at(double daysSinceJ2010, EclipticToEquatorialConversion eclipticToEquatorialConversion) {
 
         // The Sun's mean anomaly (in radians) (for which the Sun occupies a circular orbit)
-        double meanAnomaly = (ANGULAR_VELOCITY * daysSinceJ2010) + LONGITUDE_J2010 - LONGITUDE_PERIGEE;
+        double meanAnomaly = Angle.normalizePositive((ANGULAR_VELOCITY * daysSinceJ2010) + LONGITUDE_J2010 - LONGITUDE_PERIGEE);
 
         // The Sun's true anomaly (in radians) (for which the Sun occupies an elliptical orbit)
         double trueAnomaly = meanAnomaly + 2.0 * ECCENTRICITY * sin(meanAnomaly);

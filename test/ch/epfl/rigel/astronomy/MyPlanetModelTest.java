@@ -99,4 +99,5 @@ class MyPlanetModelTest {
     void allContainsAllThePlanets(){
         assertEquals("[MERCURY, VENUS, EARTH, MARS, JUPITER, SATURN, URANUS, NEPTUNE]", PlanetModel.ALL.toString());
     }
+
 }
