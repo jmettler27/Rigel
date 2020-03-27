@@ -28,8 +28,8 @@ public final class Asterism {
     }
 
     /**
-     * Returns the list of stars.
-     * @return the list of stars
+     * Returns the list of stars composing this asterism.
+     * @return the list of stars composing this asterism
      */
     public List<Star> stars() {
         return List.copyOf(stars);

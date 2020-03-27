@@ -15,7 +15,7 @@ public final class Star extends CelestialObject {
     private final int hipparcosId;
     private final float colorIndex;
 
-    // The valid closed interval for the star's color index
+    // The valid closed interval [-0.5,5.5] (unitless) for the star's color index
     private final static ClosedInterval COLOR_INDEX_INTERVAL = ClosedInterval.of(-0.5f, 5.5f);
 
     /**
@@ -32,9 +32,8 @@ public final class Star extends CelestialObject {
      * @param colorIndex
      *            The star's B-V color index
      * @throws IllegalArgumentException
-     *             if the angular size is strictly negative,
-     *             and/or if the Hipparcos ID is < 0,
-     *             and/or if the color index is not contained in [-0.5, 5.5]
+     *             if the Hipparcos ID is < 0,
+     *             and/or the color index is not contained in [-0.5,5.5]
      * @throws NullPointerException
      *             if the name and/or the equatorial position are null
      */
@@ -48,16 +47,16 @@ public final class Star extends CelestialObject {
     }
 
     /**
-     * Returns the identification number in the Hipparcos catalogue.
-     * @return the identification number in the Hipparcos catalogue
+     * Returns the identification number of this star in the Hipparcos catalogue.
+     * @return the identification number of this star in the Hipparcos catalogue
      */
     public int hipparcosId() {
         return hipparcosId;
     }
 
     /**
-     * Returns the color temperature (in degrees Kelvin).
-     * @return the color temperature (in degrees Kelvin)
+     * Returns the color temperature of this star (in degrees Kelvin).
+     * @return the color temperature of this star (in degrees Kelvin)
      */
     public int colorTemperature() {
         double T = 4600.0 * (1.0 / (0.92 * colorIndex + 1.7) + 1.0 / (0.92 * colorIndex + 0.62));

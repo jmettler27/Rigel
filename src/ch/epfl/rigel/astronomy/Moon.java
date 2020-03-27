@@ -32,8 +32,8 @@ public final class Moon extends CelestialObject {
      * @param phase
      *            The Moon's phase
      * @throws IllegalArgumentException
-     *             if the angular size is strictly negative
-     *             and/or the phase is contained in [0,1]
+     *             if the angular size is < 0
+     *             and/or the phase is not contained in [0,1]
      * @throws NullPointerException
      *             if the equatorial position is null
      */

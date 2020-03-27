@@ -41,7 +41,7 @@ public final class GeographicCoordinates extends SphericalCoordinates {
      * @param latDeg
      *            The latitude (in degrees)
      * @throws IllegalArgumentException
-     *             if at least one of the coordinates is not contained in its valid right open interval
+     *             if at least one of the coordinates is not contained in its valid interval
      * @return the geographic coordinates (longitude and latitude) in radians
      */
     public static GeographicCoordinates ofDeg(double longDeg, double latDeg) {

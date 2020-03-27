@@ -16,8 +16,8 @@ public abstract class CelestialObject {
     private final String name;
     private final EquatorialCoordinates equatorialPos;
 
-    // The angle (in radians) between two opposite points on the periphery of the "disc" (i.e. the object)
-    // as seen by the observer
+    // The angle (in radians) between two opposite points on the periphery of the "disc" (i.e. the object) as seen
+    // by the observer
     private final float angularSize;
 
     // The apparent magnitude (unitless), i.e. the luminosity of the object as perceived from the Earth
@@ -35,7 +35,7 @@ public abstract class CelestialObject {
      * @param magnitude
      *            The object's magnitude (unitless)
      * @throws IllegalArgumentException
-     *             if the angular size is strictly negative
+     *             if the angular size is < 0
      * @throws NullPointerException
      *             if the name and/or the equatorial position are null
      */

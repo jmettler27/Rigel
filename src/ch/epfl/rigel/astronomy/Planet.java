@@ -22,7 +22,7 @@ public final class Planet extends CelestialObject {
      * @param magnitude
      *            The object's magnitude (unitless)
      * @throws IllegalArgumentException
-     *             if the angular size is strictly negative
+     *             if the angular size is < 0
      * @throws NullPointerException
      *             if the name and/or the equatorial position are null
      */

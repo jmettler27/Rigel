@@ -87,7 +87,7 @@ public final class StarCatalogue {
      * @param asterism
      *            The asterism of the catalogue
      * @throws IllegalArgumentException
-     *             if the given asterism is not part of the catalogue
+     *             if the given asterism is not contained in the catalogue
      * @return an immutable list of the indices of the stars composing the given asterism
      */
     public List<Integer> asterismIndices(Asterism asterism) {

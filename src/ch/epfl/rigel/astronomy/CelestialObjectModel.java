@@ -17,7 +17,7 @@ public interface CelestialObjectModel<O> {
      * 
      * @param daysSinceJ2010
      *            The number of days elapsed from the epoch J2010 to the epoch of the observed position
-     *            of the celestial object (may be negative).
+     *            of the celestial object (may be strictly negative).
      * @param eclipticToEquatorialConversion
      *            The conversion from ecliptic to equatorial coordinates of the celestial object
      * @return the celestial object modeled by this model

@@ -41,7 +41,7 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
     // The average angular velocity of the Earth's rotation around the Sun
     private final static double ANGULAR_VELOCITY = Angle.TAU / 365.242191;
 
-    // The planets of the solar system, following elliptical orbits around the Sun
+    // The eight planets of the solar system, following elliptical orbits around the Sun
     public final static List<PlanetModel> ALL = List.of(values());
 
     // The planets that orbit closer to the Sun than the Earth (i.e. Mercury and Venus)
@@ -53,7 +53,7 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
      * @param frenchName
      *            The planet's french name
      * @param tropicalYear
-     *            The planet's period (in tropical years)
+     *            The planet's period of revolution (in tropical years)
      * @param lonJ2010Deg
      *            The planet's longitude at J2010 (in degrees)
      * @param lonPerigeeDeg
@@ -103,16 +103,16 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
         // 2nd step : The position of the planet is projected on the ecliptic plane and then expressed in
         // heliocentric ecliptic coordinates
 
-        // The planet's heliocentric ecliptic latitude (in radians, in the interval [-PI/2, PI/2])
+        // The planet's heliocentric ecliptic latitude (in radians, in the interval [-PI/2,PI/2])
         double helioEclipticLat = asin(sin(helioLon - lonAscending) * sin(inclination));
 
         // The projection of the orbital radius on the ecliptic plane (in AU)
         double eclipticRadius = orbitalRadius * cos(helioEclipticLat);
 
-        double helioEclipticLonNumerator = sin(helioLon - lonAscending) * cos(inclination);
-        double helioEclipticLonDenominator = cos(helioLon - lonAscending);
+        double numeratorHelioEclipticLon = sin(helioLon - lonAscending) * cos(inclination);
+        double denominatorHelioEclipticLon = cos(helioLon - lonAscending);
         // The planet's heliocentric ecliptic longitude (in radians, in the interval [0, 2*PI[)
-        double helioEclipticLon = Angle.normalizePositive(atan2(helioEclipticLonNumerator, helioEclipticLonDenominator)
+        double helioEclipticLon = Angle.normalizePositive(atan2(numeratorHelioEclipticLon, denominatorHelioEclipticLon)
                 + lonAscending);
 
         // 3rd step : The position of the Earth is determined
@@ -157,20 +157,21 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
     }
 
     /**
-     * Returns the planet's true anomaly (in radians).
+     * Returns the planet's true anomaly (in radians, normalized to [0,2*PI[).
      * 
      * @param daysSinceJ2010
      *            The number of days elapsed from the epoch J2010 to the epoch of the observed position
      *            of the celestial object (may be negative).
-     * @return the planet's true anomaly (in radians)
+     * @return the planet's true anomaly (in radians, normalized to [0,2*PI[)
      */
     private double trueAnomaly(double daysSinceJ2010) {
+        // Note : Some intermediate variables are normalized, as described on page 126 of the reference book.
         double planetTemp = Angle.normalizePositive(ANGULAR_VELOCITY * (daysSinceJ2010 / tropicalYear));
 
         // The planet's mean anomaly (in radians)
         double meanAnomaly = planetTemp + lonJ2010 - lonPerigee;
 
-        // The planet's true anomaly (in radians)
+        // The planet's true anomaly (in radians, normalized to [0,2*PI[)
         return Angle.normalizePositive(meanAnomaly + 2.0 * eccentricity * sin(meanAnomaly));
     }
 
@@ -189,14 +190,14 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
     }
 
     /**
-     * Returns the planet's heliocentric longitude (in radians).
+     * Returns the planet's heliocentric longitude (in radians, normalized to [0,2*PI[).
      * 
      * @param trueAnomaly
      *            The planet's true anomaly (in radians)
-     * @return the planet's heliocentric longitude (in radians)
+     * @return the planet's heliocentric longitude (in radians, normalized to [0,2*PI[)
      */
     private double heliocentricLongitude(double trueAnomaly) {
-        return trueAnomaly + lonPerigee;
+        return Angle.normalizePositive(trueAnomaly + lonPerigee);
     }
 
     /**

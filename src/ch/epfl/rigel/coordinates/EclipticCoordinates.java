@@ -40,6 +40,8 @@ public final class EclipticCoordinates extends SphericalCoordinates {
      *            The longitude (in radians)
      * @param lat
      *            The latitude (in radians)
+     * @throws IllegalArgumentException
+     *             if at least one of the coordinates is not contained in its valid interval
      * @return the ecliptic coordinates (longitude and latitude) in radians
      */
     public static EclipticCoordinates of(double lon, double lat) {

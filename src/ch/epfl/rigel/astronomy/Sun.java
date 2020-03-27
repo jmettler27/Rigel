@@ -29,7 +29,7 @@ public final class Sun extends CelestialObject {
      * @param meanAnomaly
      *            The Sun's mean anomaly
      * @throws IllegalArgumentException
-     *             if the angular size is strictly negative
+     *             if the angular size is < 0
      * @throws NullPointerException
      *             if the ecliptic and/or the equatorial position are null
      */
