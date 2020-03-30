@@ -10,7 +10,7 @@ import java.util.Queue;
 import static org.junit.jupiter.api.Assertions.*;
 
 class MyAsterismLoaderTest {
-    public static final String AST_CATALOGUE_NAME = "/asterisms.txt", HYG_CATALOGUE_NAME = "/hygdata_v3.csv";
+    static final String AST_CATALOGUE_NAME = "/asterisms.txt";
 
     @Test
     void asterismCatalogueIsCorrectlyInstalled() throws IOException {
@@ -22,7 +22,7 @@ class MyAsterismLoaderTest {
     @Test
     void asterismCatalogueContainsRigel() throws IOException {
         try (InputStream astStream = getClass().getResourceAsStream(AST_CATALOGUE_NAME);
-             InputStream hygStream = getClass().getResourceAsStream(HYG_CATALOGUE_NAME)) {
+             InputStream hygStream = getClass().getResourceAsStream(MyHygDatabaseLoaderTest.HYG_CATALOGUE_NAME)) {
 
             StarCatalogue.Builder builder = new StarCatalogue.Builder();
             builder.loadFrom(hygStream, HygDatabaseLoader.INSTANCE);
@@ -42,7 +42,7 @@ class MyAsterismLoaderTest {
     @Test
     void asterismLoader() throws IOException {
         try (InputStream astStream = getClass().getResourceAsStream(AST_CATALOGUE_NAME);
-             InputStream hygStream = getClass().getResourceAsStream(HYG_CATALOGUE_NAME)) {
+             InputStream hygStream = getClass().getResourceAsStream(MyHygDatabaseLoaderTest.HYG_CATALOGUE_NAME)) {
 
             StarCatalogue.Builder builder = new StarCatalogue.Builder();
             builder.loadFrom(hygStream, HygDatabaseLoader.INSTANCE);

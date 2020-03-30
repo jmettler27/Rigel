@@ -8,7 +8,7 @@ import java.io.InputStream;
 import static org.junit.jupiter.api.Assertions.*;
 
 class MyHygDatabaseLoaderTest {
-    private static final String HYG_CATALOGUE_NAME = "/hygdata_v3.csv";
+    static final String HYG_CATALOGUE_NAME = "/hygdata_v3.csv";
 
     @Test
     void hygDatabaseIsCorrectlyInstalled() throws IOException {

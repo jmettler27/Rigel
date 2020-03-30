@@ -120,10 +120,34 @@ public final class ObservedSky {
             CartesianCoordinates cartesianPos = equToCartConversion(planet.equatorialPos());
             planetPositions[0][planetIndex] = cartesianPos.x();
             planetPositions[1][planetIndex] = cartesianPos.y();
-
             ++planetIndex;
         }
         return planetPositions;
+    }
+
+    /**
+     * Returns the list of the stars of the catalogue.
+     * @return the list of the stars of the catalogue
+     */
+    public List<Star> stars(){
+        return catalogue.stars();
+    }
+
+    /**
+     * Returns the Cartesian coordinates of the stars of the catalogue in the plan.
+     * @return the Cartesian coordinates of the stars of the catalogue in the plan
+     */
+    public double[][] starPositions(){
+        double[][] starPositions = new double[2][catalogue.stars().size()];
+
+        int starIndex = 0;
+        for(Star star : catalogue.stars()){
+            CartesianCoordinates cartesianPos = equToCartConversion(star.equatorialPos());
+            starPositions[0][starIndex] = cartesianPos.x();
+            starPositions[1][starIndex] = cartesianPos.y();
+            ++starIndex;
+        }
+        return starPositions;
     }
 
     /**
