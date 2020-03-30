@@ -43,7 +43,6 @@ public enum HygDatabaseLoader implements StarCatalogue.Loader {
 
             String line; // The current line of data (i.e. the current star in the HYG catalogue)
             while ((line = reader.readLine()) != null) {
-
                 String[] columns = line.split(","); // The 37 informations of the current star
 
                 // The star's Hipparcos identification number (0 by default)

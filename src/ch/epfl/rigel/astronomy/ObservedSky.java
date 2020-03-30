@@ -138,10 +138,10 @@ public final class ObservedSky {
      * @return the Cartesian coordinates of the stars of the catalogue in the plan
      */
     public double[][] starPositions(){
-        double[][] starPositions = new double[2][catalogue.stars().size()];
+        double[][] starPositions = new double[2][stars().size()];
 
         int starIndex = 0;
-        for(Star star : catalogue.stars()){
+        for(Star star : stars()){
             CartesianCoordinates cartesianPos = equToCartConversion(star.equatorialPos());
             starPositions[0][starIndex] = cartesianPos.x();
             starPositions[1][starIndex] = cartesianPos.y();
@@ -172,38 +172,44 @@ public final class ObservedSky {
     }
 
     /**
-     * Returns the closest celestial object to the given point, as long as it is within the maximum distance.
+     * Returns the closest celestial object to the given point on the plan, as long as it is within the maximum distance.
      *
      * @param cartesianPos
-     *            The given point (in Cartesian coordinates)
+     *            The given point on the plan (in Cartesian coordinates)
      * @param maxDistance
      *            The maximum distance
      * @return the closest celestial object to the given point
      */
     public Optional<CelestialObject> objectClosestTo(CartesianCoordinates cartesianPos, double maxDistance) {
-        CelestialObject closestObject = sun();
+        // By default, we choose the Sun to be the closest celestial object to the given point
         double minDistance = distanceBetween(sunPosition(), cartesianPos);
-        double moonDistance = distanceBetween(moonPosition(), cartesianPos);
+        CelestialObject closestObject = sun();
 
+        // Checks if the Moon is closer than the Sun to the given point
+        double moonDistance = distanceBetween(moonPosition(), cartesianPos);
         if (moonDistance < minDistance) {
             minDistance = moonDistance;
             closestObject = moon();
         }
 
+        // Checks if one of the planets is closer than the Sun or the Moon to the given point
         for (Planet planet : planets()) {
-            double distanceToPlanet = distanceBetween(equToCartConversion(planet.equatorialPos()), cartesianPos);
+            CartesianCoordinates planetCartesianPos = equToCartConversion(planet.equatorialPos());
+            double distanceToPlanet = distanceBetween(planetCartesianPos, cartesianPos);
 
             if (distanceToPlanet < minDistance) {
                 minDistance = distanceToPlanet;
                 closestObject = planet;
             }
         }
+        // Returns a full container (cell) when a celestial object closer than the maximum distance from the given point
+        // has been found, or an empty cell otherwise.
         return (minDistance < maxDistance) ? Optional.of(closestObject) : Optional.empty();
     }
 
     /**
      * Additional method.
-     * Derives the distance between two points on the plan.
+     * Derives the distance between the two given points on the plan.
      *
      * @param point1
      *            The Cartesian coordinates of the first point on the plan
@@ -212,7 +218,8 @@ public final class ObservedSky {
      * @return the distance between the two points on the plan
      */
     private double distanceBetween(CartesianCoordinates point1, CartesianCoordinates point2) {
-        return sqrt(pow(point1.x() - point2.x(), 2) + pow(point1.y() - point2.y(), 2));
+        double x1 = point1.x(), x2 = point2.x(), y1 = point1.y(), y2 = point2.y();
+        return sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
     }
 
     /**
@@ -227,8 +234,8 @@ public final class ObservedSky {
         // Conversion from equatorial to horizontal coordinates
         EquatorialToHorizontalConversion equToHor = new EquatorialToHorizontalConversion(when, where);
 
-        // Conversion from equatorial to horizontal coordinates, and then from horizontal to cartesian coordinates
-        // (using the stereographic projection of the sky)
+        // Conversion from equatorial to horizontal coordinates, and then from horizontal to Cartesian coordinates
+        // (using the stereographic projection of the sky for the second conversion)
         Function<EquatorialCoordinates, CartesianCoordinates> equToCart = equToHor.andThen(projection);
 
         return equToCart.apply(equ);
