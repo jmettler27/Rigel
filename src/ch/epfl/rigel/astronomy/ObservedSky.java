@@ -5,10 +5,7 @@ import ch.epfl.rigel.coordinates.*;
 import static java.lang.Math.*;
 
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 
 /**
@@ -24,6 +21,12 @@ public final class ObservedSky {
     private final Sun sun;
     private final Moon moon;
     private final List<Planet> planets;
+
+    private final CartesianCoordinates sunPosition;
+    private final CartesianCoordinates moonPosition;
+    private final double[][] planetPositions;
+    private final double[][] starPositions;
+
 
     /**
      * Constructs a representation of the sky at a given epoch and place of observation.
@@ -64,6 +67,11 @@ public final class ObservedSky {
         for (PlanetModel model : models) {
             planets.add(model.at(daysSinceJ2010, conversion));
         }
+
+        sunPosition = equToCartConversion(sun.equatorialPos());
+        moonPosition = equToCartConversion(moon.equatorialPos());
+        planetPositions = planetPositions();
+        starPositions = starPositions();
     }
 
     /**
@@ -79,7 +87,7 @@ public final class ObservedSky {
      * @return the Cartesian coordinates of the Sun as projected in the plan
      */
     public CartesianCoordinates sunPosition() {
-        return equToCartConversion(sun.equatorialPos());
+        return sunPosition;
 
     }
 
@@ -96,7 +104,7 @@ public final class ObservedSky {
      * @return the Cartesian coordinates of the Moon as projected in the plan
      */
     public CartesianCoordinates moonPosition() {
-        return equToCartConversion(moon.equatorialPos());
+        return moonPosition;
 
     }
 
@@ -113,15 +121,19 @@ public final class ObservedSky {
      * @return the Cartesian coordinates of the extraterrestrial planets of the solar system as projected in the plan
      */
     public double[][] planetPositions() {
-        double[][] planetPositions = new double[2][7];
+        double[][] planetPositions = new double[2][7]; // Immutable table of coordinates
+        double[][] temp = new double[2][7]; // Mutable table of coordinates
 
         int planetIndex = 0;
         for (Planet planet : planets) {
             CartesianCoordinates cartesianPos = equToCartConversion(planet.equatorialPos());
-            planetPositions[0][planetIndex] = cartesianPos.x();
-            planetPositions[1][planetIndex] = cartesianPos.y();
+            temp[0][planetIndex] = cartesianPos.x();
+            temp[1][planetIndex] = cartesianPos.y();
             ++planetIndex;
         }
+        planetPositions[0] = Arrays.copyOf(temp[0], 7); // Immutable table of x coordinates
+        planetPositions[1] = Arrays.copyOf(temp[1], 7); // Immutable table of y coordinates
+
         return planetPositions;
     }
 
@@ -138,15 +150,20 @@ public final class ObservedSky {
      * @return the Cartesian coordinates of the stars of the catalogue in the plan
      */
     public double[][] starPositions(){
-        double[][] starPositions = new double[2][stars().size()];
+        int nbStars = stars().size(); // The number of stars in the catalogue
+        double[][] starPositions = new double[2][nbStars]; // Immutable table of coordinates
+        double[][] temp = new double[2][nbStars]; // Mutable table of coordinates
 
         int starIndex = 0;
         for(Star star : stars()){
             CartesianCoordinates cartesianPos = equToCartConversion(star.equatorialPos());
-            starPositions[0][starIndex] = cartesianPos.x();
-            starPositions[1][starIndex] = cartesianPos.y();
+            temp[0][starIndex] = cartesianPos.x();
+            temp[1][starIndex] = cartesianPos.y();
             ++starIndex;
         }
+        starPositions[0] = Arrays.copyOf(temp[0], nbStars); // Immutable table of x coordinates
+        starPositions[1] = Arrays.copyOf(temp[1], nbStars); // Immutable table of y coordinates
+
         return starPositions;
     }
 
@@ -193,15 +210,37 @@ public final class ObservedSky {
         }
 
         // Checks if one of the planets is closer than the Sun or the Moon to the given point
+        int planetIndex = 0;
         for (Planet planet : planets()) {
-            CartesianCoordinates planetCartesianPos = equToCartConversion(planet.equatorialPos());
-            double distanceToPlanet = distanceBetween(planetCartesianPos, cartesianPos);
+            // The Cartesian coordinates of the planet
+            CartesianCoordinates planetCartesianPos = CartesianCoordinates.of(
+                    planetPositions[0][planetIndex],
+                    planetPositions[1][planetIndex]);
 
+            double distanceToPlanet = distanceBetween(planetCartesianPos, cartesianPos);
             if (distanceToPlanet < minDistance) {
                 minDistance = distanceToPlanet;
                 closestObject = planet;
             }
+            ++planetIndex;
         }
+
+        // Checks if one of the stars is closer than the Sun or the Moon or the planets to the given point
+        int starIndex = 0;
+        for (Star star : stars()) {
+            // The Cartesian coordinates of the star
+            CartesianCoordinates starCartesianPos = CartesianCoordinates.of(
+                    starPositions[0][starIndex],
+                    starPositions[1][starIndex]);
+
+            double distanceToStar = distanceBetween(starCartesianPos, cartesianPos);
+            if (distanceToStar < minDistance) {
+                minDistance = distanceToStar;
+                closestObject = star;
+            }
+            ++starIndex;
+        }
+
         // Returns a full container (cell) when a celestial object closer than the maximum distance from the given point
         // has been found, or an empty cell otherwise.
         return (minDistance < maxDistance) ? Optional.of(closestObject) : Optional.empty();
@@ -219,7 +258,7 @@ public final class ObservedSky {
      */
     private double distanceBetween(CartesianCoordinates point1, CartesianCoordinates point2) {
         double x1 = point1.x(), x2 = point2.x(), y1 = point1.y(), y2 = point2.y();
-        return sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
+        return hypot((x1 - x2), (y1 - y2));
     }
 
     /**
