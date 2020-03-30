@@ -15,7 +15,6 @@ import java.util.*;
 public final class StarCatalogue {
 
     private final List<Star> stars;
-    private final List<Asterism> asterisms;
     private final Map<Asterism, List<Integer>> asterismsWithIndices;
 
     /**
@@ -35,7 +34,6 @@ public final class StarCatalogue {
             }
         }
         this.stars = List.copyOf(stars); // Immutable list of stars
-        this.asterisms = List.copyOf(asterisms); // Immutable list of asterisms
 
         // Constructs the map by associating to each asterism (the key) its list of indices (the value)
         asterismsWithIndices = new HashMap<>();
