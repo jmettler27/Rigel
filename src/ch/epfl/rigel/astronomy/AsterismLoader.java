@@ -24,7 +24,10 @@ public enum AsterismLoader implements StarCatalogue.Loader {
     public void load(InputStream inputStream, StarCatalogue.Builder builder) throws IOException {
 
         // The buffered reader of the given input stream (i.e. the catalogue of stars, encoded in ASCII)
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.US_ASCII))) {
+        try (BufferedReader reader =
+                     new BufferedReader(
+                             new InputStreamReader(
+                                     inputStream, StandardCharsets.US_ASCII))) {
 
             List<Star> stars = builder.stars();
 

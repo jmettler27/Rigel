@@ -34,7 +34,10 @@ public enum HygDatabaseLoader implements StarCatalogue.Loader {
     public void load(InputStream inputStream, StarCatalogue.Builder builder) throws IOException {
 
         // The buffered reader of the given input stream (i.e. the HYG database, encoded in ASCII)
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.US_ASCII))) {
+        try (BufferedReader reader =
+                     new BufferedReader(
+                             new InputStreamReader(
+                                     inputStream, StandardCharsets.US_ASCII))) {
 
             reader.readLine(); // The header line, giving the names of the columns (which is thus unusable, and skipped)
 
