@@ -39,9 +39,9 @@ public enum HygDatabaseLoader implements StarCatalogue.Loader {
                              new InputStreamReader(
                                      inputStream, StandardCharsets.US_ASCII))) {
 
-            reader.readLine(); // The header line, giving the names of the columns (which is thus unusable, and skipped)
+            reader.readLine(); // Ignores the header line, giving the names of the columns (which is thus unusable))
 
-            String line; // The current line (i.e. the current star in the HYG catalogue)
+            String line; // The current line of data (i.e. the current star in the HYG catalogue)
             while ((line = reader.readLine()) != null) {
 
                 String[] columns = line.split(","); // The 37 informations of the current star

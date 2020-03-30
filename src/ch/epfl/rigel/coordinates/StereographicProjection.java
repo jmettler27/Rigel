@@ -7,14 +7,14 @@ import java.util.function.Function;
 import static java.lang.Math.*;
 
 /**
- * A stereographic projection on a plane of the horizontal coordinates of a celestial object visible in the sky.
+ * A stereographic projection on a plan of the horizontal coordinates of a celestial object visible in the sky.
  *
  * @author Mathias Bouilloud (309979)
  * @author Julien Mettler (309999)
  */
 public final class StereographicProjection implements Function<HorizontalCoordinates, CartesianCoordinates> {
 
-    // The center of the projection, projected at the origin of the plane
+    // The center of the projection, projected at the origin of the plan
     private final HorizontalCoordinates center;
 
     // The cosine and sine of the center's latitude

@@ -10,7 +10,7 @@ import java.util.Queue;
 import static org.junit.jupiter.api.Assertions.*;
 
 class MyAsterismLoaderTest {
-    private static final String AST_CATALOGUE_NAME = "/asterisms.txt", HYG_CATALOGUE_NAME = "/hygdata_v3.csv";
+    public static final String AST_CATALOGUE_NAME = "/asterisms.txt", HYG_CATALOGUE_NAME = "/hygdata_v3.csv";
 
     @Test
     void asterismCatalogueIsCorrectlyInstalled() throws IOException {

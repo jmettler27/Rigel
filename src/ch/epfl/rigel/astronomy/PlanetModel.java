@@ -5,6 +5,7 @@ import ch.epfl.rigel.coordinates.EclipticToEquatorialConversion;
 import ch.epfl.rigel.coordinates.EquatorialCoordinates;
 import ch.epfl.rigel.math.Angle;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.Math.*;
@@ -41,10 +42,13 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
     private final static double ANGULAR_VELOCITY = Angle.TAU / 365.242191;
 
     // The eight planets of the solar system, following elliptical orbits around the Sun
-    public final static List<PlanetModel> ALL = List.of(values());
+    public final static List<PlanetModel> ALL = List.copyOf(List.of(values()));
 
     // The planets that orbit closer to the Sun than the Earth (i.e. Mercury and Venus)
-    private final static List<PlanetModel> INNER_PLANETS = ALL.subList(MERCURY.ordinal(), EARTH.ordinal());
+    public final static List<PlanetModel> INNER_PLANETS = List.copyOf(ALL.subList(MERCURY.ordinal(), EARTH.ordinal()));
+
+    // The planets that orbit closer to the Sun than the Earth (i.e. Mars, Jupiter, Saturn, Uranus, Neptune)
+    public final static List<PlanetModel> OUTER_PLANETS = List.copyOf(ALL.subList(MARS.ordinal(), NEPTUNE.ordinal() + 1));
 
     /**
      * Constructs the model of a planet through planetary constants.
@@ -157,7 +161,7 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
 
     /**
      * Returns the planet's true anomaly (in radians).
-     * 
+     *
      * @param daysSinceJ2010
      *            The number of days elapsed from the epoch J2010 to the epoch of the observed position
      *            of the celestial object (may be negative).
@@ -189,7 +193,7 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
 
     /**
      * Returns the planet's heliocentric longitude (in radians, normalized to [0,2*PI[).
-     * 
+     *
      * @param trueAnomaly
      *            The planet's true anomaly (in radians)
      * @return the planet's heliocentric longitude (in radians, normalized to [0,2*PI[)

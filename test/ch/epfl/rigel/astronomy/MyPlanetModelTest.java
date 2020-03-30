@@ -96,8 +96,10 @@ class MyPlanetModelTest {
     }
 
     @Test
-    void allContainsAllThePlanets(){
+    void listsContainsTheCorrectPlanets(){
         assertEquals("[MERCURY, VENUS, EARTH, MARS, JUPITER, SATURN, URANUS, NEPTUNE]", PlanetModel.ALL.toString());
+        assertEquals("[MERCURY, VENUS]", PlanetModel.INNER_PLANETS.toString());
+        assertEquals("[MARS, JUPITER, SATURN, URANUS, NEPTUNE]", PlanetModel.OUTER_PLANETS.toString());
     }
 
 }

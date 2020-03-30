@@ -31,7 +31,7 @@ public enum AsterismLoader implements StarCatalogue.Loader {
 
             List<Star> stars = builder.stars();
 
-            String line; // The current line (i.e. the current asterism in the catalogue)
+            String line; // The current line of data (i.e. the current asterism in the catalogue)
             while ((line = reader.readLine()) != null) {
 
                 String[] columns = line.split(","); // The Hipparcos numbers of of the current asterism's stars
