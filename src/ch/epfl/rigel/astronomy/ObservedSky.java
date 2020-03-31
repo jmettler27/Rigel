@@ -22,9 +22,7 @@ public final class ObservedSky {
     // The projected positions on the plan of all of the celestial objects in the observed sky
     private final CartesianCoordinates sunPosition, moonPosition;
     private final double[][] planetPositions, starPositions;
-    private final Map<CelestialObject, CartesianCoordinates> positions;
-
-    private Map<CelestialObject, CartesianCoordinates> allObjectsPositions;
+    private final Map<CelestialObject, CartesianCoordinates> positions; // Immutable map
 
     /**
      * Constructs a representation of the sky at a given epoch and place of observation.
@@ -67,59 +65,36 @@ public final class ObservedSky {
         // Conversion from equatorial to Cartesian coordinates
         EquatorialToCartesianConversion equToCart = new EquatorialToCartesianConversion(when, where, projection);
 
-        // Map which associates to each celestial object in the observed sky its Cartesian coordinates on the plan
-        positions = new HashMap<>();
+        // Modifiable map which associates to each celestial object in the observed sky its Cartesian coordinates on the plan
+        Map<CelestialObject, CartesianCoordinates> allObjectsPositions = new HashMap<>();
 
-        // Derives the projected position of the Sun on the plan
+        // Derives the projected position of the Sun on the plan and puts them in the map
         sunPosition = equToCart.apply(sun.equatorialPos());
-        positions.put(sun, sunPosition);
+        allObjectsPositions.put(sun, sunPosition);
 
-        // Derives the projected position of the Moon on the plan
+        // Derives the projected position of the Moon on the plan and puts them in the map
         moonPosition = equToCart.apply(moon.equatorialPos());
-        positions.put(moon, moonPosition);
+        allObjectsPositions.put(moon, moonPosition);
 
-        // Derives the projected positions of the extraterrestrial planets of the solar system on the plan
+        // Derives the projected positions of the extraterrestrial planets of the solar system on the plan and puts them
+        // in the map
         planetPositions = new double[2][7]; // Immutable table of coordinates
         double[][] tempPlanets = new double[2][7]; // Mutable table of coordinates
 
-        /*
-        int planetIndex = 0;
-        for (Planet planet : planets) {
-            CartesianCoordinates planetPos = equToCart.apply(planet.equatorialPos());
-            tempPlanets[0][planetIndex] = planetPos.x();
-            tempPlanets[1][planetIndex] = planetPos.y();
-            positions.put(planet, CartesianCoordinates.of(planetPos.x(), planetPos.y()));
-            ++planetIndex;
-        }
-
-         */
-
-        fillArray(planets, tempPlanets, equToCart);
+        addPositions(planets, tempPlanets, equToCart, allObjectsPositions);
         planetPositions[0] = Arrays.copyOf(tempPlanets[0], 7); // Immutable table of x coordinates
         planetPositions[1] = Arrays.copyOf(tempPlanets[1], 7); // Immutable table of y coordinates
 
-        // Derives the projected positions of the stars of the catalogue on the plan
+        // Derives the projected positions of the stars of the catalogue on the plan and puts them in the map
         int nbStars = stars().size(); // The number of stars in the catalogue
         starPositions = new double[2][nbStars]; // Immutable table of coordinates
         double[][] tempStars = new double[2][nbStars]; // Mutable table of coordinates
-        /*
-        int starIndex = 0;
-        for (Star star : stars()) {
-            CartesianCoordinates starPos = equToCart.apply(star.equatorialPos());
-            tempStars[0][starIndex] = starPos.x();
-            tempStars[1][starIndex] = starPos.y();
-            positions.put(star, CartesianCoordinates.of(starPos.x(), starPos.y()));
-            ++starIndex;
-        }
 
-         */
-        fillArray(stars(), tempStars, equToCart);
+        addPositions(stars(), tempStars, equToCart, allObjectsPositions);
         starPositions[0] = Arrays.copyOf(tempStars[0], nbStars); // Immutable table of x coordinates
         starPositions[1] = Arrays.copyOf(tempStars[1], nbStars); // Immutable table of y coordinates
 
-        for(CelestialObject object : positions.keySet()){ //// Create an modifiable copy of all positions map
-            allObjectsPositions.put(object, positions.get(object));
-        }
+        positions = Map.copyOf(allObjectsPositions);  // Immutable map
     }
 
     /**
@@ -208,58 +183,86 @@ public final class ObservedSky {
     }
 
     /**
+     * Additional method.
+     * Adds the Cartesian coordinates of the given list of celestial objects to the double entry array and to the map
+     * of projected positions, using the given conversion.
+     *
+     * @param list
+     *            The list of celestial objects
+     * @param tempPositions
+     *            The array containing the abscissa and ordinate of the celestial objects on the plan
+     * @param equToCart
+     *            The conversion from equatorial to Cartesian coordinates
+     * @param allObjectsPositions
+     *            The map which associated to each Celestial object its position on the plan
+     */
+    private void addPositions(List<? extends CelestialObject> list, double[][] tempPositions,
+                              EquatorialToCartesianConversion equToCart,
+                              Map<CelestialObject, CartesianCoordinates> allObjectsPositions) {
+        int objectIndex = 0;
+        for (CelestialObject object : list) {
+            CartesianCoordinates objectPos = equToCart.apply(object.equatorialPos());
+            tempPositions[0][objectIndex] = objectPos.x();
+            tempPositions[1][objectIndex] = objectPos.y();
+            allObjectsPositions.put(object, CartesianCoordinates.of(objectPos.x(), objectPos.y()));
+            ++objectIndex;
+        }
+    }
+
+    /**
      * Returns the closest celestial object to the given point on the plan, as long as it is within the maximum distance.
      *
-     * @param cartesianPos
-     *            The given point on the plan (in Cartesian coordinates)
+     * @param searchPoint
+     *            The given search point on the plan (in Cartesian coordinates)
      * @param maxDistance
-     *            The maximum distance
+     *            The maximum search distance
      * @return the closest celestial object to the given point
      */
-    public Optional<CelestialObject> objectClosestTo(CartesianCoordinates cartesianPos, double maxDistance) {
-        /*
-        // By default, we choose the Sun to be the closest celestial object to the given point
-        double minDistance = distanceBetween(sunPosition, cartesianPos); // The minimum distance
-        CelestialObject closestObject = sun;
+    public Optional<CelestialObject> objectClosestTo(CartesianCoordinates searchPoint, double maxDistance) {
+        Map<CelestialObject, CartesianCoordinates> closePositions = new HashMap<>();
 
-        // Checks if one of the celestial objects is closer than the Sun to the given point
+        // Iterates on all the celestial objects of the sky and adds only those which are contained in the square
+        // of side length equal to (2 * maxDistance) and of center cartesianPos
         for (CelestialObject object : positions.keySet()) {
-            double distanceToObject = distanceBetween(positions.get(object), cartesianPos);
+            CartesianCoordinates objectPos = positions.get(object);
+            if (squareContains(objectPos, searchPoint, maxDistance)) {
+                closePositions.put(object, objectPos);
+            }
+        }
+
+        double minDistance = Double.MAX_VALUE; // The distance between the closest object and the search point
+        CelestialObject closestObject = null; // The closest object to the search point
+
+        // Linear search on the remaining celestial objects
+        for (CelestialObject object : closePositions.keySet()) {
+            double distanceToObject = distanceBetween(closePositions.get(object), searchPoint);
             if (distanceToObject < minDistance) {
                 minDistance = distanceToObject;
                 closestObject = object;
             }
         }
-        // Returns a full container (cell) when a celestial object closer than the maximum distance from the given point
-        // has been found, or an empty cell otherwise.
-        return (minDistance < maxDistance) ? Optional.of(closestObject) : Optional.empty();
+        // Returns a full cell when a celestial object closer than the maximum distance from the given point has been
+        // found, or an empty cell otherwise.
+        return (closestObject != null && minDistance < maxDistance) ? Optional.of(closestObject) : Optional.empty();
+    }
 
-         */
-
-        //// Iterates on Planets,Earth, Moon and  Sun and remove those which are not contained in square of dimension (2 * maxDistance) and center cartesianPos
-        for(CelestialObject object : allObjectsPositions.keySet()){
-            CartesianCoordinates objectCoordinates = allObjectsPositions.get(object);
-            if(!containedInSquare(objectCoordinates, cartesianPos, maxDistance)){
-                allObjectsPositions.remove(object);
-            }
-        }
-
-        double minDistance = Double.MAX_VALUE;
-        CelestialObject closestObject = null;
-        //// Linear Search on remaining planets
-        for(CelestialObject object : allObjectsPositions.keySet()){
-            double distance = distanceBetween(allObjectsPositions.get(object), cartesianPos);
-            if(distance < minDistance){
-                minDistance = distance;
-                closestObject = object;
-            }
-        }
-
-        if(closestObject == null || minDistance > maxDistance){
-            return Optional.empty();
-        }
-
-        return Optional.of(closestObject);
+    /**
+     * Additional method.
+     * Checks if another celestial object is contained a square centered in the search point and whose side is twice
+     * the maximum search distance.
+     *
+     * @param otherPos
+     *            The other celestial object's position on the plan
+     * @param center
+     *            The center of the square, i.e. the search point
+     * @param halfSide
+     *            The half side of the square, i.e. the maximum search distance
+     * @return true if the other celestial object is contained in the square
+     */
+    private boolean squareContains(CartesianCoordinates otherPos, CartesianCoordinates center, double halfSide) {
+        ClosedInterval xSide = ClosedInterval.of(center.x() - halfSide, center.x() + halfSide);
+        ClosedInterval ySide = ClosedInterval.of(center.y() - halfSide, center.y() + halfSide);
+        return (xSide.contains(otherPos.x()) && ySide.contains(otherPos.y()));
     }
 
     /**
@@ -275,32 +278,5 @@ public final class ObservedSky {
     private double distanceBetween(CartesianCoordinates point1, CartesianCoordinates point2) {
         double x1 = point1.x(), x2 = point2.x(), y1 = point1.y(), y2 = point2.y();
         return hypot((x1 - x2), (y1 - y2));
-    }
-
-    /**
-     * Additional method.
-     * Check if the given point in the square of center (center) and dimension (2*semiDimension)
-     *
-     * @param coordinates
-     * @param center
-     * @param semiDimension
-     * @return
-     */
-    private boolean containedInSquare(CartesianCoordinates coordinates, CartesianCoordinates center, double semiDimension){
-        ClosedInterval xSquare = ClosedInterval.of(center.x() - semiDimension, center.x() + semiDimension);
-        ClosedInterval ySquare = ClosedInterval.of(center.y() - semiDimension, center.y() + semiDimension);
-        return(xSquare.contains(coordinates.x()) && ySquare.contains(coordinates.y()));
-    }
-
-    private <T> void fillArray(List<T> list, double tab[][], EquatorialToCartesianConversion equToCart){
-        int planetIndex = 0;
-        for (T element : list) {
-            CelestialObject object = (CelestialObject) element;
-            CartesianCoordinates planetPos = equToCart.apply(object.equatorialPos());
-            tab[0][planetIndex] = planetPos.x();
-            tab[1][planetIndex] = planetPos.y();
-            positions.put(object, CartesianCoordinates.of(planetPos.x(), planetPos.y()));
-            ++planetIndex;
-        }
     }
 }

@@ -20,7 +20,7 @@ public abstract class BlackBodyColor {
      *            The color temperature (in degrees Kelvin)
      * @return the color of the black body associated to the given color temperature
      */
-    public Color colorForTemperature(int temperature) {
+    public static Color colorForTemperature(int temperature) {
         Map<Integer, String> map = temperaturesWithColors();
         return Color.web(map.get(temperature));
     }
@@ -32,7 +32,7 @@ public abstract class BlackBodyColor {
      *
      * @return the map
      */
-    private Map<Integer, String> temperaturesWithColors() {
+    private static Map<Integer, String> temperaturesWithColors() {
         // Key : The color temperature (in degrees Kelvin)
         // Value : The color (in hexadecimal notation)
         Map<Integer, String> map = new HashMap<>();
@@ -41,7 +41,7 @@ public abstract class BlackBodyColor {
         try (BufferedReader reader =
                      new BufferedReader(
                              new InputStreamReader(
-                                     getClass().getResourceAsStream(COLOR_FILE_NAME)))) {
+                                     BlackBodyColor.class.getResourceAsStream(COLOR_FILE_NAME)))) {
 
             String line; // The current line of data (i.e. the characteristics of the color temperature)
             while ((line = reader.readLine()) != null) {
