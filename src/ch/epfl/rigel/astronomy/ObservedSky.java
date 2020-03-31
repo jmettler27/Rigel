@@ -1,6 +1,7 @@
 package ch.epfl.rigel.astronomy;
 
 import ch.epfl.rigel.coordinates.*;
+import ch.epfl.rigel.math.ClosedInterval;
 
 import static java.lang.Math.*;
 
@@ -22,6 +23,8 @@ public final class ObservedSky {
     private final CartesianCoordinates sunPosition, moonPosition;
     private final double[][] planetPositions, starPositions;
     private final Map<CelestialObject, CartesianCoordinates> positions;
+
+    private Map<CelestialObject, CartesianCoordinates> allObjectsPositions;
 
     /**
      * Constructs a representation of the sky at a given epoch and place of observation.
@@ -79,6 +82,7 @@ public final class ObservedSky {
         planetPositions = new double[2][7]; // Immutable table of coordinates
         double[][] tempPlanets = new double[2][7]; // Mutable table of coordinates
 
+        /*
         int planetIndex = 0;
         for (Planet planet : planets) {
             CartesianCoordinates planetPos = equToCart.apply(planet.equatorialPos());
@@ -87,6 +91,10 @@ public final class ObservedSky {
             positions.put(planet, CartesianCoordinates.of(planetPos.x(), planetPos.y()));
             ++planetIndex;
         }
+
+         */
+
+        fillArray(planets, tempPlanets, equToCart);
         planetPositions[0] = Arrays.copyOf(tempPlanets[0], 7); // Immutable table of x coordinates
         planetPositions[1] = Arrays.copyOf(tempPlanets[1], 7); // Immutable table of y coordinates
 
@@ -94,7 +102,7 @@ public final class ObservedSky {
         int nbStars = stars().size(); // The number of stars in the catalogue
         starPositions = new double[2][nbStars]; // Immutable table of coordinates
         double[][] tempStars = new double[2][nbStars]; // Mutable table of coordinates
-
+        /*
         int starIndex = 0;
         for (Star star : stars()) {
             CartesianCoordinates starPos = equToCart.apply(star.equatorialPos());
@@ -103,8 +111,15 @@ public final class ObservedSky {
             positions.put(star, CartesianCoordinates.of(starPos.x(), starPos.y()));
             ++starIndex;
         }
+
+         */
+        fillArray(stars(), tempStars, equToCart);
         starPositions[0] = Arrays.copyOf(tempStars[0], nbStars); // Immutable table of x coordinates
         starPositions[1] = Arrays.copyOf(tempStars[1], nbStars); // Immutable table of y coordinates
+
+        for(CelestialObject object : positions.keySet()){ //// Create an modifiable copy of all positions map
+            allObjectsPositions.put(object, positions.get(object));
+        }
     }
 
     /**
@@ -202,6 +217,7 @@ public final class ObservedSky {
      * @return the closest celestial object to the given point
      */
     public Optional<CelestialObject> objectClosestTo(CartesianCoordinates cartesianPos, double maxDistance) {
+        /*
         // By default, we choose the Sun to be the closest celestial object to the given point
         double minDistance = distanceBetween(sunPosition, cartesianPos); // The minimum distance
         CelestialObject closestObject = sun;
@@ -217,6 +233,33 @@ public final class ObservedSky {
         // Returns a full container (cell) when a celestial object closer than the maximum distance from the given point
         // has been found, or an empty cell otherwise.
         return (minDistance < maxDistance) ? Optional.of(closestObject) : Optional.empty();
+
+         */
+
+        //// Iterates on Planets,Earth, Moon and  Sun and remove those which are not contained in square of dimension (2 * maxDistance) and center cartesianPos
+        for(CelestialObject object : allObjectsPositions.keySet()){
+            CartesianCoordinates objectCoordinates = allObjectsPositions.get(object);
+            if(!containedInSquare(objectCoordinates, cartesianPos, maxDistance)){
+                allObjectsPositions.remove(object);
+            }
+        }
+
+        double minDistance = Double.MAX_VALUE;
+        CelestialObject closestObject = null;
+        //// Linear Search on remaining planets
+        for(CelestialObject object : allObjectsPositions.keySet()){
+            double distance = distanceBetween(allObjectsPositions.get(object), cartesianPos);
+            if(distance < minDistance){
+                minDistance = distance;
+                closestObject = object;
+            }
+        }
+
+        if(closestObject == null || minDistance > maxDistance){
+            return Optional.empty();
+        }
+
+        return Optional.of(closestObject);
     }
 
     /**
@@ -232,5 +275,32 @@ public final class ObservedSky {
     private double distanceBetween(CartesianCoordinates point1, CartesianCoordinates point2) {
         double x1 = point1.x(), x2 = point2.x(), y1 = point1.y(), y2 = point2.y();
         return hypot((x1 - x2), (y1 - y2));
+    }
+
+    /**
+     * Additional method.
+     * Check if the given point in the square of center (center) and dimension (2*semiDimension)
+     *
+     * @param coordinates
+     * @param center
+     * @param semiDimension
+     * @return
+     */
+    private boolean containedInSquare(CartesianCoordinates coordinates, CartesianCoordinates center, double semiDimension){
+        ClosedInterval xSquare = ClosedInterval.of(center.x() - semiDimension, center.x() + semiDimension);
+        ClosedInterval ySquare = ClosedInterval.of(center.y() - semiDimension, center.y() + semiDimension);
+        return(xSquare.contains(coordinates.x()) && ySquare.contains(coordinates.y()));
+    }
+
+    private <T> void fillArray(List<T> list, double tab[][], EquatorialToCartesianConversion equToCart){
+        int planetIndex = 0;
+        for (T element : list) {
+            CelestialObject object = (CelestialObject) element;
+            CartesianCoordinates planetPos = equToCart.apply(object.equatorialPos());
+            tab[0][planetIndex] = planetPos.x();
+            tab[1][planetIndex] = planetPos.y();
+            positions.put(object, CartesianCoordinates.of(planetPos.x(), planetPos.y()));
+            ++planetIndex;
+        }
     }
 }
