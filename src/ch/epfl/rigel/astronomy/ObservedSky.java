@@ -18,12 +18,10 @@ public final class ObservedSky {
     private final Moon moon;
     private final List<Planet> planets;
 
-    // The projected positions all of the celestial objects visible in the sky
-    private final CartesianCoordinates sunPosition;
-    private final CartesianCoordinates moonPosition;
-    private final double[][] planetPositions;
-    private final double[][] starPositions;
-    private final Map<CelestialObject, CartesianCoordinates> projectedPositions;
+    // The projected positions on the plan of all of the celestial objects in the observed sky
+    private final CartesianCoordinates sunPosition, moonPosition;
+    private final double[][] planetPositions, starPositions;
+    private final Map<CelestialObject, CartesianCoordinates> positions;
 
     /**
      * Constructs a representation of the sky at a given epoch and place of observation.
@@ -39,10 +37,9 @@ public final class ObservedSky {
      */
     public ObservedSky(ZonedDateTime when, StereographicProjection projection, GeographicCoordinates where,
                        StarCatalogue catalogue) {
-
         this.catalogue = catalogue;
 
-        // The number of days elapsed from the epoch J2010 to the epoch of the observed position
+        // The number of days elapsed from the epoch J2010 to the epoch of the observation
         double daysSinceJ2010 = Epoch.J2010.daysUntil(when);
 
         // Conversion from ecliptic to equatorial coordinates
@@ -67,14 +64,16 @@ public final class ObservedSky {
         // Conversion from equatorial to Cartesian coordinates
         EquatorialToCartesianConversion equToCart = new EquatorialToCartesianConversion(when, where, projection);
 
-        // The projected positions of the Sun and the Moon on the plan
-        sunPosition = equToCart.apply(sun.equatorialPos());
-        moonPosition = equToCart.apply(moon.equatorialPos());
+        // Map which associates to each celestial object in the observed sky its Cartesian coordinates on the plan
+        positions = new HashMap<>();
 
-        // Map which associates to each celestial object in the sky its Cartesian coordinates on the plan
-        projectedPositions = new HashMap<>();
-        projectedPositions.put(sun, sunPosition);
-        projectedPositions.put(moon, moonPosition);
+        // Derives the projected position of the Sun on the plan
+        sunPosition = equToCart.apply(sun.equatorialPos());
+        positions.put(sun, sunPosition);
+
+        // Derives the projected position of the Moon on the plan
+        moonPosition = equToCart.apply(moon.equatorialPos());
+        positions.put(moon, moonPosition);
 
         // Derives the projected positions of the extraterrestrial planets of the solar system on the plan
         planetPositions = new double[2][7]; // Immutable table of coordinates
@@ -82,10 +81,10 @@ public final class ObservedSky {
 
         int planetIndex = 0;
         for (Planet planet : planets) {
-            CartesianCoordinates cartesianPos = equToCart.apply(planet.equatorialPos());
-            tempPlanets[0][planetIndex] = cartesianPos.x();
-            tempPlanets[1][planetIndex] = cartesianPos.y();
-            projectedPositions.put(planet, CartesianCoordinates.of(cartesianPos.x(), cartesianPos.y()));
+            CartesianCoordinates planetPos = equToCart.apply(planet.equatorialPos());
+            tempPlanets[0][planetIndex] = planetPos.x();
+            tempPlanets[1][planetIndex] = planetPos.y();
+            positions.put(planet, CartesianCoordinates.of(planetPos.x(), planetPos.y()));
             ++planetIndex;
         }
         planetPositions[0] = Arrays.copyOf(tempPlanets[0], 7); // Immutable table of x coordinates
@@ -98,10 +97,10 @@ public final class ObservedSky {
 
         int starIndex = 0;
         for (Star star : stars()) {
-            CartesianCoordinates cartesianPos = equToCart.apply(star.equatorialPos());
-            tempStars[0][starIndex] = cartesianPos.x();
-            tempStars[1][starIndex] = cartesianPos.y();
-            projectedPositions.put(star, CartesianCoordinates.of(cartesianPos.x(), cartesianPos.y()));
+            CartesianCoordinates starPos = equToCart.apply(star.equatorialPos());
+            tempStars[0][starIndex] = starPos.x();
+            tempStars[1][starIndex] = starPos.y();
+            positions.put(star, CartesianCoordinates.of(starPos.x(), starPos.y()));
             ++starIndex;
         }
         starPositions[0] = Arrays.copyOf(tempStars[0], nbStars); // Immutable table of x coordinates
@@ -138,7 +137,6 @@ public final class ObservedSky {
      */
     public CartesianCoordinates moonPosition() {
         return moonPosition;
-
     }
 
     /**
@@ -209,8 +207,8 @@ public final class ObservedSky {
         CelestialObject closestObject = sun;
 
         // Checks if one of the celestial objects is closer than the Sun to the given point
-        for (CelestialObject object : projectedPositions.keySet()) {
-            double distanceToObject = distanceBetween(projectedPositions.get(object), cartesianPos);
+        for (CelestialObject object : positions.keySet()) {
+            double distanceToObject = distanceBetween(positions.get(object), cartesianPos);
             if (distanceToObject < minDistance) {
                 minDistance = distanceToObject;
                 closestObject = object;
