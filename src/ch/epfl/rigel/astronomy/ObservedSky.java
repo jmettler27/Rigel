@@ -36,7 +36,7 @@ public final class ObservedSky {
      * @param catalogue
      *            The catalogue of the observed stars
      */
-    public ObservedSky(ZonedDateTime when, StereographicProjection projection, GeographicCoordinates where,
+    public ObservedSky(ZonedDateTime when, GeographicCoordinates where, StereographicProjection projection,
                        StarCatalogue catalogue) {
         this.catalogue = catalogue;
 
@@ -192,7 +192,7 @@ public final class ObservedSky {
      * @param tempPositions
      *            The array containing the abscissa and ordinate of the celestial objects on the plan
      * @param equToCart
-     *            The conversion from equatorial to Cartesian coordinates
+     *            The conversion from equatorial to Cartesian coordinates of one celestial object
      * @param allObjectsPositions
      *            The map which associated to each Celestial object its position on the plan
      */
@@ -219,12 +219,15 @@ public final class ObservedSky {
      * @return the closest celestial object to the given point
      */
     public Optional<CelestialObject> objectClosestTo(CartesianCoordinates searchPoint, double maxDistance) {
+
+        // The positions on the plan of the celestial objects of the sky who are close to the given search point
         Map<CelestialObject, CartesianCoordinates> closePositions = new HashMap<>();
 
-        // Iterates on all the celestial objects of the sky and adds only those which are contained in the square
-        // of side length equal to (2 * maxDistance) and of center cartesianPos
+        // Adds to the map only the celestial objects who are contained in a square centered in the given search point
+        // and whose sides are of length (2 * maxDistance)
         for (CelestialObject object : positions.keySet()) {
             CartesianCoordinates objectPos = positions.get(object);
+
             if (squareContains(objectPos, searchPoint, maxDistance)) {
                 closePositions.put(object, objectPos);
             }
@@ -233,9 +236,10 @@ public final class ObservedSky {
         double minDistance = Double.MAX_VALUE; // The distance between the closest object and the search point
         CelestialObject closestObject = null; // The closest object to the search point
 
-        // Linear search on the remaining celestial objects
+        // Determines which of the celestial objects on the map is closest to the given point
         for (CelestialObject object : closePositions.keySet()) {
             double distanceToObject = distanceBetween(closePositions.get(object), searchPoint);
+
             if (distanceToObject < minDistance) {
                 minDistance = distanceToObject;
                 closestObject = object;

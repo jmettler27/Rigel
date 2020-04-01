@@ -1,5 +1,6 @@
 package ch.epfl.rigel.gui;
 
+import javafx.scene.paint.Color;
 import org.junit.jupiter.api.Test;
 
 import java.io.*;
@@ -11,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class MyBlackBodyColorTest {
 
     private static final String COLOR_FILE_NAME = "/bbr_color.txt";
+    private static final Map<Integer, String> TEMPERATURE_COLOR_MAP = MyBlackBodyColorTest.temperatureColorMap();
 
     @Test
     void colorDatabaseIsCorrectlyInstalled() throws IOException {
@@ -20,7 +22,14 @@ class MyBlackBodyColorTest {
     }
 
     @Test
-    void readerWorks() {
+    void colorForTemperatureWorks() {
+        assertEquals(391, TEMPERATURE_COLOR_MAP.size());
+        assertEquals("#c8d9ff", TEMPERATURE_COLOR_MAP.get(10500));
+        assertEquals(Color.web("#ffcc99"), BlackBodyColor.colorForTemperature(3798));
+    }
+
+
+    private static Map<Integer, String> temperatureColorMap() {
         // Key : The color temperature (in degrees Kelvin)
         // Value : The color (in hexadecimal notation)
         Map<Integer, String> map = new HashMap<>();
@@ -29,10 +38,11 @@ class MyBlackBodyColorTest {
         try (BufferedReader reader =
                      new BufferedReader(
                              new InputStreamReader(
-                                     getClass().getResourceAsStream(COLOR_FILE_NAME)))) {
+                                     MyBlackBodyColorTest.class.getResourceAsStream(COLOR_FILE_NAME)))) {
 
             String line; // The current line of data (i.e. the characteristics of the color temperature)
             while ((line = reader.readLine()) != null) {
+
                 // Ignores the comment lines (beginning with the # character) and those containing the text "2deg"
                 if (line.charAt(0) != '#' && line.charAt(10) != ' ') {
 
@@ -41,18 +51,16 @@ class MyBlackBodyColorTest {
                     String temperatureString = (line.charAt(1) == ' ') ?
                             line.substring(2, 6) : // The temperature is between 1_000K and 9_000K
                             line.substring(1, 6);  // The temperature is between 10_000K and 40_000K
+
                     int temperature = Integer.parseInt(temperatureString); // The temperature (in degrees Kelvin)
-
-                    // The color (in hexadecimal notation)
-                    String colorString = line.substring(80, 87);
-
+                    String colorString = line.substring(80, 87); // The color (in hexadecimal notation)
                     map.put(temperature, colorString);
                 }
             }
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
-        assertEquals(391, map.size());
-        assertEquals("#c8d9ff", map.get(10500));
+        return Map.copyOf(map);
     }
+
 }

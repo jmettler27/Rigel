@@ -1,5 +1,6 @@
 package ch.epfl.rigel.gui;
 
+import ch.epfl.rigel.Preconditions;
 import javafx.scene.paint.Color;
 
 import java.io.*;
@@ -12,17 +13,22 @@ import java.util.Map;
 public abstract class BlackBodyColor {
 
     private static final String COLOR_FILE_NAME = "/bbr_color.txt";
+    private static final Map<Integer, String> TEMPERATURE_COLOR_MAP = temperatureColorMap();
 
     /**
-     * Returns the color of the black body given its color temperature (in degrees Kelvin).
+     * Constructs ecliptic coordinates (in radians) with the given longitude and latitude (in radians).
      *
      * @param temperature
      *            The color temperature (in degrees Kelvin)
+     * @throws IllegalArgumentException
+     *            if the closest multiple of 100 to the given temperature does not correspond to a temperature in the map
      * @return the color of the black body associated to the given color temperature
      */
     public static Color colorForTemperature(int temperature) {
-        Map<Integer, String> map = temperaturesWithColors();
-        return Color.web(map.get(temperature));
+        int closestTemperature = closestMultipleTo(temperature);
+        Preconditions.checkArgument(TEMPERATURE_COLOR_MAP.containsKey(closestTemperature));
+
+        return Color.web(TEMPERATURE_COLOR_MAP.get(closestTemperature));
     }
 
     /**
@@ -32,7 +38,7 @@ public abstract class BlackBodyColor {
      *
      * @return the map
      */
-    private static Map<Integer, String> temperaturesWithColors() {
+    private static Map<Integer, String> temperatureColorMap() {
         // Key : The color temperature (in degrees Kelvin)
         // Value : The color (in hexadecimal notation)
         Map<Integer, String> map = new HashMap<>();
@@ -64,5 +70,31 @@ public abstract class BlackBodyColor {
             throw new UncheckedIOException(e);
         }
         return Map.copyOf(map);
+    }
+
+    /**
+     * Additional method.
+     * Returns the closest multiple of 100 to the given number.
+     *
+     * @param number
+     *            The given number
+     * @throws IllegalArgumentException
+     *            if the given number is < 0
+     * @return the closest multiple of 100 to the given number
+     */
+    private static int closestMultipleTo(int number) {
+        Preconditions.checkArgument(number >= 0);
+
+        int closestMultiple = number;
+
+        if (number % 100 != 0) {
+            int temp = (number / 100) + 1;
+            closestMultiple = temp * 100;
+        }
+
+        if(closestMultiple - number > 50){
+            closestMultiple -= 100;
+        }
+        return closestMultiple;
     }
 }

@@ -36,10 +36,11 @@ public final class StarCatalogue {
         this.stars = List.copyOf(stars); // Immutable list of stars
 
         // Constructs the map by associating to each asterism (the key) its list of indices (the value)
-        asterismsWithIndices = new HashMap<>();
+        Map<Asterism, List<Integer>> map = new HashMap<>();
         for (Asterism a : asterisms) {
-            asterismsWithIndices.put(a, starsIndices(a));
+            map.put(a, indicesOf(a));
         }
+        asterismsWithIndices = Map.copyOf(map); // Immutable map
     }
 
     /**
@@ -49,15 +50,15 @@ public final class StarCatalogue {
      * given key, in the map).
      * Note : the given asterism is assumed to be contained in the catalogue since this method is used in the constructor.
      *
-     * @param a
+     * @param asterism
      *            The given asterism
      * @return the list of the indices of the stars composing the given asterism
      */
-    private List<Integer> starsIndices(Asterism a) {
+    private List<Integer> indicesOf(Asterism asterism) {
         List<Integer> indices = new ArrayList<>();
 
         // Adds the index of each star as indexed in the list of the stars of the catalogue
-        for (Star s : a.stars()) {
+        for (Star s : asterism.stars()) {
             indices.add(stars.indexOf(s));
         }
         return indices;
@@ -68,7 +69,7 @@ public final class StarCatalogue {
      * @return the list of the stars of the catalogue
      */
     public List<Star> stars() {
-        return List.copyOf(stars);
+        return stars;
     }
 
     /**
