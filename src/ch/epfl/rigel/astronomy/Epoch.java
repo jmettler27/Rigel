@@ -38,7 +38,10 @@ public enum Epoch {
      *            The associated time-zone
      */
     Epoch(int year, Month month, int dayOfMonth, int hour, int minute, ZoneOffset zoneOffset) {
-        zonedDateTime = ZonedDateTime.of(LocalDate.of(year, month, dayOfMonth), LocalTime.of(hour, minute), zoneOffset);
+        zonedDateTime = ZonedDateTime.of(
+                LocalDate.of(year, month, dayOfMonth),
+                LocalTime.of(hour, minute),
+                zoneOffset);
     }
 
     /**
@@ -51,7 +54,6 @@ public enum Epoch {
     public double daysUntil(ZonedDateTime when) {
         // The number of milliseconds between this epoch and the given epoch
         double nbMillis = zonedDateTime.until(when, ChronoUnit.MILLIS);
-
         return nbMillis / MILLIS_PER_DAY;
     }
 
@@ -65,7 +67,6 @@ public enum Epoch {
     public double julianCenturiesUntil(ZonedDateTime when) {
         // The number of days between this epoch and the given epoch
         double nbDays = daysUntil(when);
-
         return nbDays / DAYS_PER_JULIAN_CENTURY;
     }
 }

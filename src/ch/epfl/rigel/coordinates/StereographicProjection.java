@@ -98,10 +98,10 @@ public final class StereographicProjection implements Function<HorizontalCoordin
     }
 
     /**
-     * Returns the horizontal coordinates of the point whose projection is the given Cartesian coordinate point.
+     * Returns the horizontal coordinates of the point whose projection on the plan is the given Cartesian coordinate point.
      *
      * @param xy
-     *            The Cartesian coordinate point, i.e. the projection
+     *            The Cartesian coordinate point, i.e. the projection of the horizontal coordinates on the plan
      * @return the horizontal coordinates of the corresponding point, before projection
      */
     public HorizontalCoordinates inverseApply(CartesianCoordinates xy) {

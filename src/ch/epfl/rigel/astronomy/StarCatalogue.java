@@ -37,31 +37,10 @@ public final class StarCatalogue {
 
         // Constructs the map by associating to each asterism (the key) its list of indices (the value)
         Map<Asterism, List<Integer>> map = new HashMap<>();
-        for (Asterism a : asterisms) {
-            map.put(a, indicesOf(a));
+        for (Asterism ast : asterisms) {
+            map.put(ast, indicesOf(ast));
         }
         asterismsWithIndices = Map.copyOf(map); // Immutable map
-    }
-
-    /**
-     * Additional method.
-     *
-     * Constructs the list of the indices of the stars composing the given asterism (i.e. associates the value to the
-     * given key, in the map).
-     * Note : the given asterism is assumed to be contained in the catalogue since this method is used in the constructor.
-     *
-     * @param asterism
-     *            The given asterism
-     * @return the list of the indices of the stars composing the given asterism
-     */
-    private List<Integer> indicesOf(Asterism asterism) {
-        List<Integer> indices = new ArrayList<>();
-
-        // Adds the index of each star as indexed in the list of the stars of the catalogue
-        for (Star s : asterism.stars()) {
-            indices.add(stars.indexOf(s));
-        }
-        return indices;
     }
 
     /**
@@ -95,6 +74,27 @@ public final class StarCatalogue {
     }
 
     /**
+     * Additional method.
+     *
+     * Constructs the list of the indices of the stars composing the given asterism (i.e. associates the value to the
+     * given key, in the map).
+     * Note : the given asterism is assumed to be contained in the catalogue since this method is used in the constructor.
+     *
+     * @param asterism
+     *            The given asterism
+     * @return the list of the indices of the stars composing the given asterism
+     */
+    private List<Integer> indicesOf(Asterism asterism) {
+        List<Integer> indices = new ArrayList<>();
+
+        // Adds the index of each star as indexed in the list of the stars of the catalogue
+        for (Star s : asterism.stars()) {
+            indices.add(stars.indexOf(s));
+        }
+        return indices;
+    }
+
+    /**
      * A builder of a catalogue of stars and asterisms.
      *
      * @author Mathias Bouilloud (309979)
@@ -119,10 +119,12 @@ public final class StarCatalogue {
          *
          * @param star
          *            The star to be added to the catalogue
+         * @throws NullPointerException
+         *             if the star to be added is null
          * @return the builder of the catalogue under construction
          */
         public Builder addStar(Star star) {
-            stars.add(star);
+            stars.add(Objects.requireNonNull(star));
             return this;
         }
 
@@ -139,10 +141,12 @@ public final class StarCatalogue {
          *
          * @param asterism
          *            The asterism to be added to the catalogue
+         * @throws NullPointerException
+         *             if the asterism to be added is null
          * @return the builder of the catalogue under construction
          */
         public Builder addAsterism(Asterism asterism) {
-            asterisms.add(asterism);
+            asterisms.add(Objects.requireNonNull(asterism));
             return this;
         }
 
@@ -188,7 +192,7 @@ public final class StarCatalogue {
 
         /**
          * Loads the stars and/or asterisms from the given input stream and adds them to the catalogue
-         * under construction of the builder;
+         * under construction of the builder.
          *
          * @param inputStream
          *            The input stream

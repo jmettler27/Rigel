@@ -42,7 +42,6 @@ public final class Preconditions {
      */
     public static double checkInInterval(Interval interval, double value) {
         checkArgument(interval.contains(value));
-
         return value;
     }
 }

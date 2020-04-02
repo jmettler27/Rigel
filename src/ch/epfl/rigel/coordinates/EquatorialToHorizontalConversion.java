@@ -9,8 +9,7 @@ import java.util.function.Function;
 import static java.lang.Math.*;
 
 /**
- * A change of coordinate system from equatorial to horizontal coordinates, at a
- * given astronomical epoch and location.
+ * A change of coordinate system from equatorial to horizontal coordinates, at a given astronomical epoch and location.
  *
  * @author Mathias Bouilloud (309979)
  * @author Julien Mettler (309999)
@@ -23,8 +22,8 @@ public final class EquatorialToHorizontalConversion implements Function<Equatori
     private final double cosLat, sinLat; // The cosine and sine of the observer's latitude
 
     /**
-     * Constructs a change of coordinate system between equatorial and horizontal coordinates
-     * for the given date/time pair and location.
+     * Constructs a change of coordinate system between equatorial and horizontal coordinates for the given
+     * date/time pair and location.
      *
      * @param when
      *            The given date/time pair

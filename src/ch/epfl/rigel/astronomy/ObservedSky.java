@@ -22,7 +22,7 @@ public final class ObservedSky {
     // The projected positions on the plan of all of the celestial objects in the observed sky
     private final CartesianCoordinates sunPosition, moonPosition;
     private final double[][] planetPositions, starPositions;
-    private final Map<CelestialObject, CartesianCoordinates> positions; // Immutable map
+    private final Map<CelestialObject, CartesianCoordinates> positions;
 
     /**
      * Constructs a representation of the sky at a given epoch and place of observation.
@@ -183,33 +183,6 @@ public final class ObservedSky {
     }
 
     /**
-     * Additional method.
-     * Adds the Cartesian coordinates of the given list of celestial objects to the double entry array and to the map
-     * of projected positions, using the given conversion.
-     *
-     * @param list
-     *            The list of celestial objects
-     * @param tempPositions
-     *            The array containing the abscissa and ordinate of the celestial objects on the plan
-     * @param equToCart
-     *            The conversion from equatorial to Cartesian coordinates of one celestial object
-     * @param allObjectsPositions
-     *            The map which associated to each Celestial object its position on the plan
-     */
-    private void addPositions(List<? extends CelestialObject> list, double[][] tempPositions,
-                              EquatorialToCartesianConversion equToCart,
-                              Map<CelestialObject, CartesianCoordinates> allObjectsPositions) {
-        int objectIndex = 0;
-        for (CelestialObject object : list) {
-            CartesianCoordinates objectPos = equToCart.apply(object.equatorialPos());
-            tempPositions[0][objectIndex] = objectPos.x();
-            tempPositions[1][objectIndex] = objectPos.y();
-            allObjectsPositions.put(object, CartesianCoordinates.of(objectPos.x(), objectPos.y()));
-            ++objectIndex;
-        }
-    }
-
-    /**
      * Returns the closest celestial object to the given point on the plan, as long as it is within the maximum distance.
      *
      * @param searchPoint
@@ -237,17 +210,44 @@ public final class ObservedSky {
         CelestialObject closestObject = null; // The closest object to the search point
 
         // Determines which of the celestial objects on the map is closest to the given point
-        for (CelestialObject object : closePositions.keySet()) {
-            double distanceToObject = distanceBetween(closePositions.get(object), searchPoint);
+        for (CelestialObject closeObject : closePositions.keySet()) {
+            double distanceToObject = distanceBetween(closePositions.get(closeObject), searchPoint);
 
             if (distanceToObject < minDistance) {
                 minDistance = distanceToObject;
-                closestObject = object;
+                closestObject = closeObject;
             }
         }
-        // Returns a full cell when a celestial object closer than the maximum distance from the given point has been
-        // found, or an empty cell otherwise.
+        // Returns a full cell when a non null celestial object closer than the maximum distance from the given point
+        // has been found, or an empty cell otherwise.
         return (closestObject != null && minDistance < maxDistance) ? Optional.of(closestObject) : Optional.empty();
+    }
+
+    /**
+     * Additional method.
+     * Adds the Cartesian coordinates of the given list of celestial objects to the double entry array and to the map
+     * of projected positions, using the given conversion.
+     *
+     * @param list
+     *            The list of celestial objects
+     * @param tempPositions
+     *            The array containing the abscissa and ordinate of the celestial objects on the plan
+     * @param equToCart
+     *            The conversion from equatorial to Cartesian coordinates of one celestial object
+     * @param allObjectsPositions
+     *            The map which associated to each Celestial object its position on the plan
+     */
+    private void addPositions(List<? extends CelestialObject> list, double[][] tempPositions,
+                              EquatorialToCartesianConversion equToCart,
+                              Map<CelestialObject, CartesianCoordinates> allObjectsPositions) {
+        int objectIndex = 0;
+        for (CelestialObject object : list) {
+            CartesianCoordinates objectPos = equToCart.apply(object.equatorialPos());
+            tempPositions[0][objectIndex] = objectPos.x();
+            tempPositions[1][objectIndex] = objectPos.y();
+            allObjectsPositions.put(object, CartesianCoordinates.of(objectPos.x(), objectPos.y()));
+            ++objectIndex;
+        }
     }
 
     /**
@@ -281,6 +281,6 @@ public final class ObservedSky {
      */
     private double distanceBetween(CartesianCoordinates point1, CartesianCoordinates point2) {
         double x1 = point1.x(), x2 = point2.x(), y1 = point1.y(), y2 = point2.y();
-        return hypot((x1 - x2), (y1 - y2));
+        return hypot(x1 - x2, y1 - y2);
     }
 }

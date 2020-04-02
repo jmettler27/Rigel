@@ -15,7 +15,7 @@ public final class Star extends CelestialObject {
     private final int hipparcosId;
     private final float colorIndex;
 
-    // The valid closed interval [-0.5,5.5] (unitless) for the star's color index
+    // The valid closed interval [-0.5, 5.5] (unitless) for the star's color index
     private final static ClosedInterval COLOR_INDEX_INTERVAL = ClosedInterval.of(-0.5f, 5.5f);
 
     /**
@@ -33,7 +33,7 @@ public final class Star extends CelestialObject {
      *            The star's B-V color index
      * @throws IllegalArgumentException
      *             if the Hipparcos ID is < 0,
-     *             and/or the color index is not contained in [-0.5,5.5]
+     *             and/or the color index is not contained in [-0.5, 5.5]
      * @throws NullPointerException
      *             if the name and/or the equatorial position are null
      */
@@ -41,9 +41,8 @@ public final class Star extends CelestialObject {
         super(name, equatorialPos, 0, magnitude);
 
         Preconditions.checkArgument(hipparcosId >= 0);
-        this.hipparcosId = hipparcosId;
-
         this.colorIndex = (float) Preconditions.checkInInterval(COLOR_INDEX_INTERVAL, colorIndex);
+        this.hipparcosId = hipparcosId;
     }
 
     /**

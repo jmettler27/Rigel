@@ -35,7 +35,8 @@ public final class EclipticToEquatorialConversion implements Function<EclipticCo
         double coeff2 = -Angle.ofArcsec(46.815);
         double coeff3 = Angle.ofDMS(23, 26, 21.45);
 
-        // The obliquity of the ecliptic, i.e. the angle of inclination of the Earth's axis of rotation relative to the ecliptic.
+        // The obliquity of the ecliptic, i.e. the angle of inclination of the Earth's axis of rotation relative to the
+        // ecliptic.
         double obliquity = Polynomial.of(coeff0, coeff1, coeff2, coeff3).at(nbJulianCenturies);
 
         cosObliquity = cos(obliquity);

@@ -23,7 +23,8 @@ public final class EquatorialToCartesianConversion implements Function<Equatoria
      * @param where
      *            The given location
      */
-    public EquatorialToCartesianConversion(ZonedDateTime when, GeographicCoordinates where, StereographicProjection projection){
+    public EquatorialToCartesianConversion(ZonedDateTime when, GeographicCoordinates where,
+                                           StereographicProjection projection){
         equToHor = new EquatorialToHorizontalConversion(when, where); // Conversion from equatorial to horizontal coordinates
         this.projection = projection;
     }

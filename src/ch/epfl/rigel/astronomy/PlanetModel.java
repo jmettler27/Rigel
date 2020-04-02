@@ -5,7 +5,6 @@ import ch.epfl.rigel.coordinates.EclipticToEquatorialConversion;
 import ch.epfl.rigel.coordinates.EquatorialCoordinates;
 import ch.epfl.rigel.math.Angle;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.Math.*;
@@ -112,10 +111,10 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
         // The projection of the orbital radius on the ecliptic plane (in AU)
         double eclipticRadius = orbitalRadius * cos(helioEclipticLat);
 
-        double numeratorHelioEclipticLon = sin(helioLon - lonAscending) * cos(inclination);
-        double denominatorHelioEclipticLon = cos(helioLon - lonAscending);
+        double numeratorEclipticLon = sin(helioLon - lonAscending) * cos(inclination);
+        double denominatorEclipticLon = cos(helioLon - lonAscending);
         // The planet's heliocentric ecliptic longitude (in radians, in the interval [0, 2*PI[)
-        double helioEclipticLon = Angle.normalizePositive(atan2(numeratorHelioEclipticLon, denominatorHelioEclipticLon)
+        double helioEclipticLon = Angle.normalizePositive(atan2(numeratorEclipticLon, denominatorEclipticLon)
                 + lonAscending);
 
         // 3rd step : The position of the Earth is determined

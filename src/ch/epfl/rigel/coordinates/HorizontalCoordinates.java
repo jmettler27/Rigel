@@ -53,10 +53,10 @@ public final class HorizontalCoordinates extends SphericalCoordinates {
      * @return the horizontal coordinates (azimuth and altitude) in radians
      */
     public static HorizontalCoordinates ofDeg(double azDeg, double altDeg) {
-        double correctAzDeg = Preconditions.checkInInterval(AZ_INTERVAL_DEG, azDeg);
-        double correctAltDeg = Preconditions.checkInInterval(ALT_INTERVAL_DEG, altDeg);
+        double validAzDeg = Preconditions.checkInInterval(AZ_INTERVAL_DEG, azDeg);
+        double validAltDeg = Preconditions.checkInInterval(ALT_INTERVAL_DEG, altDeg);
 
-        return new HorizontalCoordinates(Angle.ofDeg(correctAzDeg), Angle.ofDeg(correctAltDeg));
+        return new HorizontalCoordinates(Angle.ofDeg(validAzDeg), Angle.ofDeg(validAltDeg));
     }
 
     /**
@@ -201,8 +201,8 @@ public final class HorizontalCoordinates extends SphericalCoordinates {
     /**
      * Additional method.
      *
-     * Returns a right open interval containing azimuth values (in degrees), of
-     * size 45.0 and centered in the given azimuth (center).
+     * Returns a right open interval containing azimuth values (in degrees), of size 45.0 and centered in
+     * the given azimuth (center).
      *
      * @param center
      *            The given center of the right open interval (in degrees)
