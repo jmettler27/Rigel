@@ -124,7 +124,7 @@ public final class StarCatalogue {
          * @return the builder of the catalogue under construction
          */
         public Builder addStar(Star star) {
-            stars.add(Objects.requireNonNull(star));
+            stars.add(star);
             return this;
         }
 
@@ -146,7 +146,7 @@ public final class StarCatalogue {
          * @return the builder of the catalogue under construction
          */
         public Builder addAsterism(Asterism asterism) {
-            asterisms.add(Objects.requireNonNull(asterism));
+            asterisms.add(asterism);
             return this;
         }
 

@@ -4,6 +4,7 @@ import ch.epfl.rigel.Preconditions;
 import javafx.scene.paint.Color;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -47,7 +48,7 @@ public abstract class BlackBodyColor {
         try (BufferedReader reader =
                      new BufferedReader(
                              new InputStreamReader(
-                                     BlackBodyColor.class.getResourceAsStream(COLOR_FILE_NAME)))) {
+                                     BlackBodyColor.class.getResourceAsStream(COLOR_FILE_NAME), StandardCharsets.US_ASCII))) {
 
             String line; // The current line of data (i.e. the characteristics of the color temperature)
             while ((line = reader.readLine()) != null) {

@@ -14,6 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class MyAsterismLoaderTest {
     static final String AST_CATALOGUE_NAME = "/asterisms.txt";
 
+
     @Test
     void asterismCatalogueIsCorrectlyInstalled() throws IOException {
         try (InputStream astStream = getClass().getResourceAsStream(AST_CATALOGUE_NAME)) {

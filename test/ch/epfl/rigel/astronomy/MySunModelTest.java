@@ -27,7 +27,7 @@ class MySunModelTest {
 
     @Test
     void atWorks1988() {
-        assertEquals(0.33532070245804535, SUN_1988.equatorialPos().dec());
+        assertEquals(0.33532070245804535, SUN_1988.equatorialPos().dec(), 1e-13);
     }
 
 
