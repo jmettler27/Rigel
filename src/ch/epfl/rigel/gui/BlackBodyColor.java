@@ -1,6 +1,7 @@
 package ch.epfl.rigel.gui;
 
 import ch.epfl.rigel.Preconditions;
+import ch.epfl.rigel.math.RightOpenInterval;
 import javafx.scene.paint.Color;
 
 import java.io.*;
@@ -85,16 +86,16 @@ public abstract class BlackBodyColor {
      */
     private static int closestMultipleTo(int number) {
         Preconditions.checkArgument(number >= 0);
+        int closestMultiple = number; // The closest multiple is the number itself if it is divisible by 100
 
-        int closestMultiple = number;
-
+        // The number is not divisible by 100
         if (number % 100 != 0) {
-            int temp = (number / 100) + 1;
-            closestMultiple = temp * 100;
-        }
+            int temp = number / 100;
+            int remain = number % 100;
 
-        if(closestMultiple - number > 50){
-            closestMultiple -= 100;
+            // Rounds the number to its closest lower or upper multiple of 100 according to its remainder in the
+            // division by 100 of this number.
+            closestMultiple = (0 < remain && remain < 50) ? (temp) * 100 : (temp + 1) * 100;
         }
         return closestMultiple;
     }
