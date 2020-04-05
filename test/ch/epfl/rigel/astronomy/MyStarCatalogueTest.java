@@ -20,17 +20,18 @@ class MyStarCatalogueTest {
     }
 
     @Test
-    void catalogueContainsACorrectNumberOfStarsAndAsterisms() throws IOException{
+    void catalogueContainsACorrectNumberOfStarsAndAsterisms() {
         assertEquals(5067, CATALOGUE.stars().size());
         assertEquals(153, CATALOGUE.asterisms().size());
     }
+
     @Test
     void stars() throws IOException {
 
     }
 
     @Test
-    void asterisms() throws IOException {
+    void asterisms(){
 
         // Checks if the number of indices of each asterism is equal to the number of stars composing it
         for (Asterism asterism : CATALOGUE.asterisms()) {
@@ -41,7 +42,7 @@ class MyStarCatalogueTest {
     }
 
     @Test
-    void asterismIndices() throws IOException {
+    void asterismIndices() {
     }
 
     private static StarCatalogue buildCatalogue() throws IOException {

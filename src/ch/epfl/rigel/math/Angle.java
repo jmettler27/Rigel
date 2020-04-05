@@ -10,12 +10,12 @@ import ch.epfl.rigel.Preconditions;
  */
 public final class Angle {
 
-    public final static double
+    public static final double
             TAU = 2 * Math.PI, // 2*PI
             RAD_PER_HOUR = TAU / 24.0, // Conversion from hours to radians
             HOUR_PER_RAD = 24.0 / TAU; // Conversion from radians to hours
 
-    private final static RightOpenInterval DMS_INTERVAL = RightOpenInterval.of(0, 60);
+    private static final RightOpenInterval DMS_INTERVAL = RightOpenInterval.of(0, 60);
 
     /**
      * Default constructor.

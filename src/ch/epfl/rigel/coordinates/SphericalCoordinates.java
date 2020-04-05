@@ -3,7 +3,7 @@ package ch.epfl.rigel.coordinates;
 import ch.epfl.rigel.math.Angle;
 
 /**
- * Spherical coordinates.
+ * Spherical coordinates system.
  * 
  * @author Mathias Bouilloud (309979)
  * @author Julien Mettler (309999)

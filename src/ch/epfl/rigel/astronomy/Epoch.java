@@ -18,7 +18,8 @@ public enum Epoch {
     private final ZonedDateTime zonedDateTime; // The date/time pair associated to its time-zone
 
     // The number of milliseconds per day and the number of days per Julian century
-    private static final double MILLIS_PER_DAY = 1000.0 * 3600 * 24.0, DAYS_PER_JULIAN_CENTURY = 36525.0;
+    private static final double MILLIS_PER_DAY = 1000.0 * 3600 * 24.0;
+    private static final double DAYS_PER_JULIAN_CENTURY = 36525.0;
 
 
     /**

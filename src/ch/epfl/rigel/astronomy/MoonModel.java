@@ -14,9 +14,10 @@ import static java.lang.Math.*;
  * @author Julien Mettler (309999)
  */
 public enum MoonModel implements CelestialObjectModel<Moon> {
+
     MOON();
 
-    private final static double
+    private static final double
             MEAN_LONGITUDE = Angle.ofDeg(91.929336), // The mean longitude (in radians)
             MEAN_LONGITUDE_PERIGEE = Angle.ofDeg(130.143076), // The mean longitude at the perigee (in radians)
             ASCENDING_NODE_LON = Angle.ofDeg(291.682547), // The longitude of the ascending node (in radians)
@@ -52,67 +53,67 @@ public enum MoonModel implements CelestialObjectModel<Moon> {
         double meanOrbitalLon = Angle.normalizePositive(ANGLE_ORBITAL_LONGITUDE * daysSinceJ2010 + MEAN_LONGITUDE);
 
         // The Moon's mean anomaly
-        double moonMeanAnomaly = Angle.normalizePositive(meanOrbitalLon - ANGLE_MOON_ANOMALY * daysSinceJ2010
+        double meanAnomaly = Angle.normalizePositive(meanOrbitalLon - ANGLE_MOON_ANOMALY * daysSinceJ2010
                 - MEAN_LONGITUDE_PERIGEE);
 
         // The evection
-        double evection = ANGLE_EVECTION * sin(2.0 * (meanOrbitalLon - sunLon) - moonMeanAnomaly);
+        double evection = ANGLE_EVECTION * sin(2.0 * (meanOrbitalLon - sunLon) - meanAnomaly);
 
         // The correction of the annual equation
-        double annualEquationCor = ANGLE_ANNUAL_EQUATION * sin(sunMeanAnomaly);
+        double correctionAnnualEqu = ANGLE_ANNUAL_EQUATION * sin(sunMeanAnomaly);
 
         // The 3rd correction
         double correction3 = ANGLE_CORRECTION_3 * sin(sunMeanAnomaly);
 
         // The Moon's corrected anomaly
-        double moonCorrectedAnomaly = moonMeanAnomaly + evection - annualEquationCor - correction3;
+        double correctedAnomaly = meanAnomaly + evection - correctionAnnualEqu - correction3;
 
         // The correction of the center equation
-        double centerEquationCor = ANGLE_CENTER_EQUATION * sin(moonCorrectedAnomaly);
+        double correctedCenterEqu = ANGLE_CENTER_EQUATION * sin(correctedAnomaly);
 
         // The 4th correction
-        double correction4 = ANGLE_CORRECTION_4 * sin(2.0 * moonCorrectedAnomaly);
+        double correction4 = ANGLE_CORRECTION_4 * sin(2.0 * correctedAnomaly);
 
         // The Moon's corrected orbital longitude
-        double moonOrbitalLon_Cor = meanOrbitalLon + evection + centerEquationCor - annualEquationCor + correction4;
+        double correctionOrbitalLon = meanOrbitalLon + evection + correctedCenterEqu - correctionAnnualEqu + correction4;
 
         // The variation
-        double variation = ANGLE_VARIATION * sin(2.0 * (moonOrbitalLon_Cor - sunLon));
+        double variation = ANGLE_VARIATION * sin(2.0 * (correctionOrbitalLon - sunLon));
 
         // The Moon's true orbital longitude
-        double moonOrbitalLon_True = moonOrbitalLon_Cor + variation;
+        double trueOrbitalLon = correctionOrbitalLon + variation;
 
 
         // Step 2 : Deriving the Moon's ecliptic position
 
         // The Moon's mean longitude of the ascending node
-        double moonMeanLon_ascend = Angle.normalizePositive(ASCENDING_NODE_LON - ANGLE_MEAN_LON * daysSinceJ2010);
+        double meanLonAscending = Angle.normalizePositive(ASCENDING_NODE_LON - ANGLE_MEAN_LON * daysSinceJ2010);
 
         // The Moon's corrected longitude of the ascending node
-        double moonLonAscend_Cor = moonMeanLon_ascend - ANGLE_CORRECTED_LON * sin(sunMeanAnomaly);
+        double correctionAscending = meanLonAscending - ANGLE_CORRECTED_LON * sin(sunMeanAnomaly);
 
         // Derivation of the Moon's ecliptic longitude
-        double numeratorLon = sin(moonOrbitalLon_True - moonLonAscend_Cor) * cos(ORBIT_INCLINATION);
-        double denominatorLon = cos(moonOrbitalLon_True - moonLonAscend_Cor);
+        double numeratorLon = sin(trueOrbitalLon - correctionAscending) * cos(ORBIT_INCLINATION);
+        double denominatorLon = cos(trueOrbitalLon - correctionAscending);
 
         // The Moon's ecliptic longitude (in radians)
-        double moonEclipticLon = Angle.normalizePositive(atan2(numeratorLon, denominatorLon) + moonLonAscend_Cor);
+        double moonEclipticLon = Angle.normalizePositive(atan2(numeratorLon, denominatorLon) + correctionAscending);
 
         // The Moon's ecliptic latitude (in radians)
-        double moonEclipticLat = asin(sin(moonOrbitalLon_True - moonLonAscend_Cor) * sin(ORBIT_INCLINATION));
+        double moonEclipticLat = asin(sin(trueOrbitalLon - correctionAscending) * sin(ORBIT_INCLINATION));
 
         // The Moon's ecliptic position (in radians)
-        EclipticCoordinates eclipticCoordinates = EclipticCoordinates.of(moonEclipticLon, moonEclipticLat);
+        EclipticCoordinates eclipticPos = EclipticCoordinates.of(moonEclipticLon, moonEclipticLat);
 
         // The Moon's equatorial position (in radians)
-        EquatorialCoordinates equatorialPos = eclipticToEquatorialConversion.apply(eclipticCoordinates);
+        EquatorialCoordinates equatorialPos = eclipticToEquatorialConversion.apply(eclipticPos);
 
         // The Moon's phase (unitless)
-        double phase = (1.0 - cos(moonOrbitalLon_True - sunLon)) / 2.0;
+        double phase = (1.0 - cos(trueOrbitalLon - sunLon)) / 2.0;
 
         // Derivation of the distance between the Earth and the Moon
         double numeratorDistance = 1.0 - ECCENTRICITY * ECCENTRICITY;
-        double denominatorDistance = 1.0 + ECCENTRICITY * cos(moonCorrectedAnomaly + centerEquationCor);
+        double denominatorDistance = 1.0 + ECCENTRICITY * cos(correctedAnomaly + correctedCenterEqu);
         double earthMoonDistance = numeratorDistance / denominatorDistance; // The distance between the Earth and the Moon
 
         // The Moon's angular size (in radians)

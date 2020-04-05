@@ -3,7 +3,7 @@ package ch.epfl.rigel.coordinates;
 import java.util.Locale;
 
 /**
- * Cartesian coordinates.
+ * Cartesian coordinates system.
  *
  * @author Mathias Bouilloud (309979)
  * @author Julien Mettler (309999)

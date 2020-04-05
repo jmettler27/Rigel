@@ -59,10 +59,12 @@ public final class SiderealTime {
         double nbMillis_hr = nbMillis / MILLIS_PER_HOUR;
 
         // S0 and S1 (in hours)
-        double S0 = POLYNOMIAL_S0.at(nbJulianCenturies), S1 = POLYNOMIAL_S1.at(nbMillis_hr);
+        double S0 = POLYNOMIAL_S0.at(nbJulianCenturies);
+        double S1 = POLYNOMIAL_S1.at(nbMillis_hr);
 
         // S0 and S1 (in hours) normalized to [0, 24h[
-        double normalized_S0 = DAY_NORMALIZATION.reduce(S0), normalized_S1 = DAY_NORMALIZATION.reduce(S1);
+        double normalized_S0 = DAY_NORMALIZATION.reduce(S0);
+        double normalized_S1 = DAY_NORMALIZATION.reduce(S1);
 
         // The Greenwich sidereal time (in hours) normalized to [0, 24h[
         double siderealGreenwich_hr = DAY_NORMALIZATION.reduce(normalized_S0 + normalized_S1);

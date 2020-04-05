@@ -41,6 +41,8 @@ class MyBlackBodyColorTest {
         assertEquals(29500, closestMultipleTo(29549));
         assertEquals(29600, closestMultipleTo(29550));
         assertEquals(10000, closestMultipleTo(9950));
+        assertEquals(9900, closestMultipleTo(9949));
+
     }
 
     private static int closestMultipleTo(int number) {

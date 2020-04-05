@@ -13,6 +13,7 @@ import static java.lang.Math.*;
  * @author Julien Mettler (309999)
  */
 public enum SunModel implements CelestialObjectModel<Sun> {
+
     SUN();
 
     // Solar constants, used to derive the position of the Sun at a given epoch

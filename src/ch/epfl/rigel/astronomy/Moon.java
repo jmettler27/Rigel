@@ -18,7 +18,7 @@ public final class Moon extends CelestialObject {
     private final float phase;
 
     // The valid closed interval [0,1] for the phase
-    private final static ClosedInterval PHASE_INTERVAL = ClosedInterval.of(0,1);
+    private static final ClosedInterval PHASE_INTERVAL = ClosedInterval.of(0,1);
 
     /**
      * Constructs the Moon at a point in time with the given equatorial position, angular size, magnitude and phase.

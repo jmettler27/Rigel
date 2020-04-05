@@ -49,7 +49,8 @@ public abstract class BlackBodyColor {
         try (BufferedReader reader =
                      new BufferedReader(
                              new InputStreamReader(
-                                     BlackBodyColor.class.getResourceAsStream(COLOR_FILE_NAME), StandardCharsets.US_ASCII))) {
+                                     BlackBodyColor.class.getResourceAsStream(COLOR_FILE_NAME),
+                                     StandardCharsets.US_ASCII))) {
 
             String line; // The current line of data (i.e. the characteristics of the color temperature)
             while ((line = reader.readLine()) != null) {
@@ -94,7 +95,7 @@ public abstract class BlackBodyColor {
             int remain = number % 100;
 
             // Rounds the number to its closest lower or upper multiple of 100 according to its remainder in the
-            // division by 100 of this number.
+            // euclidean division by 100.
             closestMultiple = (0 < remain && remain < 50) ? (temp) * 100 : (temp + 1) * 100;
         }
         return closestMultiple;

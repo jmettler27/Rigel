@@ -16,7 +16,7 @@ public final class Star extends CelestialObject {
     private final float colorIndex;
 
     // The valid closed interval [-0.5, 5.5] (unitless) for the star's color index
-    private final static ClosedInterval COLOR_INDEX_INTERVAL = ClosedInterval.of(-0.5f, 5.5f);
+    private static final ClosedInterval COLOR_INDEX_INTERVAL = ClosedInterval.of(-0.5f, 5.5f);
 
     /**
      * Constructs a star with the given name, equatorial position, angular size and magnitude.

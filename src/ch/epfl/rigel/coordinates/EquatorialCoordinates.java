@@ -8,7 +8,7 @@ import ch.epfl.rigel.math.ClosedInterval;
 import ch.epfl.rigel.math.RightOpenInterval;
 
 /**
- * Equatorial coordinates.
+ * Equatorial coordinates system.
  *
  * @author Mathias Bouilloud (309979)
  * @author Julien Mettler (309999)
@@ -16,10 +16,10 @@ import ch.epfl.rigel.math.RightOpenInterval;
 public final class EquatorialCoordinates extends SphericalCoordinates {
 
     // The valid right open interval [0, 2*PI[ (in radians) for the right ascension
-    private final static RightOpenInterval RA_INTERVAL_RAD = RightOpenInterval.of(0, Angle.TAU);
+    private static final RightOpenInterval RA_INTERVAL_RAD = RightOpenInterval.of(0, Angle.TAU);
 
     // The valid closed interval [-PI/2, PI/2] (in radians) for the declination
-    private final static ClosedInterval DEC_INTERVAL_RAD = ClosedInterval.of(Angle.ofDeg(-90), Angle.ofDeg(90));
+    private static final ClosedInterval DEC_INTERVAL_RAD = ClosedInterval.of(Angle.ofDeg(-90), Angle.ofDeg(90));
 
     /**
      * Constructs equatorial coordinates (in radians) with the given right ascension and declination (in radians).

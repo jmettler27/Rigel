@@ -51,13 +51,13 @@ public final class ObservedSky {
         moon = MoonModel.MOON.at(daysSinceJ2010, eclToEqu);
 
         // The models of the extraterrestrial planets of the solar system
-        List<PlanetModel> models = new ArrayList<>();
-        models.addAll(PlanetModel.INNER_PLANETS);
-        models.addAll(PlanetModel.OUTER_PLANETS);
+        List<PlanetModel> planetModels = new ArrayList<>();
+        planetModels.addAll(PlanetModel.INNER_PLANETS);
+        planetModels.addAll(PlanetModel.OUTER_PLANETS);
 
         // The extraterrestrial planets of the solar system as observed at the given epoch and place of observation
         List<Planet> planetsList = new ArrayList<>();
-        for (PlanetModel model : models) {
+        for (PlanetModel model : planetModels) {
             planetsList.add(model.at(daysSinceJ2010, eclToEqu));
         }
         planets = List.copyOf(planetsList);
@@ -76,23 +76,17 @@ public final class ObservedSky {
         moonPosition = equToCart.apply(moon.equatorialPos());
         allObjectsPositions.put(moon, moonPosition);
 
-        // Derives the projected positions of the extraterrestrial planets of the solar system on the plan and puts them
-        // in the map
-        planetPositions = new double[2][7]; // Immutable table of coordinates
-        double[][] tempPlanets = new double[2][7]; // Mutable table of coordinates
-
-        addPositions(planets, tempPlanets, equToCart, allObjectsPositions);
-        planetPositions[0] = Arrays.copyOf(tempPlanets[0], 7); // Immutable table of x coordinates
-        planetPositions[1] = Arrays.copyOf(tempPlanets[1], 7); // Immutable table of y coordinates
+        // Derives the projected positions of the planets of the solar system on the plan and puts them in the map
+        planetPositions = new double[2][7]; // Immutable array of coordinates
+        double[][] tempPlanets = multiplePositions(planets, equToCart, allObjectsPositions);
+        System.arraycopy(tempPlanets[0], 0, planetPositions[0], 0,  planets.size());
+        System.arraycopy(tempPlanets[1], 0, planetPositions[1], 0,  planets.size());
 
         // Derives the projected positions of the stars of the catalogue on the plan and puts them in the map
-        int nbStars = stars().size(); // The number of stars in the catalogue
-        starPositions = new double[2][nbStars]; // Immutable table of coordinates
-        double[][] tempStars = new double[2][nbStars]; // Mutable table of coordinates
-
-        addPositions(stars(), tempStars, equToCart, allObjectsPositions);
-        starPositions[0] = Arrays.copyOf(tempStars[0], nbStars); // Immutable table of x coordinates
-        starPositions[1] = Arrays.copyOf(tempStars[1], nbStars); // Immutable table of y coordinates
+        starPositions = new double[2][stars().size()]; // Immutable array of coordinates
+        double[][] tempStars = multiplePositions(stars(), equToCart, allObjectsPositions);
+        System.arraycopy(tempStars[0], 0, starPositions[0], 0,  stars().size());
+        System.arraycopy(tempStars[1], 0, starPositions[1], 0,  stars().size());
 
         positions = Map.copyOf(allObjectsPositions);  // Immutable map
     }
@@ -186,7 +180,7 @@ public final class ObservedSky {
      * Returns the closest celestial object to the given point on the plan, as long as it is within the maximum distance.
      *
      * @param searchPoint
-     *            The given search point on the plan (in Cartesian coordinates)
+     *            The given search point on the plan (in Cartesian coordinates), i.e. the position of the mouse pointer
      * @param maxDistance
      *            The maximum search distance
      * @return the closest celestial object to the given point
@@ -225,29 +219,32 @@ public final class ObservedSky {
 
     /**
      * Additional method.
-     * Adds the Cartesian coordinates of the given list of celestial objects to the double entry array and to the map
-     * of projected positions, using the given conversion.
+     * Adds the Cartesian coordinates of the given list of celestial objects to the map of projected positions, using
+     * the given conversion.
      *
      * @param list
      *            The list of celestial objects
-     * @param tempPositions
-     *            The array containing the abscissa and ordinate of the celestial objects on the plan
      * @param equToCart
      *            The conversion from equatorial to Cartesian coordinates of one celestial object
      * @param allObjectsPositions
      *            The map which associated to each Celestial object its position on the plan
      */
-    private void addPositions(List<? extends CelestialObject> list, double[][] tempPositions,
-                              EquatorialToCartesianConversion equToCart,
-                              Map<CelestialObject, CartesianCoordinates> allObjectsPositions) {
-        int objectIndex = 0;
+    private double[][] multiplePositions(List<? extends CelestialObject> list, EquatorialToCartesianConversion equToCart,
+                                         Map<CelestialObject, CartesianCoordinates> allObjectsPositions) {
+        double[][] tempPositions = new double[2][list.size()];
+        int index = 0;
+
         for (CelestialObject object : list) {
-            CartesianCoordinates objectPos = equToCart.apply(object.equatorialPos());
-            tempPositions[0][objectIndex] = objectPos.x();
-            tempPositions[1][objectIndex] = objectPos.y();
-            allObjectsPositions.put(object, CartesianCoordinates.of(objectPos.x(), objectPos.y()));
-            ++objectIndex;
+            CartesianCoordinates cartesianPos = equToCart.apply(object.equatorialPos());
+            tempPositions[0][index] = cartesianPos.x();
+            tempPositions[1][index] = cartesianPos.y();
+
+            // Maps the object to its Cartesian position
+            allObjectsPositions.put(object, CartesianCoordinates.of(cartesianPos.x(), cartesianPos.y()));
+
+            ++index;
         }
+        return tempPositions;
     }
 
     /**

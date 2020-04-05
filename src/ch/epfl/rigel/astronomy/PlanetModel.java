@@ -16,6 +16,7 @@ import static java.lang.Math.*;
  * @author Julien Mettler (309999)
  */
 public enum PlanetModel implements CelestialObjectModel<Planet> {
+
     MERCURY("Mercure", 0.24085, 75.5671, 77.612, 0.205627,0.387098, 7.0051,48.449, 6.74, -0.42),
 
     VENUS("Vénus", 0.615207, 272.30044, 131.54, 0.006812,0.723329, 3.3947,76.769, 16.92, -4.40),
@@ -38,16 +39,16 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
             angularSize1AU, magnitude1AU;
 
     // The average angular velocity of the Earth's rotation around the Sun
-    private final static double ANGULAR_VELOCITY = Angle.TAU / 365.242191;
+    private static final double ANGULAR_VELOCITY = Angle.TAU / 365.242191;
 
     // The eight planets of the solar system, following elliptical orbits around the Sun
-    public final static List<PlanetModel> ALL = List.copyOf(List.of(values()));
+    public static final List<PlanetModel> ALL = List.copyOf(List.of(values()));
 
     // The planets that orbit closer to the Sun than the Earth (i.e. Mercury and Venus)
-    public final static List<PlanetModel> INNER_PLANETS = List.copyOf(ALL.subList(MERCURY.ordinal(), EARTH.ordinal()));
+    public static final List<PlanetModel> INNER_PLANETS = List.copyOf(ALL.subList(MERCURY.ordinal(), EARTH.ordinal()));
 
     // The planets that orbit closer to the Sun than the Earth (i.e. Mars, Jupiter, Saturn, Uranus, Neptune)
-    public final static List<PlanetModel> OUTER_PLANETS = List.copyOf(ALL.subList(MARS.ordinal(), NEPTUNE.ordinal() + 1));
+    public static final List<PlanetModel> OUTER_PLANETS = List.copyOf(ALL.subList(MARS.ordinal(), NEPTUNE.ordinal() + 1));
 
     /**
      * Constructs the model of a planet through planetary constants.
@@ -133,12 +134,12 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
 
         // The planet's geocentric ecliptic coordinates
         // Note : We assume that the method at will never be applied to the Earth
-        EclipticCoordinates eclipticCoordinates = INNER_PLANETS.contains(this) ?
+        EclipticCoordinates eclipticPos = INNER_PLANETS.contains(this) ?
                 innerPlanetsCoords(earthOrbitalRadius, earthHelioLon, eclipticRadius, helioEclipticLon, helioEclipticLat) :
                 outerPlanetsCoords(earthOrbitalRadius, earthHelioLon, eclipticRadius, helioEclipticLon, helioEclipticLat);
 
         // The planet's equatorial coordinates
-        EquatorialCoordinates equatorialCoordinates = eclipticToEquatorialConversion.apply(eclipticCoordinates);
+        EquatorialCoordinates equatorialPos = eclipticToEquatorialConversion.apply(eclipticPos);
 
         double tempDistance = 2.0 * earthOrbitalRadius * orbitalRadius * cos(helioLon - earthHelioLon) * cos(helioEclipticLat);
 
@@ -150,12 +151,12 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
 
         // The planet's phase, i.e. the illuminated percentage of the planet's "disc" illuminated by the Sun,
         // as seen from the Earth
-        double phase = (1.0 + cos(eclipticCoordinates.lon() - helioLon)) / 2.0;
+        double phase = (1.0 + cos(eclipticPos.lon() - helioLon)) / 2.0;
 
         // The planet's magnitude (unitless)
         double magnitude = magnitude1AU + 5.0 * log10((orbitalRadius * earthPlanetDistance) / sqrt(phase));
 
-        return new Planet(frenchName, equatorialCoordinates, (float) angularSize, (float) magnitude);
+        return new Planet(frenchName, equatorialPos, (float) angularSize, (float) magnitude);
     }
 
     /**
@@ -167,10 +168,10 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
      * @return the planet's true anomaly (in radians)
      */
     private double trueAnomaly(double daysSinceJ2010) {
-        double planetTemp = ANGULAR_VELOCITY * (daysSinceJ2010 / tropicalYear);
+        double temp = ANGULAR_VELOCITY * (daysSinceJ2010 / tropicalYear);
 
         // The planet's mean anomaly (in radians)
-        double meanAnomaly = planetTemp + lonJ2010 - lonPerigee;
+        double meanAnomaly = temp + lonJ2010 - lonPerigee;
 
         // The planet's true anomaly (in radians)
         return meanAnomaly + 2.0 * eccentricity * sin(meanAnomaly);

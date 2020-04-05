@@ -8,7 +8,7 @@ import ch.epfl.rigel.math.ClosedInterval;
 import ch.epfl.rigel.math.RightOpenInterval;
 
 /**
- * Geographic coordinates.
+ * Geographic coordinates system.
  *
  * @author Mathias Bouilloud (309979)
  * @author Julien Mettler (309999)
@@ -16,10 +16,10 @@ import ch.epfl.rigel.math.RightOpenInterval;
 public final class GeographicCoordinates extends SphericalCoordinates {
 
     // The valid right open interval [-180°, 180°[ (in degrees) for the longitude
-    private final static RightOpenInterval LON_INTERVAL_DEG = RightOpenInterval.of(-180, 180);
+    private static final RightOpenInterval LON_INTERVAL_DEG = RightOpenInterval.of(-180, 180);
 
     // The valid closed interval [-90°, 90°] (in degrees) for the latitude
-    private final static ClosedInterval LAT_INTERVAL_DEG = ClosedInterval.of(-90, 90);
+    private static final ClosedInterval LAT_INTERVAL_DEG = ClosedInterval.of(-90, 90);
 
     /**
      * Constructs geographic coordinates (in radians) with the given longitude and latitude (in radians).

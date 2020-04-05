@@ -8,7 +8,7 @@ import ch.epfl.rigel.math.ClosedInterval;
 import ch.epfl.rigel.math.RightOpenInterval;
 
 /**
- * Ecliptic coordinates.
+ * Ecliptic coordinates system.
  * 
  * @author Mathias Bouilloud (309979)
  * @author Julien Mettler (309999)
@@ -16,10 +16,10 @@ import ch.epfl.rigel.math.RightOpenInterval;
 public final class EclipticCoordinates extends SphericalCoordinates {
 
     // The valid right open interval [0, 2*PI[ (in radians) for the ecliptic longitude
-    private final static RightOpenInterval LON_INTERVAL_RAD = RightOpenInterval.of(0, Angle.TAU);
+    private static final RightOpenInterval LON_INTERVAL_RAD = RightOpenInterval.of(0, Angle.TAU);
 
     // The valid closed interval [-PI/2, PI/2] (in radians) for the ecliptic latitude
-    private final static ClosedInterval LAT_INTERVAL_RAD = ClosedInterval.of(Angle.ofDeg(-90), Angle.ofDeg(90));
+    private static final ClosedInterval LAT_INTERVAL_RAD = ClosedInterval.of(Angle.ofDeg(-90), Angle.ofDeg(90));
 
     /**
      * Constructs ecliptic coordinates (in radians) with the given longitude and latitude (in radians).

@@ -43,26 +43,7 @@ class MySunModelTest {
         // Actual dec          : 19◦ 21' 10.38143150466' = 19.352 8837309735 2°
         //                                                 19.352 8837309735 63
         assertEquals(Angle.ofDMS(19, 21, 10), SUN_2003.equatorialPos().dec(), Angle.ofDMS(0, 0, 1 / 2d));
-        //assertEquals(19.35288373097352, SUN_2003.equatorialPos().decDeg());
-
-        System.out.println("Right ascension:");
-        System.out.println(SUN_2003.equatorialPos().raDeg() + " degrees");
-        System.out.println(SUN_2003.equatorialPos().ra() + " radians");
-        // 125.89024212446 708 degrees
-        // 125.89024212446 688	degrees (other)
-
-        // 2.1971992212048 117 radians
-        // 2.1971992212048 08 radians (other)
-
-        System.out.println();
-        System.out.println("Declination:");
-        System.out.println(SUN_2003.equatorialPos().decDeg() + " degrees");
-        System.out.println(SUN_2003.equatorialPos().dec() + " radians");
-
-        // 19.3528837309735 2 degrees
-        // 19.3528837309735 63 degrees (other)
-        // 0.33777154086113 24 radians
-        // 0.33777154086113 32 radians (other)
+        assertEquals(19.35288373097352, SUN_2003.equatorialPos().decDeg());
     }
 
 

@@ -15,9 +15,10 @@ import java.nio.charset.StandardCharsets;
  * @author Julien Mettler (309999)
  */
 public enum HygDatabaseLoader implements StarCatalogue.Loader {
+
     INSTANCE();
 
-    private final static int
+    private static final int
             HIP = 2, // Index of the star's Hipparcos identification number
             PROPER = 7, // Index of the star's proper name
             MAG = 14, // Index of the star's magnitude
