@@ -20,18 +20,20 @@ import java.util.List;
 public final class SkyCanvasPainter {
 
     private final Canvas canvas;
+    private final GraphicsContext ctx;
+
     private static final double DIAMETER = 2.0 * Math.tan(Angle.ofDeg(0.5) / 4.0);
     private static final ClosedInterval MAGNITUDE_INTERVAL = ClosedInterval.of(-2, 5);
 
+
     public SkyCanvasPainter(Canvas canvas) {
         this.canvas = canvas;
+        this.ctx = canvas.getGraphicsContext2D();
     }
 
     public void clear() {
-        //canvas.getGraphicsContext2D().clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         canvas.getGraphicsContext2D().setFill(Color.BLACK);
         canvas.getGraphicsContext2D().fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
-
     }
 
     public void drawStars(ObservedSky sky, StereographicProjection projection, Transform transform) {
@@ -40,8 +42,6 @@ public final class SkyCanvasPainter {
         double[][] starPositions = sky.starPositions();
 
         List<Double> list = new ArrayList<>();
-
-        GraphicsContext ctx = canvas.getGraphicsContext2D();
 
         double[] points = new double[2 * stars.size()];
         for (int i = 0; i < stars.size(); i++) {
@@ -61,7 +61,7 @@ public final class SkyCanvasPainter {
         double[] size = new double[stars.size()];
         int index = 0;
         for (Star star : stars) {
-            size[index] = diameterForMagnitude(star);
+            size[index] = PlaneToCanvas.applyToDistance(diameterForMagnitude(star), transform);
 
             CartesianCoordinates cartesianPos = CartesianCoordinates.of(
                     transformedPoints[index * 2], transformedPoints[index * 2 + 1]);
@@ -80,8 +80,6 @@ public final class SkyCanvasPainter {
         double[][] planetPositions = sky.planetPositions();
 
         List<Double> list = new ArrayList<>();
-
-        GraphicsContext ctx = canvas.getGraphicsContext2D();
 
         double[] points = new double[2 * planets.size()];
         for (int i = 0; i < planets.size(); i++) {
@@ -103,7 +101,7 @@ public final class SkyCanvasPainter {
         double[] size = new double[planets.size()];
         int index = 0;
         for (Planet planet : planets) {
-            size[index] = diameterForMagnitude(planet);
+            size[index] = PlaneToCanvas.applyToDistance(diameterForMagnitude(planet), transform);
 
             CartesianCoordinates cartesianPos = CartesianCoordinates.of(
                     transformedPoints[index * 2], transformedPoints[index * 2 + 1]);
@@ -143,25 +141,23 @@ public final class SkyCanvasPainter {
         double screenDiameter = PlaneToCanvas.applyToDistance(diameter, planeToCanvas);
         CartesianCoordinates coordinates = PlaneToCanvas.applyToPoint(moonPosition, planeToCanvas);
 
-        GraphicsContext ctx = canvas.getGraphicsContext2D();
         ctx.setFill(Color.WHITE);
         drawCircle(ctx, screenDiameter, coordinates);
     }
 
     public void drawHorizon(ObservedSky sky, StereographicProjection projection, Transform transform) {
-        HorizontalCoordinates hor = HorizontalCoordinates.of(0,0);
-        CartesianCoordinates centerForParallel = projection.circleCenterForParallel(hor);
-        double radiusForParallel = projection.circleRadiusForParallel(hor);
+        HorizontalCoordinates hor = HorizontalCoordinates.ofDeg(45,0);
+        CartesianCoordinates center = PlaneToCanvas.applyToPoint(projection.circleCenterForParallel(hor), transform);
+        double radius = PlaneToCanvas.applyToDistance(projection.circleRadiusForParallel(hor), transform);
 
-        GraphicsContext ctx = canvas.getGraphicsContext2D();
-        ctx.setLineWidth(2); // Trait de largeur 2
+        ctx.setLineWidth(100); // Trait de largeur 2
 
         ctx.setFill(Color.RED);
-        ctx.strokeOval(centerForParallel.x() - radiusForParallel, centerForParallel.y() - radiusForParallel,
-                radiusForParallel, radiusForParallel);
+        ctx.fillOval(center.x() - radius, center.y() - radius,
+                radius, radius);
 
-        System.out.println(centerForParallel);
-        System.out.println(radiusForParallel);
+        System.out.println(center);
+        System.out.println(radius);
         //drawCircle(ctx, radiusForParallel * 2.0, centerForParallel);
 
 

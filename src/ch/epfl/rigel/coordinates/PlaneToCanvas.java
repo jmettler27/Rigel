@@ -16,7 +16,9 @@ public final class PlaneToCanvas {
 
     public static double applyToDistance(double x, Transform transform) {
         Transform dilatation = Transform.scale(transform.getMxx(), transform.getMyy());
-        Point2D point2D = dilatation.deltaTransform(x, 0);
+        Transform translation = Transform.translate(transform.getTx(), transform.getTy());
+        Transform concatenation = translation.createConcatenation(dilatation);
+        Point2D point2D = concatenation.deltaTransform(x, 0);
 
         return Math.abs(point2D.getX());
     }
