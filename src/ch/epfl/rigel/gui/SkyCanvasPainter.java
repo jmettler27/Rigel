@@ -29,7 +29,7 @@ public final class SkyCanvasPainter {
     public void clear() {
         canvas.getGraphicsContext2D().clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         canvas.getGraphicsContext2D().setFill(Color.BLACK);
-        canvas.getGraphicsContext2D().fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+        //canvas.getGraphicsContext2D().fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
 
     }
 
@@ -53,7 +53,9 @@ public final class SkyCanvasPainter {
         }
 
         double[] transformedPoints = new double[2 * stars.size()];
-        transform.transform2DPoints(points, 0, transformedPoints, 0, stars.size());
+        Transform concatenation = Transform.translate(transform.getTx(), transform.getTy()).createConcatenation(
+                Transform.scale(transform.getMxx(), transform.getMyy()));
+        concatenation.transform2DPoints(points, 0, transformedPoints, 0, stars.size());
 
         double[] size = new double[stars.size()];
         int index = 0;
@@ -150,7 +152,7 @@ public final class SkyCanvasPainter {
                 diameter / 2.0, diameter / 2.0);
     }
 
-    private static double diameterForMagnitude(CelestialObject object) {
+    public static double diameterForMagnitude(CelestialObject object) {
         double clippedMagnitude = MAGNITUDE_INTERVAL.clip(object.magnitude());
         double sizeFactor = (99.0 - 17.0 * clippedMagnitude) / 140.0;
         return sizeFactor * DIAMETER;
