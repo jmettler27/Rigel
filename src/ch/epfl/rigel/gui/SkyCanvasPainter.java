@@ -13,7 +13,6 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Transform;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -186,7 +185,7 @@ public final class SkyCanvasPainter {
         ctx.setFill(Color.RED);
         ctx.fillOval(center.x() - radius, center.y() - radius, radius, radius);
 
-        //drawCircle(ctx, radiusForParallel * 2.0, centerForParallel);
+        drawCircle( center, radius * 2.0);
     }
 
     /**

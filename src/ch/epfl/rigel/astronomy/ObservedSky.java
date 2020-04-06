@@ -82,13 +82,13 @@ public final class ObservedSky {
         // Derives the projected positions of the planets of the solar system on the plan and puts them in the map
         planetPositions = new double[14]; // Immutable array of coordinates
         double[] tempPlanets = multiplePositions(planets, equToCart, allObjectsPositions);
-        System.arraycopy(tempPlanets, 0, planetPositions,0,  2* planets.size());
+        System.arraycopy(tempPlanets, 0, planetPositions,0,  2 * planets.size());
 
 
         // Derives the projected positions of the stars of the catalogue on the plan and puts them in the map
         starPositions = new double[2*stars().size()]; // Immutable array of coordinates
         double[] tempStars = multiplePositions(stars(), equToCart, allObjectsPositions);
-        System.arraycopy(tempStars, 0, starPositions, 0,  2*stars().size());
+        System.arraycopy(tempStars, 0, starPositions, 0,  2 * stars().size());
 
         positions = Map.copyOf(allObjectsPositions);  // Immutable map
     }

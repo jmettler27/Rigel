@@ -45,7 +45,7 @@ public final class PlanToCanvas {
         Transform concatenation = concatenation(transform);
         Point2D canvasVector = concatenation.deltaTransform(x, 0);
 
-        return Math.abs(canvasVector.getX()); // The magnitude of the vector
+        return 2.0 * Math.abs(canvasVector.getX()); // The magnitude of the vector
     }
 
     /**
