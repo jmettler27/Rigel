@@ -12,13 +12,15 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 
 public class EpflLogo extends Application {
-    public static void main(String[] args) { launch(args); }
+    public static void main(String[] args) {
+        launch(args);
+    }
 
     @Override
     public void start(Stage primaryStage) {
         Canvas canvas = new Canvas(800, 300);
         GraphicsContext ctx = canvas.getGraphicsContext2D();
-git 
+
         // Fond blanc
         ctx.setFill(Color.WHITE);
         ctx.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
