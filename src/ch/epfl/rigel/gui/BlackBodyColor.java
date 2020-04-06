@@ -11,6 +11,9 @@ import java.util.Map;
 
 /**
  * The color of a black body, i.e. a celestial object that emits light solely because of its color temperature.
+ *
+ * @author Mathias Bouilloud (309979)
+ * @author Julien Mettler (309999)
  */
 public abstract class BlackBodyColor {
 

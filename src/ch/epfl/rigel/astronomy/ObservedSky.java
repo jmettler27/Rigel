@@ -10,6 +10,9 @@ import java.util.*;
 
 /**
  * A set of celestial objects projected on the plane by stereographic projection, at a given epoch and place of observation.
+ *
+ * @author Mathias Bouilloud (309979)
+ * @author Julien Mettler (309999)
  */
 public final class ObservedSky {
 
