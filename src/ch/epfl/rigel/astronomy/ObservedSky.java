@@ -82,13 +82,13 @@ public final class ObservedSky {
         // Derives the projected positions of the planets of the solar system on the plan and puts them in the map
         planetPositions = new double[14]; // Immutable array of coordinates
         double[] tempPlanets = multiplePositions(planets, equToCart, allObjectsPositions);
-        System.arraycopy(tempPlanets, 0, planetPositions,0,  planets.size());
+        System.arraycopy(tempPlanets, 0, planetPositions,0,  2* planets.size());
 
 
         // Derives the projected positions of the stars of the catalogue on the plan and puts them in the map
-        starPositions = new double[stars().size()]; // Immutable array of coordinates
+        starPositions = new double[2*stars().size()]; // Immutable array of coordinates
         double[] tempStars = multiplePositions(stars(), equToCart, allObjectsPositions);
-        System.arraycopy(tempStars, 0, starPositions, 0,  stars().size());
+        System.arraycopy(tempStars, 0, starPositions, 0,  2*stars().size());
 
         positions = Map.copyOf(allObjectsPositions);  // Immutable map
     }
@@ -234,7 +234,7 @@ public final class ObservedSky {
     private double[] multiplePositions(List<? extends CelestialObject> list, EquatorialToCartesianConversion equToCart,
                                          Map<CelestialObject, CartesianCoordinates> allObjectsPositions) {
 
-        double[] tempPositions = new double[list.size()];
+        double[] tempPositions = new double[2*list.size()];
 
         for (int i = 0; i < list.size(); i++) {
             CelestialObject object = list.get(i);

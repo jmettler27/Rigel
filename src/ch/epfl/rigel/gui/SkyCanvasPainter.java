@@ -80,22 +80,6 @@ public final class SkyCanvasPainter {
 
             ++index;
         }
-
-        /*List<Double> list = new ArrayList<>();
-
-        double[] cartesianPositions = new double[2 * stars.size()];
-        for (int i = 0; i < stars.size(); i++) {
-            list.add(starPositions[0][i]);
-            list.add(starPositions[1][i]);
-        }
-
-        for (int i = 0; i < 2 * stars.size(); ++i) {
-            cartesianPositions[i] = list.get(i);
-        }
-
-        double[] transformedPositions = new double[2 * stars.size()];
-        Transform concatenation = PlanToCanvas.concatenation(transform);
-        concatenation.transform2DPoints(cartesianPositions, 0, transformedPositions, 0, stars.size());*/
     }
 
     /**
@@ -217,14 +201,14 @@ public final class SkyCanvasPainter {
      */
     private static double[] transformedPositions (double[] objectPositions,
                                                   Transform transform){
-        
+
 
         double[] transformed = new double[objectPositions.length];
         Transform concatenation = PlanToCanvas.concatenation(transform);
-        concatenation.transform2DPoints(objectPositions, 0, transformed, 0, objectPositions.length);
+        concatenation.transform2DPoints(objectPositions, 0, transformed, 0, objectPositions.length/2);
 
         double[] transformedPositions = new double[objectPositions.length];
-        System.arraycopy(transformed, 0, transformedPositions,0, objectPositions.length);
+        System.arraycopy(transformed, 0, transformedPositions,0, objectPositions.length/2);
 
         return transformedPositions;
     }
