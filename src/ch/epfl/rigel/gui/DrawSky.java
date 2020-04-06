@@ -36,32 +36,23 @@ public final class DrawSky extends Application {
                     .loadFrom(hs, HygDatabaseLoader.INSTANCE)
                     .build();
 
-            ZonedDateTime when =
-                    ZonedDateTime.parse("2020-02-17T20:15:00+01:00");
-            GeographicCoordinates where =
-                    GeographicCoordinates.ofDeg(6.57, 46.52);
-            HorizontalCoordinates projCenter =
-                    HorizontalCoordinates.ofDeg(180, 45);
-            StereographicProjection projection =
-                    new StereographicProjection(projCenter);
-            ObservedSky sky =
-                    new ObservedSky(when, where, projection, catalogue);
+            ZonedDateTime when = ZonedDateTime.parse("2020-02-17T20:15:00+01:00");
+            GeographicCoordinates where = GeographicCoordinates.ofDeg(6.57, 46.52);
+            HorizontalCoordinates projCenter = HorizontalCoordinates.ofDeg(180, 45);
+            StereographicProjection projection = new StereographicProjection(projCenter);
+            ObservedSky sky = new ObservedSky(when, where, projection, catalogue);
 
-            Canvas canvas =
-                    new Canvas(800, 600);
-            Transform planeToCanvas =
-                    Transform.affine(1300, 0, 0, -1300, 400, 300);
-            SkyCanvasPainter painter =
-                    new SkyCanvasPainter(canvas);
+            Canvas canvas = new Canvas(800, 600);
+            Transform planeToCanvas = Transform.affine(1300, 0, 0, -1300, 400, 300);
+            SkyCanvasPainter painter = new SkyCanvasPainter(canvas);
 
             painter.clear();
-            //painter.drawStars(sky, projection, planeToCanvas);
-            painter.drawMoon(sky, projection, planeToCanvas);
+            painter.drawStars(sky, projection, planeToCanvas);
 
-            WritableImage fxImage =
-                    canvas.snapshot(null, null);
-            BufferedImage swingImage =
-                    SwingFXUtils.fromFXImage(fxImage, null);
+            // painter.drawMoon(sky, projection, planeToCanvas);
+
+            WritableImage fxImage = canvas.snapshot(null, null);
+            BufferedImage swingImage = SwingFXUtils.fromFXImage(fxImage, null);
             ImageIO.write(swingImage, "png", new File("sky.png"));
         }
         Platform.exit();
