@@ -82,12 +82,6 @@ class MyObservedSkyTest {
 
     @Test
     void addPositionsWorks() {
-        List<? extends CelestialObject> list = new ArrayList<>();
-
-
-        Planet planet = new Planet("name", EquatorialCoordinates.of(0, 0), 0f, 0f);
-        Map<CelestialObject, EquatorialCoordinates> map = new HashMap<>();
-        map.put(planet, planet.equatorialPos());
     }
 
 
