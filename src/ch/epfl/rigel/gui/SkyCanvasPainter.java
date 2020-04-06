@@ -62,9 +62,9 @@ public final class SkyCanvasPainter {
      */
     public void drawStars(ObservedSky sky, Transform transform) {
         List<Star> stars = sky.stars();
-        double[][] starPositions = sky.starPositions(); // The positions of the stars on the plan
+        double[] starPositions = sky.starPositions(); // The positions of the stars on the plan
 
-        double[] transformedPositions = transformedPositions(stars, starPositions, transform);
+        double[] transformedPositions = transformedPositions(starPositions, transform);
 
         drawAsterisms(sky, transformedPositions);
 
@@ -108,9 +108,9 @@ public final class SkyCanvasPainter {
      */
     public void drawPlanets(ObservedSky sky, Transform transform) {
         List<Planet> planets = sky.planets();
-        double[][] planetPositions = sky.planetPositions(); // The positions of the planets on the plan
+        double[] planetPositions = sky.planetPositions(); // The positions of the planets on the plan
 
-        double[] transformedPositions = transformedPositions(planets, planetPositions, transform);
+        double[] transformedPositions = transformedPositions(planetPositions, transform);
 
         int index = 0;
         for (Planet p : planets) {
@@ -124,23 +124,6 @@ public final class SkyCanvasPainter {
 
             ++index;
         }
-
-         /*List<Double> list = new ArrayList<>();
-
-        double[] points = new double[2 * planets.size()];
-        for (int i = 0; i < planets.size(); i++) {
-            list.add(planetPositions[0][i]);
-            list.add(planetPositions[1][i]);
-        }
-
-        for (int i = 0; i < 2 * planets.size(); ++i) {
-            points[i] = list.get(i);
-        }
-
-        double[] transformedPositions = new double[2 * planets.size()];
-
-        Transform concatenation = PlanToCanvas.concatenation(transform);
-        concatenation.transform2DPoints(points, 0, transformedPositions, 0, planets.size());*/
     }
 
     /**
@@ -226,34 +209,22 @@ public final class SkyCanvasPainter {
      * Additional method.
      * Returns the positions of the images of the given celestial objects, using an affine transform.
      *
-     * @param objects
-     *            The celestial objects
      * @param objectPositions
      *            The positions of the celestial objects on the plan
      * @param transform
      *            The affine transform
      * @return the positions of the images of the celestial objects
      */
-    private static double[] transformedPositions (List<? extends CelestialObject> objects, double[][] objectPositions,
+    private static double[] transformedPositions (double[] objectPositions,
                                                   Transform transform){
-        List<Double> list = new ArrayList<>();
+        
 
-        double[] cartesianPositions = new double[2*objects.size()];
-        for(int i = 0; i < objects.size(); ++i){
-            list.add(objectPositions[0][i]);
-            list.add(objectPositions[1][i]);
-        }
-
-        for(int i = 0; i < 2 * objects.size(); ++i){
-            cartesianPositions[i] = list.get(i);
-        }
-
-        double[] transformed = new double[2 * objects.size()];
+        double[] transformed = new double[objectPositions.length];
         Transform concatenation = PlanToCanvas.concatenation(transform);
-        concatenation.transform2DPoints(cartesianPositions, 0, transformed, 0, objects.size());
+        concatenation.transform2DPoints(objectPositions, 0, transformed, 0, objectPositions.length);
 
-        double[] transformedPositions = new double[2*objects.size()];
-        System.arraycopy(transformed, 0, transformedPositions,0, 2*objects.size());
+        double[] transformedPositions = new double[objectPositions.length];
+        System.arraycopy(transformed, 0, transformedPositions,0, objectPositions.length);
 
         return transformedPositions;
     }

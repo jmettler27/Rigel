@@ -24,7 +24,7 @@ public final class ObservedSky {
 
     // The projected positions on the plan of all of the celestial objects in the observed sky
     private final CartesianCoordinates sunPosition, moonPosition;
-    private final double[][] planetPositions, starPositions;
+    private final double[] planetPositions, starPositions;
     private final Map<CelestialObject, CartesianCoordinates> positions;
 
     /**
@@ -80,16 +80,15 @@ public final class ObservedSky {
         allObjectsPositions.put(moon, moonPosition);
 
         // Derives the projected positions of the planets of the solar system on the plan and puts them in the map
-        planetPositions = new double[2][7]; // Immutable array of coordinates
-        double[][] tempPlanets = multiplePositions(planets, equToCart, allObjectsPositions);
-        System.arraycopy(tempPlanets[0], 0, planetPositions[0], 0,  planets.size());
-        System.arraycopy(tempPlanets[1], 0, planetPositions[1], 0,  planets.size());
+        planetPositions = new double[14]; // Immutable array of coordinates
+        double[] tempPlanets = multiplePositions(planets, equToCart, allObjectsPositions);
+        System.arraycopy(tempPlanets, 0, planetPositions,0,  planets.size());
+
 
         // Derives the projected positions of the stars of the catalogue on the plan and puts them in the map
-        starPositions = new double[2][stars().size()]; // Immutable array of coordinates
-        double[][] tempStars = multiplePositions(stars(), equToCart, allObjectsPositions);
-        System.arraycopy(tempStars[0], 0, starPositions[0], 0,  stars().size());
-        System.arraycopy(tempStars[1], 0, starPositions[1], 0,  stars().size());
+        starPositions = new double[stars().size()]; // Immutable array of coordinates
+        double[] tempStars = multiplePositions(stars(), equToCart, allObjectsPositions);
+        System.arraycopy(tempStars, 0, starPositions, 0,  stars().size());
 
         positions = Map.copyOf(allObjectsPositions);  // Immutable map
     }
@@ -138,7 +137,7 @@ public final class ObservedSky {
      * Returns the Cartesian coordinates of the extraterrestrial planets of the solar system as projected in the plan.
      * @return the Cartesian coordinates of the extraterrestrial planets of the solar system as projected in the plan
      */
-    public double[][] planetPositions() {
+    public double[] planetPositions() {
         return planetPositions;
     }
 
@@ -154,7 +153,7 @@ public final class ObservedSky {
      * Returns the Cartesian coordinates of the stars of the catalogue in the plan.
      * @return the Cartesian coordinates of the stars of the catalogue in the plan
      */
-    public double[][] starPositions() {
+    public double[] starPositions() {
         return starPositions;
     }
 
@@ -232,20 +231,17 @@ public final class ObservedSky {
      * @param allObjectsPositions
      *            The map which associated to each Celestial object its position on the plan
      */
-    private double[][] multiplePositions(List<? extends CelestialObject> list, EquatorialToCartesianConversion equToCart,
+    private double[] multiplePositions(List<? extends CelestialObject> list, EquatorialToCartesianConversion equToCart,
                                          Map<CelestialObject, CartesianCoordinates> allObjectsPositions) {
-        double[][] tempPositions = new double[2][list.size()];
-        int index = 0;
 
-        for (CelestialObject object : list) {
+        double[] tempPositions = new double[list.size()];
+
+        for (int i = 0; i < list.size(); i++) {
+            CelestialObject object = list.get(i);
             CartesianCoordinates cartesianPos = equToCart.apply(object.equatorialPos());
-            tempPositions[0][index] = cartesianPos.x();
-            tempPositions[1][index] = cartesianPos.y();
-
-            // Maps the object to its Cartesian position
+            tempPositions[2 * i] = cartesianPos.x();
+            tempPositions[2 * i + 1] = cartesianPos.y();
             allObjectsPositions.put(object, cartesianPos);
-
-            ++index;
         }
         return tempPositions;
     }
