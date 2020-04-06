@@ -69,7 +69,6 @@ public final class SkyCanvasPainter {
             CartesianCoordinates imagePos = CartesianCoordinates.of(
                     transformedPoints[index * 2], transformedPoints[index * 2 + 1]);
 
-            System.out.println(imagePos.x() + " " + imagePos.y());
             ctx.setFill(BlackBodyColor.colorForTemperature(star.colorTemperature()));
             drawCircle(ctx, size[index], imagePos);
 
@@ -162,8 +161,8 @@ public final class SkyCanvasPainter {
     private void drawAsterisms(ObservedSky sky, double[] starPositions) {
         Set<Asterism> asterisms = sky.asterisms();
 
-        ctx.setLineWidth(1);
         ctx.setFill(Color.BLUE);
+        ctx.setLineWidth(1);
 
         for (Asterism ast : asterisms) {
             ctx.beginPath();
