@@ -4,9 +4,10 @@ import ch.epfl.rigel.astronomy.*;
 import ch.epfl.rigel.coordinates.CartesianCoordinates;
 import ch.epfl.rigel.coordinates.HorizontalCoordinates;
 import ch.epfl.rigel.coordinates.StereographicProjection;
-import ch.epfl.rigel.coordinates.PlanToCanvas;
+import ch.epfl.rigel.coordinates.PlaneToCanvas;
 import ch.epfl.rigel.math.Angle;
 import ch.epfl.rigel.math.ClosedInterval;
+import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -14,7 +15,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.transform.Transform;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * A painter of the observed sky.
@@ -56,23 +56,24 @@ public final class SkyCanvasPainter {
      *
      * @param sky
      *            The observed sky
-     * @param transform
+     * @param planeToCanvas
      *            The affine transform
      */
-    public void drawStars(ObservedSky sky, Transform transform) {
+    public void drawStars(ObservedSky sky, Transform planeToCanvas) {
         List<Star> stars = sky.stars();
         double[] starPositions = sky.starPositions(); // The positions of the stars on the plan
 
-        double[] transformedPositions = transformedPositions(starPositions, transform);
+        double[] transformedPositions = transformedPositions(starPositions, planeToCanvas);
 
         drawAsterisms(sky, transformedPositions);
 
         int index = 0;
         for (Star s : stars) {
-            double imageDiameter = PlanToCanvas.applyToDistance(diameterForMagnitude(s), transform);
-
             CartesianCoordinates imagePosition = CartesianCoordinates.of(
                     transformedPositions[index * 2], transformedPositions[index * 2 + 1]);
+
+            // The diameter of the image of the star
+            double imageDiameter = PlaneToCanvas.applyToDistance(diameterForMagnitude(s), planeToCanvas);
 
             ctx.setFill(BlackBodyColor.colorForTemperature(s.colorTemperature()));
             drawCircle(imagePosition, imageDiameter);
@@ -86,18 +87,20 @@ public final class SkyCanvasPainter {
      *
      * @param sky
      *            The observed sky
-     * @param transform
+     * @param planeToCanvas
      *            The affine transform
      */
-    public void drawPlanets(ObservedSky sky, Transform transform) {
+    public void drawPlanets(ObservedSky sky, Transform planeToCanvas) {
         List<Planet> planets = sky.planets();
         double[] planetPositions = sky.planetPositions(); // The positions of the planets on the plan
 
-        double[] transformedPositions = transformedPositions(planetPositions, transform);
+        // The positions of the images of the planets
+        double[] transformedPositions = transformedPositions(planetPositions, planeToCanvas);
 
         int index = 0;
         for (Planet p : planets) {
-            double imageDiameter = PlanToCanvas.applyToDistance(diameterForMagnitude(p), transform);
+            // The diameter of the image of the planet
+            double imageDiameter = PlaneToCanvas.applyToDistance(diameterForMagnitude(p), planeToCanvas);
 
             CartesianCoordinates imagePosition = CartesianCoordinates.of(
                     transformedPositions[index * 2], transformedPositions[index * 2 + 1]);
@@ -116,18 +119,18 @@ public final class SkyCanvasPainter {
      *            The observed sky
      * @param projection
      *            The stereographic projection
-     * @param transform
+     * @param planeToCanvas
      *            The affine transform
      */
-    public void drawSun(ObservedSky sky, StereographicProjection projection, Transform transform) {
+    public void drawSun(ObservedSky sky, StereographicProjection projection, Transform planeToCanvas) {
         Sun sun = sky.sun(); // The observed Sun
 
         CartesianCoordinates sunPosition = sky.sunPosition(); // The position of the Sun on the plan
         double diameter = projection.applyToAngle(sun.angularSize()); // The projected diameter of the Sun on the plan
 
         // The position and diameter of the image of the Sun
-        CartesianCoordinates imagePosition = PlanToCanvas.applyToPoint(sunPosition, transform);
-        double imageDiameter = PlanToCanvas.applyToDistance(diameter, transform);
+        CartesianCoordinates imagePosition = PlaneToCanvas.applyToPoint(sunPosition, planeToCanvas);
+        double imageDiameter = PlaneToCanvas.applyToDistance(diameter, planeToCanvas);
 
         // Draws the three concentric discs composing the image of the Sun, from the largest to the Sun
 
@@ -148,10 +151,10 @@ public final class SkyCanvasPainter {
      *            The observed sky
      * @param projection
      *            The stereographic projection
-     * @param transform
+     * @param planeToCanvas
      *            The affine transform
      */
-    public void drawMoon(ObservedSky sky, StereographicProjection projection, Transform transform) {
+    public void drawMoon(ObservedSky sky, StereographicProjection projection, Transform planeToCanvas) {
         Moon moon = sky.moon(); // The observed Moon
 
         // The position and projected diameter of the Moon on the plan
@@ -159,8 +162,8 @@ public final class SkyCanvasPainter {
         double diameter = projection.applyToAngle(moon.angularSize());
 
         // The position and diameter of the image of the Moon
-        CartesianCoordinates imagePosition = PlanToCanvas.applyToPoint(moonPosition, transform);
-        double imageDiameter = PlanToCanvas.applyToDistance(diameter, transform);
+        CartesianCoordinates imagePosition = PlaneToCanvas.applyToPoint(moonPosition, planeToCanvas);
+        double imageDiameter = PlaneToCanvas.applyToDistance(diameter, planeToCanvas);
 
         ctx.setFill(Color.WHITE);
         drawCircle(imagePosition, imageDiameter);
@@ -172,20 +175,21 @@ public final class SkyCanvasPainter {
      *
      * @param projection
      *            The stereographic projection
-     * @param transform
+     * @param planeToCanvas
      *            The affine transform
      */
-    public void drawHorizon(StereographicProjection projection, Transform transform) {
-        HorizontalCoordinates hor = HorizontalCoordinates.ofDeg(45, 0);
-        CartesianCoordinates center = PlanToCanvas.applyToPoint(projection.circleCenterForParallel(hor), transform);
-        double radius = PlanToCanvas.applyToDistance(projection.circleRadiusForParallel(hor), transform);
+    public void drawHorizon(StereographicProjection projection, Transform planeToCanvas) {
+        HorizontalCoordinates hor = HorizontalCoordinates.ofDeg(0, 0);
 
-        ctx.setLineWidth(2); // Trait de largeur 2
+        CartesianCoordinates center = PlaneToCanvas.applyToPoint(projection.circleCenterForParallel(hor), planeToCanvas);
+        double diameter = 2.0 * PlaneToCanvas.applyToDistance(projection.circleRadiusForParallel(hor), planeToCanvas);
+        System.out.println(projection.circleRadiusForParallel(hor));
+        System.out.println("Center : " + center + ", diameter : " + diameter);
 
         ctx.setFill(Color.RED);
-        ctx.fillOval(center.x() - radius, center.y() - radius, radius, radius);
+        ctx.setLineWidth(4); // Trait de largeur 2
 
-        drawCircle( center, radius * 2.0);
+        drawCircle(center, diameter);
     }
 
     /**
@@ -194,20 +198,19 @@ public final class SkyCanvasPainter {
      *
      * @param objectPositions
      *            The positions of the celestial objects on the plan
-     * @param transform
+     * @param planeToCanvas
      *            The affine transform
      * @return the positions of the images of the celestial objects
      */
-    private static double[] transformedPositions (double[] objectPositions,
-                                                  Transform transform){
-
-
+    private static double[] transformedPositions (double[] objectPositions, Transform planeToCanvas){
         double[] transformed = new double[objectPositions.length];
-        Transform concatenation = PlanToCanvas.concatenation(transform);
-        concatenation.transform2DPoints(objectPositions, 0, transformed, 0, objectPositions.length/2);
+        Transform concatenation = PlaneToCanvas.concatenation(planeToCanvas);
+        concatenation.transform2DPoints(objectPositions, 0, transformed, 0,
+                objectPositions.length / 2);
 
+        // The positions of the images of the celestial objects
         double[] transformedPositions = new double[objectPositions.length];
-        System.arraycopy(transformed, 0, transformedPositions,0, objectPositions.length/2);
+        System.arraycopy(transformed, 0, transformedPositions,0, objectPositions.length / 2);
 
         return transformedPositions;
     }
@@ -217,41 +220,48 @@ public final class SkyCanvasPainter {
      *
      * @param sky
      *            The observed sky
-     * @param starPositions
-     *            The positions of the asterisms' stars in the canvas coordinate system
+     * @param transformedPositions
+     *            The positions of the asterisms' stars expressed in the canvas coordinate system
      */
-    private void drawAsterisms(ObservedSky sky, double[] starPositions) {
-        Set<Asterism> asterisms = sky.asterisms();
+    private void drawAsterisms(ObservedSky sky, double[] transformedPositions) {
+        Bounds borders = canvas.getBoundsInLocal(); // The borders of the canvas
 
-        ctx.setFill(Color.BLUE);
-        ctx.setLineWidth(1);
+        ctx.setLineWidth(1.0);
+        ctx.setStroke(Color.BLUE);
 
-        for (Asterism ast : asterisms) {
-            ctx.beginPath();
+        for (Asterism ast : sky.asterisms()) {
+            ctx.beginPath(); // Resets the current path to empty
             List<Integer> asterismIndices = sky.asterismsIndices(ast);
 
-            for (int index = 0; index < asterismIndices.size(); ++index) {
-                int starIndex = asterismIndices.get(index);
-                ctx.moveTo(starPositions[starIndex * 2], starPositions[starIndex * 2 + 1]);
-                int starIndex1 = asterismIndices.get(index + 1);
+            for (int i = 0; i < asterismIndices.size() - 1; ++i) {
+                // The index (in the catalogue) and position (on the canvas) of the star at the beginning of the segment
+                int index1 = asterismIndices.get(i);
+                Point2D starPos1 = new Point2D(transformedPositions[index1 * 2], transformedPositions[index1 * 2 + 1]);
 
-                Point2D firstPoint = new Point2D(starPositions[starIndex * 2], starPositions[starIndex * 2 + 1]);
-                Point2D secondPoint = new Point2D(starPositions[starIndex1 * 2], starPositions[starIndex1 * 2 + 1]);
-                if (canvas.getBoundsInLocal().contains(firstPoint) && canvas.getBoundsInLocal().contains(secondPoint)) {
-                    ctx.lineTo(starPositions[starIndex1 * 2], starPositions[starIndex1 * 2 + 1]);
+                // The index (in the catalogue) and position (on the canvas) of the star at the end of the segment
+                int index2 = asterismIndices.get(i + 1);
+                Point2D starPos2 = new Point2D(transformedPositions[index2 * 2], transformedPositions[index2 * 2 + 1]);
+
+                ctx.moveTo(starPos1.getX(), starPos1.getY()); // Starts the segment at the position of the first star
+
+                // Add a segment between the two stars if they are both within the limits of the canvas.
+                if (borders.contains(starPos1) && borders.contains(starPos2)) {
+                    ctx.lineTo(starPos2.getX(), starPos2.getY());
                 }
+                ctx.fill(); // Colors the segment in blue
             }
-            ctx.stroke(); // Draws the path
+            ctx.closePath();
+            ctx.stroke();
         }
     }
 
     /**
      * Draws a filled circle of given diameter.
      *
-     * @param diameter
-     *            The diameter of the circle
      * @param upperLeftBound
      *            The coordinates of the upper left bound of the circle
+     * @param diameter
+     *            The diameter of the circle
      */
     private void drawCircle(CartesianCoordinates upperLeftBound, double diameter) {
         ctx.fillOval(upperLeftBound.x() - diameter / 2.0, upperLeftBound.y() - diameter / 2.0,

@@ -35,7 +35,7 @@ public class EpflLogo extends Application {
         // Trous dans le E et le F
         ctx.setFill(Color.WHITE);
         ctx.fillRect(50, 126, 30, 26);
-        ctx.fillRect(440, 130, 30, 26);
+        ctx.fillRect(440, 135, 28, 22);
 
         primaryStage.setScene(new Scene(new BorderPane(canvas)));
         primaryStage.show();
