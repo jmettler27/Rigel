@@ -240,7 +240,7 @@ public final class ObservedSky {
             tempPositions[1][index] = cartesianPos.y();
 
             // Maps the object to its Cartesian position
-            allObjectsPositions.put(object, CartesianCoordinates.of(cartesianPos.x(), cartesianPos.y()));
+            allObjectsPositions.put(object, cartesianPos);
 
             ++index;
         }

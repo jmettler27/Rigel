@@ -6,11 +6,14 @@ import ch.epfl.rigel.coordinates.StereographicProjection;
 import ch.epfl.rigel.coordinates.PlaneToCanvas;
 import ch.epfl.rigel.math.Angle;
 import ch.epfl.rigel.math.ClosedInterval;
+import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Transform;
 
+import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public final class SkyCanvasPainter {
@@ -25,26 +28,42 @@ public final class SkyCanvasPainter {
 
     public void clear() {
         canvas.getGraphicsContext2D().clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+        canvas.getGraphicsContext2D().setFill(Color.BLACK);
+        canvas.getGraphicsContext2D().fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+
     }
 
     public void drawStars(ObservedSky sky, StereographicProjection projection, Transform transform) {
         List<Star> stars = sky.stars();
 
         double[][] starPositions = sky.starPositions();
-        double[][] transformedStarPositions = new double[2][stars.size()];
-        PlaneToCanvas.applyToArray(starPositions, transform, transformedStarPositions);
 
+        List<Double> list = new ArrayList<>();
 
         GraphicsContext ctx = canvas.getGraphicsContext2D();
 
+        double[] points = new double[2 * stars.size()];
+        for (int i = 0; i < stars.size(); i++) {
+            list.add(starPositions[0][i]);
+            list.add(starPositions[1][i]);
+        }
+
+        for (int i = 0; i < 2 * stars.size(); ++i) {
+            points[i] = list.get(i);
+        }
+
+        double[] transformedPoints = new double[2 * stars.size()];
+        transform.transform2DPoints(points, 0, transformedPoints, 0, stars.size());
+
         double[] size = new double[stars.size()];
         int index = 0;
-        for(Star star : stars){
+        for (Star star : stars) {
             size[index] = diameterForMagnitude(star);
 
             CartesianCoordinates cartesianPos = CartesianCoordinates.of(
-                    transformedStarPositions[0][index], transformedStarPositions[1][index]);
+                    transformedPoints[index * 2], transformedPoints[index * 2 + 1]);
 
+            System.out.println(cartesianPos.x() + " " + cartesianPos.y());
             ctx.setFill(BlackBodyColor.colorForTemperature(star.colorTemperature()));
             drawCircle(ctx, size[index], cartesianPos);
 
@@ -56,18 +75,31 @@ public final class SkyCanvasPainter {
         List<Planet> planets = sky.planets();
 
         double[][] planetPositions = sky.planetPositions();
-        double[][] transformedPlanetPositions = new double[2][7];
-        PlaneToCanvas.applyToArray(planetPositions, transform, transformedPlanetPositions);
+
+        List<Double> list = new ArrayList<>();
 
         GraphicsContext ctx = canvas.getGraphicsContext2D();
 
-        double[] size = new double[7];
+        double[] points = new double[2 * planets.size()];
+        for (int i = 0; i < planets.size(); i++) {
+            list.add(planetPositions[0][i]);
+            list.add(planetPositions[1][i]);
+        }
+
+        for (int i = 0; i < 2 * planets.size(); ++i) {
+            points[i] = list.get(i);
+        }
+
+        double[] transformedPoints = new double[2 * planets.size()];
+        transform.transform2DPoints(points, 0, transformedPoints, 0, planets.size());
+
+        double[] size = new double[planets.size()];
         int index = 0;
         for (Planet planet : planets) {
             size[index] = diameterForMagnitude(planet);
 
             CartesianCoordinates cartesianPos = CartesianCoordinates.of(
-                    transformedPlanetPositions[0][index], transformedPlanetPositions[1][index]);
+                    transformedPoints[index * 2], transformedPoints[index * 2 + 1]);
 
             ctx.setFill(Color.LIGHTGRAY);
             drawCircle(ctx, size[index], cartesianPos);
@@ -114,8 +146,6 @@ public final class SkyCanvasPainter {
     }
 
     private void drawCircle(GraphicsContext ctx, double diameter, CartesianCoordinates coordinates) {
-        ctx.strokeOval(coordinates.x() - diameter / 2.0, coordinates.y() - diameter / 2.0,
-                diameter / 2.0, diameter / 2.0);
         ctx.fillOval(coordinates.x() - diameter / 2.0, coordinates.y() - diameter / 2.0,
                 diameter / 2.0, diameter / 2.0);
     }
