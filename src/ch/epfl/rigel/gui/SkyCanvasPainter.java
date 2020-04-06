@@ -2,6 +2,7 @@ package ch.epfl.rigel.gui;
 
 import ch.epfl.rigel.astronomy.*;
 import ch.epfl.rigel.coordinates.CartesianCoordinates;
+import ch.epfl.rigel.coordinates.HorizontalCoordinates;
 import ch.epfl.rigel.coordinates.StereographicProjection;
 import ch.epfl.rigel.coordinates.PlaneToCanvas;
 import ch.epfl.rigel.math.Angle;
@@ -27,9 +28,9 @@ public final class SkyCanvasPainter {
     }
 
     public void clear() {
-        canvas.getGraphicsContext2D().clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+        //canvas.getGraphicsContext2D().clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         canvas.getGraphicsContext2D().setFill(Color.BLACK);
-        //canvas.getGraphicsContext2D().fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+        canvas.getGraphicsContext2D().fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
 
     }
 
@@ -93,7 +94,11 @@ public final class SkyCanvasPainter {
         }
 
         double[] transformedPoints = new double[2 * planets.size()];
-        transform.transform2DPoints(points, 0, transformedPoints, 0, planets.size());
+
+        Transform dilatation = Transform.scale(transform.getMxx(), transform.getMyy());
+        Transform translation = Transform.translate(transform.getTx(), transform.getTy());
+        Transform concatenation = translation.createConcatenation(dilatation);
+        concatenation.transform2DPoints(points, 0, transformedPoints, 0, planets.size());
 
         double[] size = new double[planets.size()];
         int index = 0;
@@ -144,8 +149,24 @@ public final class SkyCanvasPainter {
     }
 
     public void drawHorizon(ObservedSky sky, StereographicProjection projection, Transform transform) {
+        HorizontalCoordinates hor = HorizontalCoordinates.of(0,0);
+        CartesianCoordinates centerForParallel = projection.circleCenterForParallel(hor);
+        double radiusForParallel = projection.circleRadiusForParallel(hor);
+
+        GraphicsContext ctx = canvas.getGraphicsContext2D();
+        ctx.setLineWidth(2); // Trait de largeur 2
+
+        ctx.setFill(Color.RED);
+        ctx.strokeOval(centerForParallel.x() - radiusForParallel, centerForParallel.y() - radiusForParallel,
+                radiusForParallel, radiusForParallel);
+
+        System.out.println(centerForParallel);
+        System.out.println(radiusForParallel);
+        //drawCircle(ctx, radiusForParallel * 2.0, centerForParallel);
+
 
     }
+
 
     private void drawCircle(GraphicsContext ctx, double diameter, CartesianCoordinates coordinates) {
         ctx.fillOval(coordinates.x() - diameter / 2.0, coordinates.y() - diameter / 2.0,

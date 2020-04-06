@@ -39,5 +39,9 @@ public class EpflLogo extends Application {
 
         primaryStage.setScene(new Scene(new BorderPane(canvas)));
         primaryStage.show();
+
+        ctx.setFill(Color.ORANGE);
+        ctx.strokeOval((canvas.getWidth()) / 2.0 - 30 , (canvas.getHeight() / 2.0) - 30,
+                30, 30);
     }
 }
