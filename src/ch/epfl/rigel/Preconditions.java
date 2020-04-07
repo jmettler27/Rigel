@@ -16,7 +16,7 @@ public final class Preconditions {
     private Preconditions() {}
 
     /**
-     * Checks if the condition (argument) is satisfied.
+     * Checks if the given condition is satisfied.
      * 
      * @param isTrue
      *            The condition

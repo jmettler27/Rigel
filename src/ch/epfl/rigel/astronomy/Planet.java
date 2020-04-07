@@ -3,7 +3,7 @@ package ch.epfl.rigel.astronomy;
 import ch.epfl.rigel.coordinates.EquatorialCoordinates;
 
 /**
- * A planet.
+ * A planet of the solar system.
  *
  * @author Mathias Bouilloud (309979)
  * @author Julien Mettler (309999)

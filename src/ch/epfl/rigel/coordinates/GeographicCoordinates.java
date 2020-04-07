@@ -15,10 +15,10 @@ import ch.epfl.rigel.math.RightOpenInterval;
  */
 public final class GeographicCoordinates extends SphericalCoordinates {
 
-    // The valid right open interval [-180°, 180°[ (in degrees) for the longitude
+    // The valid right open interval [-180,180[ (in degrees) for the longitude
     private static final RightOpenInterval LON_INTERVAL_DEG = RightOpenInterval.of(-180, 180);
 
-    // The valid closed interval [-90°, 90°] (in degrees) for the latitude
+    // The valid closed interval [-90,90] (in degrees) for the latitude
     private static final ClosedInterval LAT_INTERVAL_DEG = ClosedInterval.of(-90, 90);
 
     /**

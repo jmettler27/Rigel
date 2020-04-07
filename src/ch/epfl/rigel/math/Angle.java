@@ -10,11 +10,13 @@ import ch.epfl.rigel.Preconditions;
  */
 public final class Angle {
 
-    public static final double
-            TAU = 2 * Math.PI, // 2*PI
+    public static final double TAU = 2.0 * Math.PI; // The perimeter of the trigonometric circle
+
+    private static final double
             RAD_PER_HOUR = TAU / 24.0, // Conversion from hours to radians
             HOUR_PER_RAD = 24.0 / TAU; // Conversion from radians to hours
 
+    // The valid right open interval [0,60[ for the number of minutes and seconds
     private static final RightOpenInterval DMS_INTERVAL = RightOpenInterval.of(0, 60);
 
     /**
@@ -23,52 +25,52 @@ public final class Angle {
     private Angle() {}
 
     /**
-     * Normalizes the rad angle by reducing it to the interval [0,TAU[.
+     * Normalizes the given angle (in radians) by reducing it to the interval [0,2*PI[.
      *
      * @param rad
      *            The angle to be normalized
      * @return the normalized angle
      */
     public static double normalizePositive(double rad) {
-        return RightOpenInterval.of(0.0, TAU).reduce(rad);
+        return RightOpenInterval.of(0, TAU).reduce(rad);
     }
 
     /**
-     * Returns the angle corresponding to the given number of arc seconds, in radians.
+     * Returns the angle (in radians) corresponding to the given number of arc seconds.
      *
      * @param sec
      *            The number of arc seconds
      * @return the angle in radians
      */
     public static double ofArcsec(double sec) {
-        return Math.toRadians(sec / 3600);
+        return Math.toRadians(sec / 3600.0);
     }
 
     /**
-     * Returns the angle corresponding to the given angle deg​° min​′ sec​″, in radians.
+     * Returns the angle (in radians) corresponding to the given angle deg° min′ sec″.
      *
      * @param deg
-     *            The given number of degrees
+     *            The number of degrees
      * @param min
-     *            The given number of minutes
+     *            The number of minutes
      * @param sec
-     *            The given number of seconds
+     *            The number of seconds
      * @throws IllegalArgumentException
-     *             if the interval [0,60[ does not contain the given number of minutes and/or seconds
+     *             if the number of minutes and/or seconds is not contained in its valid interval
      * @return the angle in radians
      */
     public static double ofDMS(int deg, int min, double sec) {
-        double correctMin = Preconditions.checkInInterval(DMS_INTERVAL, min);
-        double correctSec = Preconditions.checkInInterval(DMS_INTERVAL, sec);
+        double validMin = Preconditions.checkInInterval(DMS_INTERVAL, min);
+        double validSec = Preconditions.checkInInterval(DMS_INTERVAL, sec);
 
-        return Math.toRadians((double) deg + correctMin / 60 + correctSec / 3600);
+        return Math.toRadians((double) deg + validMin / 60.0 + validSec / 3600.0);
     }
 
     /**
-     * Returns the angle corresponding to the given angle in degrees, in radians.
+     * Returns the angle (in radians) corresponding to the given angle in degrees.
      *
      * @param deg
-     *            The given angle in degrees
+     *            The angle in degrees
      * @return the angle in radians
      */
     public static double ofDeg(double deg) {
@@ -76,10 +78,10 @@ public final class Angle {
     }
 
     /**
-     * Returns the angle corresponding to the given angle in radians, in degrees.
+     * Returns the angle (in degrees) corresponding to the given angle in radians.
      *
      * @param rad
-     *            The given angle in radians
+     *            The angle in radians
      * @return the angle in degrees
      */
     public static double toDeg(double rad) {
@@ -87,10 +89,10 @@ public final class Angle {
     }
 
     /**
-     * Returns the angle corresponding to the given angle in hours, in radians.
+     * Returns the angle (in radians) corresponding to the given angle in hours.
      *
      * @param hr
-     *            The given angle in hours
+     *            The angle in hours
      * @return the angle in radians
      */
     public static double ofHr(double hr) {
@@ -98,10 +100,10 @@ public final class Angle {
     }
 
     /**
-     * Returns the angle corresponding to the given angle in radians, in hours.
+     * Returns the angle (in hours) corresponding to the given angle in radians.
      *
      * @param rad
-     *            The given angle in radians
+     *            The angle in radians
      * @return the angle in hours
      */
     public static double toHr(double rad) {

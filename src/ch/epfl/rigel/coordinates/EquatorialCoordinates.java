@@ -15,10 +15,10 @@ import ch.epfl.rigel.math.RightOpenInterval;
  */
 public final class EquatorialCoordinates extends SphericalCoordinates {
 
-    // The valid right open interval [0, 2*PI[ (in radians) for the right ascension
+    // The valid right open interval [0,2*PI[ (in radians) for the right ascension
     private static final RightOpenInterval RA_INTERVAL_RAD = RightOpenInterval.of(0, Angle.TAU);
 
-    // The valid closed interval [-PI/2, PI/2] (in radians) for the declination
+    // The valid closed interval [-PI/2,PI/2] (in radians) for the declination
     private static final ClosedInterval DEC_INTERVAL_RAD = ClosedInterval.of(Angle.ofDeg(-90), Angle.ofDeg(90));
 
     /**

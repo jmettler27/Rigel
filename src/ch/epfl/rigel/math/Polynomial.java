@@ -9,10 +9,10 @@ import ch.epfl.rigel.Preconditions;
  * @author Julien Mettler (309999)
  */
 public final class Polynomial {
-    private final double[] coeffs;
+    private final double[] coeffs; // The coefficients of the polynomial
 
     /**
-     *Constructs a polynomial with the given coefficients (in decreasing order).
+     * Constructs a polynomial with the given coefficients (in decreasing order).
      *
      * @param coefficientN
      *             The n-th degree coefficient
@@ -67,7 +67,7 @@ public final class Polynomial {
 
         else {
             // The value of f(x) to be derived
-            double value = coeffs[0]*x;
+            double value = coeffs[0] * x;
 
             // Polynomial of degree at least 2 (exactly two coefficients)
             if (coeffs.length != 2) {
@@ -75,9 +75,7 @@ public final class Polynomial {
                     value = (value + coeffs[i]) * x;
                 }
             }
-
             value += c0;
-
             return value;
         }
     }
@@ -108,7 +106,7 @@ public final class Polynomial {
 
         // Polynomial of degree at least 2
         else {
-            // Display of the highest-degree (at index 0) coefficient
+            // Displays the highest-degree coefficient (index 0)
             if (Math.abs(coeffs[0]) != 1) {
                 builder.append(coeffs[0])
                         .append("x^");
@@ -120,7 +118,7 @@ public final class Polynomial {
             builder.append(coeffs.length - 1);
         }
 
-        // Display of the coefficients at index at least 1
+        // Displays the coefficients at index at least 1
         for (int i = 1; i < coeffs.length; ++i) {
             if (coeffs[i] != 0) {
                 // Does not display the coefficient if the latter is 1 or -1,

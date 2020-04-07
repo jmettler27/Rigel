@@ -24,20 +24,19 @@ public enum AsterismLoader implements StarCatalogue.Loader {
     @Override
     public void load(InputStream inputStream, StarCatalogue.Builder builder) throws IOException {
 
-        // The buffered reader of the given input stream (i.e. the catalogue of stars, encoded in ASCII)
+        // Reads the catalogue of stars, encoded in ASCII)
         try (BufferedReader reader =
                      new BufferedReader(
                              new InputStreamReader(
                                      inputStream, StandardCharsets.US_ASCII))) {
 
-            // The list of stars already loaded in the catalogue's builder
-            List<Star> stars = builder.stars();
+            List<Star> stars = builder.stars(); // The list of stars already loaded in the catalogue's builder
 
             String line; // The current line of data (i.e. the current asterism in the catalogue)
             while ((line = reader.readLine()) != null) {
                 String[] columns = line.split(","); // The Hipparcos numbers of the current asterism's stars
 
-                List<Star> asterismStars = new ArrayList<>(); // The list of stars of the current asterism
+                List<Star> asterismStars = new ArrayList<>(); // The list of stars composing the current asterism
 
                 // Adds the stars of each asterism, if they are present in the list of stars of the catalogue's builder
                 for (String col : columns) {

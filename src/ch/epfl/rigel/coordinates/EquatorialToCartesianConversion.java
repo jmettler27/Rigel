@@ -34,7 +34,7 @@ public final class EquatorialToCartesianConversion implements Function<Equatoria
      */
     @Override
     public CartesianCoordinates apply(EquatorialCoordinates equ) {
-        // Converts equatorial to horizontal coordinates, and then projects the horizontal coordinates on the plan
+        // Converts equatorial to horizontal coordinates, and then projects the horizontal coordinates on the plane
         return equToHor.andThen(projection).apply(equ);
     }
 

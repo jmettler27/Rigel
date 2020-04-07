@@ -23,7 +23,7 @@ public enum Epoch {
 
 
     /**
-     * Constructs an astronomical epoch through its time and spatial informations.
+     * Constructs an astronomical epoch through its time and spatial information.
      *
      * @param year
      *            The year of the reference time
@@ -32,9 +32,9 @@ public enum Epoch {
      * @param dayOfMonth
      *            The day of the reference time
      * @param hour
-     *            The hour of the reference time (in the UTC time-zone)
+     *            The hour of the reference time (in the associated time-zone)
      * @param minute
-     *            The minute of the reference time (in the UTC time-zone)
+     *            The minute of the reference time (in the associated time-zone)
      * @param zoneOffset
      *            The associated time-zone
      */

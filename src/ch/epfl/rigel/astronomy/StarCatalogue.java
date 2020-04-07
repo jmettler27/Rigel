@@ -33,14 +33,13 @@ public final class StarCatalogue {
                 Preconditions.checkArgument(stars.contains(s));
             }
         }
-        this.stars = List.copyOf(stars); // Immutable list of stars
+        this.stars = List.copyOf(stars);
 
         // Constructs the map by associating to each asterism (the key) its list of indices (the value)
-        Map<Asterism, List<Integer>> map = new HashMap<>();
+        asterismsWithIndices = new HashMap<>();
         for (Asterism ast : asterisms) {
-            map.put(ast, indicesOf(ast));
+            asterismsWithIndices.put(ast, indicesOf(ast));
         }
-        asterismsWithIndices = Map.copyOf(map); // Immutable map
     }
 
     /**
@@ -75,14 +74,12 @@ public final class StarCatalogue {
 
     /**
      * Additional method.
-     *
-     * Constructs the list of the indices of the stars composing the given asterism (i.e. associates the value to the
-     * given key, in the map).
+     * Constructs the list of the indices of the stars composing the given asterism
      * Note : the given asterism is assumed to be contained in the catalogue since this method is used in the constructor.
      *
      * @param asterism
-     *            The given asterism
-     * @return the list of the indices of the stars composing the given asterism
+     *            The asterism
+     * @return the list of the indices of the stars composing the asterism
      */
     private List<Integer> indicesOf(Asterism asterism) {
         List<Integer> indices = new ArrayList<>();
@@ -154,7 +151,9 @@ public final class StarCatalogue {
          * Returns an unmodifiable view on the asterisms of the catalogue under construction.
          * @return an unmodifiable view on the asterisms of the catalogue under construction
          */
-        public List<Asterism> asterisms() {return Collections.unmodifiableList(asterisms);}
+        public List<Asterism> asterisms() {
+            return Collections.unmodifiableList(asterisms);
+        }
 
         /**
          * Asks the given loader to add to the catalogue under construction the stars and/or asterisms the loader
@@ -175,7 +174,7 @@ public final class StarCatalogue {
 
         /**
          * Returns the catalogue of the stars and asterisms added so far to its builder.
-         * @return the builded catalogue.
+         * @return the built catalogue.
          */
         public StarCatalogue build() {
             return new StarCatalogue(stars, asterisms);

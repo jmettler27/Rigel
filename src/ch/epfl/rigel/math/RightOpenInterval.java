@@ -32,12 +32,11 @@ public final class RightOpenInterval extends Interval {
      * @param high
      *            The high bound of the interval
      * @throws IllegalArgumentException
-     *             is the low bound is not strictly smaller than the high bound
+     *             is the low bound is greater than or equal to the high bound
      * @return the constructed right open interval
      */
     public static RightOpenInterval of(double low, double high) {
         Preconditions.checkArgument(low < high);
-
         return new RightOpenInterval(low, high);
     }
 
@@ -47,12 +46,11 @@ public final class RightOpenInterval extends Interval {
      * @param size
      *            The size of the interval
      * @throws IllegalArgumentException
-     *             if the size is not strictly positive
+     *             if the size is <= 0
      * @return the constructed right open interval centered in 0
      */
     public static RightOpenInterval symmetric(double size) {
         Preconditions.checkArgument(size > 0);
-
         return new RightOpenInterval(-size / 2.0, size / 2.0);
     }
 
@@ -65,7 +63,7 @@ public final class RightOpenInterval extends Interval {
     }
 
     /**
-     * Brings the angle v to the standard interval [low(), high()[.
+     * Brings the given angle to the standard interval [low(),high()[.
      * 
      * @param v
      *            The value to be brought to the interval
@@ -76,13 +74,13 @@ public final class RightOpenInterval extends Interval {
     }
 
     /**
-     * Returns the rest of the floor.
+     * Returns the remain of the floor.
      * 
      * @param x
-     *            The first given value
+     *            The first value
      * @param y
-     *            The second given value
-     * @return the rest of the floor
+     *            The second value
+     * @return the remain of the floor
      */
     private double floorMod(double x, double y) {
         return x - y * Math.floor(x / y);

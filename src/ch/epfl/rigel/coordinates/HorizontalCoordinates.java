@@ -17,16 +17,16 @@ import ch.epfl.rigel.math.RightOpenInterval;
  */
 public final class HorizontalCoordinates extends SphericalCoordinates {
 
-    // The valid right open interval [0°, 360°[ (in degrees) for the azimuth
+    // The valid right open interval [0,360[ (in degrees) for the azimuth
     private static final RightOpenInterval AZ_INTERVAL_DEG = RightOpenInterval.of(0, 360);
 
-    // The valid right open interval [0, 2*PI[ (in radians) for the azimuth
+    // The valid right open interval [0,2*PI[ (in radians) for the azimuth
     private static final RightOpenInterval AZ_INTERVAL_RAD = RightOpenInterval.of(0, Angle.ofDeg(360));
 
-    // The valid closed interval [-90°, 90°] (in degrees) for the altitude
+    // The valid closed interval [-90,90] (in degrees) for the altitude
     private static final ClosedInterval ALT_INTERVAL_DEG = ClosedInterval.of(-90, 90);
 
-    // The valid closed interval [-PI/2, PI/2] (in radians) for the altitude
+    // The valid closed interval [-PI/2,PI/2] (in radians) for the altitude
     private static final ClosedInterval ALT_INTERVAL_RAD = ClosedInterval.of(Angle.ofDeg(-90), Angle.ofDeg(90));
 
     /**
@@ -178,7 +178,6 @@ public final class HorizontalCoordinates extends SphericalCoordinates {
      * @return the angular distance (in radians) between the receiver and the given point
      */
     public double angularDistanceTo(HorizontalCoordinates that) {
-
         // The receiver's horizontal coordinates
         double az1 = this.az();
         double alt1 = this.alt();
@@ -200,22 +199,21 @@ public final class HorizontalCoordinates extends SphericalCoordinates {
 
     /**
      * Additional method.
-     *
      * Returns a right open interval containing azimuth values (in degrees), of size 45.0 and centered in
      * the given azimuth (center).
      *
      * @param center
-     *            The given center of the right open interval (in degrees)
+     *            The center of the right open interval (in degrees)
      * @throws IllegalArgumentException
      *             if the interval is not valid
      * @return a right open interval centered in the given azimuth (in degrees)
      */
     private RightOpenInterval centeredInterval(double center) {
-        final double HALVED_SIZE = 45.0 / 2.0;
+        double HALVED_SIZE = 45.0 / 2.0;
 
-        double interval1Deg = Preconditions.checkInInterval(AZ_INTERVAL_DEG, center - HALVED_SIZE);
-        double interval2Deg = Preconditions.checkInInterval(AZ_INTERVAL_DEG, center + HALVED_SIZE);
+        double lowBoundDeg = Preconditions.checkInInterval(AZ_INTERVAL_DEG, center - HALVED_SIZE);
+        double highBoundDeg = Preconditions.checkInInterval(AZ_INTERVAL_DEG, center + HALVED_SIZE);
 
-        return RightOpenInterval.of(interval1Deg,interval2Deg);
+        return RightOpenInterval.of(lowBoundDeg,highBoundDeg);
     }
 }

@@ -24,7 +24,7 @@ public final class Asterism {
      */
     public Asterism(List<Star> stars) {
         Preconditions.checkArgument(!stars.isEmpty());
-        this.stars = List.copyOf(stars); // Immutable list of stars
+        this.stars = List.copyOf(stars);
     }
 
     /**

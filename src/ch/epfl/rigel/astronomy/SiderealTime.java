@@ -26,7 +26,7 @@ public final class SiderealTime {
             POLYNOMIAL_S0 = Polynomial.of(0.000025862, 2400.051336, 6.697374558),
             POLYNOMIAL_S1 = Polynomial.of(1.002737909, 0);
 
-    // Used for the normalization of values to the hours of a day, in the interval [0h, 24h[
+    // Used for the normalization of values to the hours of a day
     private static final RightOpenInterval DAY_NORMALIZATION = RightOpenInterval.of(0,24);
 
     /**
@@ -35,18 +35,18 @@ public final class SiderealTime {
     private SiderealTime() {}
 
     /**
-     * Returns the Greenwich sidereal time (the one at longitude 0°) in the interval [0, 2*PI[ (in radians),
+     * Returns the Greenwich sidereal time (the one at longitude 0°) in radians, in the interval [0, 2*PI[,
      * for a given date/time pair.
      *
      * @param when
-     *            The given date/time pair (a moment/epoch)
+     *            The given date/time pair (an epoch)
      * @return the Greenwich sidereal time (in radians)
      */
     public static double greenwich(ZonedDateTime when) {
         // The given epoch expressed in the UTC time-zone
         ZonedDateTime whenUTC = when.withZoneSameInstant(ZoneOffset.UTC);
 
-        // The beginning of the day containing the epoch (i.e. 0h that day)
+        // The beginning of the day containing the epoch (i.e. 0h00 that day)
         ZonedDateTime dayStart = whenUTC.truncatedTo(ChronoUnit.DAYS);
 
         // The number of Julian centuries between the epoch J2000 and the beginning of the day
@@ -61,39 +61,30 @@ public final class SiderealTime {
         // S0 and S1 (in hours)
         double S0 = POLYNOMIAL_S0.at(nbJulianCenturies);
         double S1 = POLYNOMIAL_S1.at(nbMillis_hr);
-
-        // S0 and S1 (in hours) normalized to [0, 24h[
         double normalized_S0 = DAY_NORMALIZATION.reduce(S0);
         double normalized_S1 = DAY_NORMALIZATION.reduce(S1);
 
-        // The Greenwich sidereal time (in hours) normalized to [0, 24h[
+        // The Greenwich sidereal time (in hours)
         double siderealGreenwich_hr = DAY_NORMALIZATION.reduce(normalized_S0 + normalized_S1);
 
         // The Greenwich sidereal time (in radians)
-        double siderealGreenwich_rad = Angle.ofHr(siderealGreenwich_hr);
-
-        // The Greenwich sidereal time (in radians) normalized to [0, 2*PI[
-        return Angle.normalizePositive(siderealGreenwich_rad);
+        return Angle.normalizePositive(Angle.ofHr(siderealGreenwich_hr));
     }
 
     /**
-     * Returns the local sidereal time in the interval [0, 2*PI[ (in radians) for a given date/time pair
-     * and specific to the given location.
+     * Returns the local sidereal time (in radians) for a given date/time pair and specific to the given location.
      *
      * @param when
-     *            The given date-time pair
+     *            The date-time pair
      * @param where
-     *            The given location's geographic coordinates
+     *            The location
      * @return the local sidereal time (in radians) for the given date/time pair and specific to the given location
      */
     public static double local(ZonedDateTime when, GeographicCoordinates where) {
         // The sidereal time (in radians) specific to Greenwich
         double siderealGreenwich = greenwich(when);
 
-        // The local sidereal time, specific to the given location where
-        double localSiderealTime = siderealGreenwich + where.lon();
-
-        // The local sidereal time normalized to [0, 2*PI[
-        return Angle.normalizePositive(localSiderealTime);
+        // The local sidereal time (in radians), specific to the given location
+        return Angle.normalizePositive(siderealGreenwich + where.lon());
     }
 }

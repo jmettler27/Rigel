@@ -7,18 +7,15 @@ import java.util.function.Function;
 import static java.lang.Math.*;
 
 /**
- * A stereographic projection on a plan of the horizontal coordinates of a celestial object visible in the sky.
+ * A stereographic projection on a plane of the horizontal coordinates of a celestial object visible in the sky.
  *
  * @author Mathias Bouilloud (309979)
  * @author Julien Mettler (309999)
  */
 public final class StereographicProjection implements Function<HorizontalCoordinates, CartesianCoordinates> {
 
-    // The center of the projection, projected at the origin of the plan
-    private final HorizontalCoordinates center;
-
-    // The cosine and sine of the center's latitude
-    private final double cosCenterAlt, sinCenterAlt;
+    private final HorizontalCoordinates center; // The center of the projection, projected at the origin of the plane
+    private final double cosCenterAlt, sinCenterAlt; // The cosine and sine of the center's latitude
 
     /**
      * Constructs a stereographic projection centered in the given center point.
@@ -51,8 +48,7 @@ public final class StereographicProjection implements Function<HorizontalCoordin
     }
 
     /**
-     * Returns the radius of the circle corresponding to the projection of the parallel passing through
-     * the given point hor.
+     * Returns the radius of the circle corresponding to the projection of the parallel passing through the given point
      *
      * @param parallel
      *            The point on the parallel
@@ -84,47 +80,45 @@ public final class StereographicProjection implements Function<HorizontalCoordin
         // The longitude of the center of the projection
         double centerLon = center.az();
 
-        // The azimuth (lambda) and the altitude (phi) of the point to be projected
+        // The azimuth and the altitude of the point to be projected
         double az = azAlt.az();
         double alt = azAlt.alt();
 
+        // Calculation variables
         double lambdaDelta = az - centerLon;
         double d = 1.0 / (1.0 + sin(alt) * sinCenterAlt + cos(alt) * cosCenterAlt * cos(lambdaDelta));
 
-        double x = d * cos(alt) * sin(lambdaDelta);
-        double y = d * (sin(alt) * cosCenterAlt - cos(alt) * sinCenterAlt * cos(lambdaDelta));
+        double abscissa = d * cos(alt) * sin(lambdaDelta);
+        double ordinate = d * (sin(alt) * cosCenterAlt - cos(alt) * sinCenterAlt * cos(lambdaDelta));
 
-        return CartesianCoordinates.of(x, y);
+        return CartesianCoordinates.of(abscissa, ordinate);
     }
 
     /**
-     * Returns the horizontal coordinates of the point whose projection on the plan is the given Cartesian coordinate point.
+     * Returns the horizontal coordinates of the point whose projection on the plane is the given Cartesian coordinate point.
      *
      * @param xy
-     *            The Cartesian coordinate point, i.e. the projection of the horizontal coordinates on the plan
+     *            The Cartesian coordinate point, i.e. the projection of the horizontal coordinates on the plane
      * @return the horizontal coordinates of the corresponding point, before projection
      */
     public HorizontalCoordinates inverseApply(CartesianCoordinates xy) {
-        double x = xy.x(); // The abscissa of xy
-        double y = xy.y(); // The ordinate of xy
+        // The abscissa and ordinate of the projected point
+        double x = xy.x();
+        double y = xy.y();
 
         // The radius of the projected parallel (a circle) centered in (x,y)
-        double radius = sqrt(x * x + y * y);
+        double radius = hypot(x, y);
 
         double sinC = (2.0 * radius) / (radius * radius + 1.0);
         double cosC = (1.0 - radius * radius) / (radius * radius + 1.0);
 
-        // The longitude of the center of the projection
-        double centerLon = center.az();
-
-        // Derivation of the azimuth (the first horizontal coordinate):
+        // Calculation of the azimuth (first horizontal coordinate, in radians)
         double numeratorAz = x * sinC;
         double denominatorAz = radius * cosCenterAlt * cosC - y * sinCenterAlt * sinC;
-
-        // The azimuth, normalized in its valid interval [0, 2*PI[
+        double centerLon = center.az(); // The longitude of the center of the projection
         double azRad = Angle.normalizePositive(atan2(numeratorAz, denominatorAz) + centerLon);
 
-        // The second horizontal coordinates, the altitude, in its valid interval [-PI/2, PI/2]
+        // The altitude (second horizontal coordinate, in radians, in its valid interval[-PI/2,PI/2])
         double altRad = asin(cosC * sinCenterAlt + (y * sinC * cosCenterAlt) / radius);
 
         return HorizontalCoordinates.of(azRad, altRad);

@@ -19,14 +19,14 @@ public enum HygDatabaseLoader implements StarCatalogue.Loader {
     INSTANCE();
 
     private static final int
-            HIP = 2, // Index of the star's Hipparcos identification number
-            PROPER = 7, // Index of the star's proper name
-            MAG = 14, // Index of the star's magnitude
-            CI = 17, // Index of the star's B-V color index
-            RARAD = 24, // Index of the star's right ascension (in radians)
-            DECRAD = 25, // Index of the star's declination (in radians)
-            BAYER = 28, // Index of the star's Bayer designation
-            CON = 30; // Index of the short name of the constellation
+            HIP = 2, // The column number of the star's Hipparcos identification number
+            PROPER = 7, // The column number of the star's proper name
+            MAG = 14, // The column number of the star's magnitude
+            CI = 17, // The column number of the star's B-V color index
+            RARAD = 24, // The column number of the star's right ascension (in radians)
+            DECRAD = 25, // The column number of the star's declination (in radians)
+            BAYER = 28, // The column number of the star's Bayer designation
+            CON = 30; // The column number of the short name of the constellation
 
     /**
      * @see StarCatalogue.Loader#load(InputStream, StarCatalogue.Builder)
@@ -34,7 +34,7 @@ public enum HygDatabaseLoader implements StarCatalogue.Loader {
     @Override
     public void load(InputStream inputStream, StarCatalogue.Builder builder) throws IOException {
 
-        // The buffered reader of the given input stream (i.e. the HYG database, encoded in ASCII)
+        // Reads the HYG database, encoded in ASCII
         try (BufferedReader reader =
                      new BufferedReader(
                              new InputStreamReader(
@@ -44,7 +44,7 @@ public enum HygDatabaseLoader implements StarCatalogue.Loader {
 
             String line; // The current line of data (i.e. the current star in the HYG catalogue)
             while ((line = reader.readLine()) != null) {
-                String[] columns = line.split(","); // The 37 informations of the current star
+                String[] columns = line.split(","); // The 37 informations on the current star
 
                 // The star's Hipparcos identification number (0 by default)
                 int hipparcosId = columns[HIP - 1].equals("") ? 0 : Integer.parseInt(columns[HIP - 1]);

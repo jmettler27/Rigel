@@ -44,8 +44,8 @@ public enum MoonModel implements CelestialObjectModel<Moon> {
     public Moon at(double daysSinceJ2010, EclipticToEquatorialConversion eclipticToEquatorialConversion) {
 
         Sun sun = SunModel.SUN.at(daysSinceJ2010, eclipticToEquatorialConversion);
-        double sunMeanAnomaly = Angle.normalizePositive(sun.meanAnomaly()); // The Sun's mean anomaly
-        double sunLon = sun.eclipticPos().lon(); // The Sun's geocentric ecliptic longitude
+        double sunMeanAnomaly = Angle.normalizePositive(sun.meanAnomaly());
+        double sunLon = sun.eclipticPos().lon();
 
         // Step 1 : Deriving the Moon's orbital longitude
 
@@ -92,11 +92,9 @@ public enum MoonModel implements CelestialObjectModel<Moon> {
         // The Moon's corrected longitude of the ascending node
         double correctionAscending = meanLonAscending - ANGLE_CORRECTED_LON * sin(sunMeanAnomaly);
 
-        // Derivation of the Moon's ecliptic longitude
+        // Calculation of the Moon's ecliptic longitude (in radians)
         double numeratorLon = sin(trueOrbitalLon - correctionAscending) * cos(ORBIT_INCLINATION);
         double denominatorLon = cos(trueOrbitalLon - correctionAscending);
-
-        // The Moon's ecliptic longitude (in radians)
         double moonEclipticLon = Angle.normalizePositive(atan2(numeratorLon, denominatorLon) + correctionAscending);
 
         // The Moon's ecliptic latitude (in radians)
@@ -111,10 +109,10 @@ public enum MoonModel implements CelestialObjectModel<Moon> {
         // The Moon's phase (unitless)
         double phase = (1.0 - cos(trueOrbitalLon - sunLon)) / 2.0;
 
-        // Derivation of the distance between the Earth and the Moon
+        // Calculation of the distance between the Earth and the Moon
         double numeratorDistance = 1.0 - ECCENTRICITY * ECCENTRICITY;
         double denominatorDistance = 1.0 + ECCENTRICITY * cos(correctedAnomaly + correctedCenterEqu);
-        double earthMoonDistance = numeratorDistance / denominatorDistance; // The distance between the Earth and the Moon
+        double earthMoonDistance = numeratorDistance / denominatorDistance;
 
         // The Moon's angular size (in radians)
         double angularSize = ANGULAR_SIZE_ORBIT / earthMoonDistance;

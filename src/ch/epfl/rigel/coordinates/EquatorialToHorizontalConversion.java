@@ -47,18 +47,16 @@ public final class EquatorialToHorizontalConversion implements Function<Equatori
         double raRad = equ.ra(); // The right ascension (in radians)
         double decRad = equ.dec(); // The declination (in radians)
 
-        // The hour angle. Is equal to 0 if the astronomical object lies due south
+        // The hour angle
         double hourAngle = SiderealTime.local(when, where) - raRad;
 
-        // Derivation of the altitude (The second horizontal coordinate) :
+        // Calculation of the altitude (second horizontal coordinate, in radians, in its valid interval [-PI/2, PI/2])
         double tempAltitude = sin(decRad) * sinLat + cos(decRad) * cosLat * cos(hourAngle);
-        double altRad = asin(tempAltitude); // The altitude, in its valid range [-PI/2, PI/2]
+        double altRad = asin(tempAltitude);
 
-        // Derivation of the azimuth (the first horizontal coordinate) :
+        // Calculation of the azimuth (first horizontal coordinate)
         double numeratorAz = -cos(decRad) * cosLat * sin(hourAngle);
         double denominatorAz = sin(decRad) - sinLat * sin(altRad);
-
-        // The azimuth, normalized in its valid interval [0, 2*PI[
         double azRad = Angle.normalizePositive(atan2(numeratorAz, denominatorAz));
 
         return HorizontalCoordinates.of(azRad, altRad);

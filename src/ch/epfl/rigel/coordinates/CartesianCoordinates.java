@@ -10,8 +10,7 @@ import java.util.Locale;
  */
 public final class CartesianCoordinates {
 
-    // The abscissa x and the ordinate y
-    private final double x, y;
+    private final double x, y; // The abscissa x and the ordinate y
 
     /**
      * Constructs Cartesian coordinates with the given abscissa and ordinate.
