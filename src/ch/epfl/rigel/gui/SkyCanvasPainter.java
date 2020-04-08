@@ -76,6 +76,7 @@ public final class SkyCanvasPainter {
             // The diameter of the image of the star
             double starCanvasDiameter = PlaneToCanvas.applyToDistance(diameterForMagnitude(s), planeToCanvas);
 
+            //System.out.println(starCanvasPos);
             // Draws and colors the star according to its color temperature
             ctx.setFill(BlackBodyColor.colorForTemperature(s.colorTemperature()));
             drawCircle(starCanvasPos, starCanvasDiameter);
@@ -184,15 +185,21 @@ public final class SkyCanvasPainter {
     void drawHorizon(StereographicProjection projection, Transform planeToCanvas) {
         HorizontalCoordinates hor = HorizontalCoordinates.ofDeg(0, 0);
 
-        CartesianCoordinates center = PlaneToCanvas.applyToPoint(projection.circleCenterForParallel(hor), planeToCanvas);
-        double diameter = 2.0 * PlaneToCanvas.applyToDistance(projection.circleRadiusForParallel(hor), planeToCanvas);
-        System.out.println(projection.circleRadiusForParallel(hor));
-        System.out.println("Center : " + center + ", diameter : " + diameter);
+        // x : 800
+        // y :  600
+        System.out.println(PlaneToCanvas.applyToPoint(projection.circleCenterForParallel(hor), planeToCanvas));
 
-        ctx.setFill(Color.RED);
-        ctx.setLineWidth(2);
+        double canvasRadius = PlaneToCanvas.applyToDistance(projection.circleRadiusForParallel(hor), planeToCanvas);
+        CartesianCoordinates center = CartesianCoordinates.of(400 + canvasRadius / 2.0,550);
+        //PlaneToCanvas.applyToPoint(projection.circleCenterForParallel(hor), planeToCanvas);
 
-        drawCircle(center, diameter);
+        System.out.println("Center : " + center + ", radius : " + canvasRadius);
+
+        ctx.setLineWidth(2.0);
+        ctx.setStroke(Color.RED);
+
+        ctx.strokeOval(center.x() - canvasRadius, center.y() - canvasRadius,  canvasRadius, canvasRadius);
+
     }
 
     /**
