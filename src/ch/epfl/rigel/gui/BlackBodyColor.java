@@ -69,6 +69,7 @@ public abstract class BlackBodyColor {
 
                     int temperature = Integer.parseInt(temperatureString); // The temperature (in degrees Kelvin)
                     String colorString = line.substring(80, 87); // The color (in hexadecimal notation)
+
                     map.put(temperature, colorString);
                 }
             }

@@ -30,6 +30,29 @@ public final class PlaneToCanvas {
     }
 
     /**
+     * Returns an array containing the positions of the given points in the canvas coordinate system, using an affine
+     * transform.
+     *
+     * @param cartesianPositions
+     *            The coordinates of the given points on the plane
+     * @param planeToCanvas
+     *            The affine transform
+     * @return the coordinates of the given points in the canvas coordinate system
+     */
+    public static double[] applyToAllPoints(double[] cartesianPositions, Transform planeToCanvas){
+        double[] transformedPositions = new double[cartesianPositions.length];
+        Transform concatenation = concatenation(planeToCanvas);
+        concatenation.transform2DPoints(cartesianPositions, 0, transformedPositions, 0,
+                cartesianPositions.length / 2);
+
+        // The positions of the images of the celestial objects
+        double[] canvasPositions = new double[cartesianPositions.length];
+        System.arraycopy(transformedPositions, 0, canvasPositions,0, cartesianPositions.length / 2);
+
+        return canvasPositions;
+    }
+
+    /**
      * Expresses the magnitude of the given horizontal vector (a radius or a diameter) in the canvas coordinate system,
      * using an affine transform.
      *
@@ -54,7 +77,7 @@ public final class PlaneToCanvas {
      *            The affine transform
      * @return the concatenation of the dilatation and translation transforms
      */
-    public static Transform concatenation(Transform planeToCanvas) {
+    private static Transform concatenation(Transform planeToCanvas) {
         // Scales the image and reverses the direction of the Y axis
         Transform dilatation = Transform.scale(planeToCanvas.getMxx(), planeToCanvas.getMyy());
 

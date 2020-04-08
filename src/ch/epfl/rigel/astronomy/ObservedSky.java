@@ -22,7 +22,7 @@ public final class ObservedSky {
     private final Moon moon;
     private final List<Planet> planets;
 
-    // The projected positions on the plan of all of the celestial objects in the observed sky
+    // The projected positions on the plane of all of the celestial objects in the observed sky
     private final CartesianCoordinates sunPosition, moonPosition;
     private final double[] planetPositions, starPositions;
     private final Map<CelestialObject, CartesianCoordinates> positions;
@@ -71,24 +71,24 @@ public final class ObservedSky {
         // Modifiable map which associates to each celestial object in the observed sky its Cartesian coordinates on the plan
         Map<CelestialObject, CartesianCoordinates> allObjectsPositions = new HashMap<>();
 
-        // Derives the projected position of the Sun on the plan and puts them in the map
+        // Derives the projected position of the Sun on the plane and puts them in the map
         sunPosition = equToCart.apply(sun.equatorialPos());
         allObjectsPositions.put(sun, sunPosition);
 
-        // Derives the projected position of the Moon on the plan and puts them in the map
+        // Derives the projected position of the Moon on the plane and puts them in the map
         moonPosition = equToCart.apply(moon.equatorialPos());
         allObjectsPositions.put(moon, moonPosition);
 
-        // Derives the projected positions of the planets of the solar system on the plan and puts them in the map
-        planetPositions = new double[14]; // Immutable array of coordinates
-        double[] tempPlanets = multiplePositions(planets, equToCart, allObjectsPositions);
-        System.arraycopy(tempPlanets, 0, planetPositions,0,  2 * planets.size());
+        // Derives the projected positions of the planets of the solar system on the plane and puts them in the map
+        planetPositions = new double[2 * planets.size()]; // Immutable array of coordinates
+        double[] tempPlanetPositions = multiplePositions(planets, equToCart, allObjectsPositions);
+        System.arraycopy(tempPlanetPositions, 0, planetPositions,0,  2 * planets.size());
 
 
-        // Derives the projected positions of the stars of the catalogue on the plan and puts them in the map
-        starPositions = new double[2*stars().size()]; // Immutable array of coordinates
-        double[] tempStars = multiplePositions(stars(), equToCart, allObjectsPositions);
-        System.arraycopy(tempStars, 0, starPositions, 0,  2 * stars().size());
+        // Derives the projected positions of the stars of the catalogue on the plane and puts them in the map
+        starPositions = new double[2 * stars().size()]; // Immutable array of coordinates
+        double[] tempStarPositions = multiplePositions(stars(), equToCart, allObjectsPositions);
+        System.arraycopy(tempStarPositions, 0, starPositions, 0,  2 * stars().size());
 
         positions = Map.copyOf(allObjectsPositions);  // Immutable map
     }
@@ -182,14 +182,14 @@ public final class ObservedSky {
      * Returns the closest celestial object to the given point on the plan, as long as it is within the maximum distance.
      *
      * @param searchPoint
-     *            The given search point on the plan (in Cartesian coordinates), i.e. the position of the mouse pointer
+     *            The given search point on the plane (in Cartesian coordinates), i.e. the position of the mouse pointer
      * @param maxDistance
      *            The maximum search distance
      * @return the closest celestial object to the given point
      */
     public Optional<CelestialObject> objectClosestTo(CartesianCoordinates searchPoint, double maxDistance) {
 
-        // The positions on the plan of the celestial objects of the sky who are close to the given search point
+        // The positions on the plane of the celestial objects of the sky who are close to the given search point
         Map<CelestialObject, CartesianCoordinates> closePositions = new HashMap<>();
 
         // Adds to the map only the celestial objects who are contained in a square centered in the given search point
@@ -228,20 +228,22 @@ public final class ObservedSky {
      *            The list of celestial objects
      * @param equToCart
      *            The conversion from equatorial to Cartesian coordinates of one celestial object
-     * @param allObjectsPositions
+     * @param positions
      *            The map which associated to each Celestial object its position on the plan
      */
     private double[] multiplePositions(List<? extends CelestialObject> list, EquatorialToCartesianConversion equToCart,
-                                         Map<CelestialObject, CartesianCoordinates> allObjectsPositions) {
+                                         Map<CelestialObject, CartesianCoordinates> positions) {
 
-        double[] tempPositions = new double[2*list.size()];
+        double[] tempPositions = new double[2 * list.size()];
 
         for (int i = 0; i < list.size(); i++) {
             CelestialObject object = list.get(i);
+
             CartesianCoordinates cartesianPos = equToCart.apply(object.equatorialPos());
             tempPositions[2 * i] = cartesianPos.x();
             tempPositions[2 * i + 1] = cartesianPos.y();
-            allObjectsPositions.put(object, cartesianPos);
+
+            positions.put(object, cartesianPos);
         }
         return tempPositions;
     }
@@ -249,7 +251,7 @@ public final class ObservedSky {
     /**
      * Additional method.
      * Checks if another celestial object is contained a square centered in the search point and whose side is twice
-     * the maximum search distance.
+     * the maximum search distance. // A METTRE DANS CartesianCoordinates
      *
      * @param otherPos
      *            The other celestial object's position on the plan
@@ -267,7 +269,7 @@ public final class ObservedSky {
 
     /**
      * Additional method.
-     * Derives the distance between the two given points on the plan.
+     * Derives the distance between the two given points on the plan. // A METTRE DANS CartesianCoordinates
      *
      * @param point1
      *            The Cartesian coordinates of the first point on the plan
