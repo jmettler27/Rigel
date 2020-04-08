@@ -47,7 +47,7 @@ public final class PlaneToCanvas {
 
         // The positions of the images of the celestial objects
         double[] canvasPositions = new double[cartesianPositions.length];
-        System.arraycopy(transformedPositions, 0, canvasPositions,0, cartesianPositions.length / 2);
+        System.arraycopy(transformedPositions, 0, canvasPositions,0, transformedPositions.length);
 
         return canvasPositions;
     }
@@ -66,7 +66,7 @@ public final class PlaneToCanvas {
         Transform concatenation = concatenation(planeToCanvas);
         Point2D canvasVector = concatenation.deltaTransform(x, 0);
 
-        return 2.0 * canvasVector.magnitude(); // The magnitude of the vector
+        return canvasVector.magnitude(); // The magnitude of the vector
     }
 
     /**

@@ -9,9 +9,11 @@ import ch.epfl.rigel.math.Angle;
 import ch.epfl.rigel.math.ClosedInterval;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
+import javafx.geometry.VPos;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import javafx.scene.text.TextAlignment;
 import javafx.scene.transform.Transform;
 
 import java.util.List;
@@ -31,6 +33,7 @@ public final class SkyCanvasPainter {
 
     // The diameter of the disc of a celestial object with an angular size of 0.5 degrees.
     private static final double DIAMETER = 2.0 * Math.tan(Angle.ofDeg(0.5) / 4.0);
+
 
     /**
      * Constructs a painter of the observed sky.
@@ -74,7 +77,7 @@ public final class SkyCanvasPainter {
                     starCanvasPositions[index * 2], starCanvasPositions[index * 2 + 1]);
 
             // The diameter of the image of the star
-            double starCanvasDiameter = PlaneToCanvas.applyToDistance(diameterForMagnitude(s), planeToCanvas);
+            double starCanvasDiameter = 2.0 * PlaneToCanvas.applyToDistance(diameterForMagnitude(s), planeToCanvas);
 
             //System.out.println(starCanvasPos);
             // Draws and colors the star according to its color temperature
@@ -103,7 +106,7 @@ public final class SkyCanvasPainter {
         int index = 0;
         for (Planet p : planets) {
             // The diameter of the image of the planet
-            double planetCanvasDiameter = PlaneToCanvas.applyToDistance(diameterForMagnitude(p), planeToCanvas);
+            double planetCanvasDiameter = 2.0 * PlaneToCanvas.applyToDistance(diameterForMagnitude(p), planeToCanvas);
 
             CartesianCoordinates planetCanvasPos = CartesianCoordinates.of(
                     planetCanvasPositions[index * 2], planetCanvasPositions[index * 2 + 1]);
@@ -185,21 +188,43 @@ public final class SkyCanvasPainter {
     void drawHorizon(StereographicProjection projection, Transform planeToCanvas) {
         HorizontalCoordinates hor = HorizontalCoordinates.ofDeg(0, 0);
 
-        // x : 800
-        // y :  600
-        System.out.println(PlaneToCanvas.applyToPoint(projection.circleCenterForParallel(hor), planeToCanvas));
-
         double canvasRadius = PlaneToCanvas.applyToDistance(projection.circleRadiusForParallel(hor), planeToCanvas);
-        CartesianCoordinates center = CartesianCoordinates.of(400 + canvasRadius / 2.0,550);
-        //PlaneToCanvas.applyToPoint(projection.circleCenterForParallel(hor), planeToCanvas);
+        CartesianCoordinates center = PlaneToCanvas.applyToPoint(projection.circleCenterForParallel(hor), planeToCanvas);
 
-        System.out.println("Center : " + center + ", radius : " + canvasRadius);
+        CartesianCoordinates horizon = CartesianCoordinates.of(center.x(), center.y() - canvasRadius);
+        double altUnderHorizon = Angle.ofDeg(projection.inverseApply(horizon).altDeg() - 0.5);
+
+        HorizontalCoordinates south = HorizontalCoordinates.ofDeg(180, altUnderHorizon);
+        drawCardinalPoints(south, projection, planeToCanvas);
+
+        HorizontalCoordinates southWest = HorizontalCoordinates.ofDeg(225, altUnderHorizon);
+        drawCardinalPoints(southWest, projection, planeToCanvas);
+
+        HorizontalCoordinates west = HorizontalCoordinates.ofDeg(270, altUnderHorizon);
+        drawCardinalPoints(west, projection, planeToCanvas);
+
+        HorizontalCoordinates northWest = HorizontalCoordinates.ofDeg(315, altUnderHorizon);
+        drawCardinalPoints(northWest, projection, planeToCanvas);
+
+        HorizontalCoordinates north = HorizontalCoordinates.ofDeg(0, altUnderHorizon);
+        drawCardinalPoints(north, projection, planeToCanvas);
+
+        HorizontalCoordinates northEast = HorizontalCoordinates.ofDeg(45, altUnderHorizon);
+        drawCardinalPoints(northEast, projection, planeToCanvas);
+
+        HorizontalCoordinates east = HorizontalCoordinates.ofDeg(90, altUnderHorizon);
+        drawCardinalPoints(east, projection, planeToCanvas);
+
+        HorizontalCoordinates southEast = HorizontalCoordinates.ofDeg(135, altUnderHorizon);
+        drawCardinalPoints(southEast, projection, planeToCanvas);
+
+
+
 
         ctx.setLineWidth(2.0);
         ctx.setStroke(Color.RED);
 
-        ctx.strokeOval(center.x() - canvasRadius, center.y() - canvasRadius,  canvasRadius, canvasRadius);
-
+        ctx.strokeOval(center.x() - canvasRadius, center.y() - canvasRadius,  2.0 * canvasRadius, 2.0 * canvasRadius);
     }
 
     /**
@@ -253,7 +278,7 @@ public final class SkyCanvasPainter {
      */
     private void drawCircle(CartesianCoordinates upperLeftBound, double diameter) {
         ctx.fillOval(upperLeftBound.x() - diameter / 2.0, upperLeftBound.y() - diameter / 2.0,
-                diameter / 2.0, diameter / 2.0);
+                diameter, diameter);
     }
 
     /**
@@ -270,5 +295,13 @@ public final class SkyCanvasPainter {
         // The size factor (between 10% and 95% of the diameter of an object whose angular size is 0.5 degrees)
         double sizeFactor = (99.0 - 17.0 * clippedMagnitude) / 140.0;
         return sizeFactor * DIAMETER;
+    }
+
+    private void drawCardinalPoints(HorizontalCoordinates hor, StereographicProjection projection, Transform planeToCanvas){
+        ctx.setFill(Color.RED);
+        ctx.setTextAlign(TextAlignment.CENTER);
+        ctx.setTextBaseline(VPos.TOP);
+        CartesianCoordinates cartesianPos = PlaneToCanvas.applyToPoint(projection.apply(hor), planeToCanvas);
+        ctx.fillText(hor.azOctantName("N","E","S","W"), cartesianPos.x(), cartesianPos.y());
     }
 }

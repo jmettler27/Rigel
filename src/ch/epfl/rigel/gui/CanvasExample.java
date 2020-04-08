@@ -24,7 +24,6 @@ public class CanvasExample extends Application
     {
         // Create the Canvas
         Canvas canvas = new Canvas(400, 200);
-        Bounds borders = canvas.getBoundsInLocal();
 
         // Get the graphics context of the canvas
         GraphicsContext ctx = canvas.getGraphicsContext2D();

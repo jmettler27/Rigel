@@ -21,10 +21,11 @@ class PlaneToCanvasTest {
         CartesianCoordinates canvasPos = PlaneToCanvas.applyToPoint(cartesianPos, PLANE_TO_CANVAS);
 
         assertEquals(canvasPositions[0], canvasPos.x());
-        assertEquals(canvasPositions[1], cartesianPos.y());
+        assertEquals(canvasPositions[1], canvasPos.y());
     }
 
     @Test
     void applyToDistance() {
+        System.out.println(PlaneToCanvas.applyToDistance(1.0, PLANE_TO_CANVAS));
     }
 }
