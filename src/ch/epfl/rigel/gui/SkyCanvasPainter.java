@@ -3,7 +3,6 @@ package ch.epfl.rigel.gui;
 import ch.epfl.rigel.astronomy.*;
 import ch.epfl.rigel.coordinates.*;
 import ch.epfl.rigel.math.Angle;
-import ch.epfl.rigel.math.ClosedInterval;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.geometry.VPos;
@@ -25,12 +24,6 @@ public final class SkyCanvasPainter {
 
     private final Canvas canvas;
     private final GraphicsContext ctx; // The graphics context associated to the canvas
-
-    private static final ClosedInterval MAGNITUDE_INTERVAL = ClosedInterval.of(-2, 5);
-
-    // The diameter of the disc of a celestial object with an angular size of 0.5 degrees.
-    private static final double DIAMETER = 2.0 * Math.tan(Angle.ofDeg(0.5) / 4.0);
-
 
     /**
      * Constructs a painter of the observed sky.
@@ -74,12 +67,11 @@ public final class SkyCanvasPainter {
                     starCanvasPositions[index * 2], starCanvasPositions[index * 2 + 1]);
 
             // The diameter of the image of the star
-            double starCanvasDiameter = 2.0 * PlaneToCanvas.applyToDistance(diameterForMagnitude(s), planeToCanvas);
+            double starCanvasDiameter = PlaneToCanvas.applyToDistance(s.discSize(), planeToCanvas);
 
-            //System.out.println(starCanvasPos);
             // Draws and colors the star according to its color temperature
             ctx.setFill(BlackBodyColor.colorForTemperature(s.colorTemperature()));
-            drawCircle(starCanvasPos, starCanvasDiameter);
+            drawFilledCircle(starCanvasPos, starCanvasDiameter);
 
             ++index;
         }
@@ -103,13 +95,13 @@ public final class SkyCanvasPainter {
         int index = 0;
         for (Planet p : planets) {
             // The diameter of the image of the planet
-            double planetCanvasDiameter = 2.0 * PlaneToCanvas.applyToDistance(diameterForMagnitude(p), planeToCanvas);
+            double planetCanvasDiameter = PlaneToCanvas.applyToDistance(p.discSize(), planeToCanvas);
 
             CartesianCoordinates planetCanvasPos = CartesianCoordinates.of(
                     planetCanvasPositions[index * 2], planetCanvasPositions[index * 2 + 1]);
 
             ctx.setFill(Color.LIGHTGRAY);
-            drawCircle(planetCanvasPos, planetCanvasDiameter);
+            drawFilledCircle(planetCanvasPos, planetCanvasDiameter);
 
             ++index;
         }
@@ -137,15 +129,14 @@ public final class SkyCanvasPainter {
         double sunCanvasDiameter = PlaneToCanvas.applyToDistance(sunDiameter, planeToCanvas);
 
         // Draws the three concentric discs composing the image of the Sun, from the largest to the smallest
-
         ctx.setFill(Color.YELLOW.deriveColor(0, 0, 0, 0.25));
-        drawCircle(sunCanvasPosition, sunCanvasDiameter * 2.2);
+        drawFilledCircle(sunCanvasPosition, sunCanvasDiameter * 2.2);
 
         ctx.setFill(Color.YELLOW);
-        drawCircle(sunCanvasPosition, sunCanvasDiameter + 2.0);
+        drawFilledCircle(sunCanvasPosition, sunCanvasDiameter + 2.0);
 
         ctx.setFill(Color.WHITE);
-        drawCircle(sunCanvasPosition, sunCanvasDiameter);
+        drawFilledCircle(sunCanvasPosition, sunCanvasDiameter);
     }
 
     /**
@@ -170,7 +161,7 @@ public final class SkyCanvasPainter {
         double moonCanvasDiameter = PlaneToCanvas.applyToDistance(moonDiameter, planeToCanvas);
 
         ctx.setFill(Color.WHITE);
-        drawCircle(moonCanvasPosition, moonCanvasDiameter);
+        drawFilledCircle(moonCanvasPosition, moonCanvasDiameter);
     }
 
     /**
@@ -280,25 +271,9 @@ public final class SkyCanvasPainter {
      * @param diameter
      *            The diameter of the circle
      */
-    private void drawCircle(CartesianCoordinates upperLeftBound, double diameter) {
+    private void drawFilledCircle(CartesianCoordinates upperLeftBound, double diameter) {
         ctx.fillOval(upperLeftBound.x() - diameter / 2.0, upperLeftBound.y() - diameter / 2.0,
                 diameter, diameter);
-    }
-
-    /**
-     * Returns the diameter of the disc representing the given celestial object (star or planet) according to its
-     * magnitude.
-     *
-     * @param object
-     *            The celestial object (star or planet)
-     * @return the diameter of the disc
-     */
-    private static double diameterForMagnitude(CelestialObject object) {
-        double clippedMagnitude = MAGNITUDE_INTERVAL.clip(object.magnitude()); // The magnitude is clipped to [-2, 5]
-
-        // The size factor (between 10% and 95% of the diameter of an object whose angular size is 0.5 degrees)
-        double sizeFactor = (99.0 - 17.0 * clippedMagnitude) / 140.0;
-        return sizeFactor * DIAMETER;
     }
 
     /**
@@ -318,6 +293,6 @@ public final class SkyCanvasPainter {
         ctx.setTextBaseline(VPos.TOP);
 
         CartesianCoordinates canvasPos = PlaneToCanvas.applyToPoint(projection.apply(hor), planeToCanvas);
-        ctx.fillText(hor.azOctantName("N","E","S","W"), canvasPos.x(), canvasPos.y());
+        ctx.fillText(hor.azOctantName("N","E","S","O"), canvasPos.x(), canvasPos.y());
     }
 }

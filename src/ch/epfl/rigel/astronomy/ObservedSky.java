@@ -1,15 +1,13 @@
 package ch.epfl.rigel.astronomy;
 
 import ch.epfl.rigel.coordinates.*;
-import ch.epfl.rigel.math.ClosedInterval;
-
-import static java.lang.Math.*;
 
 import java.time.ZonedDateTime;
 import java.util.*;
 
 /**
- * A set of celestial objects projected on the plane by stereographic projection, at a given epoch and place of observation.
+ * A set of celestial objects projected on the plane by a stereographic projection, at a given epoch and place of
+ * observation.
  *
  * @author Mathias Bouilloud (309979)
  * @author Julien Mettler (309999)
@@ -80,17 +78,14 @@ public final class ObservedSky {
         allObjectsPositions.put(moon, moonPosition);
 
         // Derives the projected positions of the planets of the solar system on the plane and puts them in the map
-        planetPositions = new double[2 * planets.size()]; // Immutable array of coordinates
         double[] tempPlanetPositions = multiplePositions(planets, equToCart, allObjectsPositions);
-        System.arraycopy(tempPlanetPositions, 0, planetPositions,0,  2 * planets.size());
-
+        planetPositions = Arrays.copyOf(tempPlanetPositions, 2 * planets.size());
 
         // Derives the projected positions of the stars of the catalogue on the plane and puts them in the map
-        starPositions = new double[2 * stars().size()]; // Immutable array of coordinates
         double[] tempStarPositions = multiplePositions(stars(), equToCart, allObjectsPositions);
-        System.arraycopy(tempStarPositions, 0, starPositions, 0,  2 * stars().size());
+        starPositions = Arrays.copyOf(tempStarPositions, 2 * stars().size());
 
-        positions = Map.copyOf(allObjectsPositions);  // Immutable map
+        positions = Map.copyOf(allObjectsPositions);  // Unmodifiable map
     }
 
     /**
@@ -197,7 +192,7 @@ public final class ObservedSky {
         for (CelestialObject object : positions.keySet()) {
             CartesianCoordinates objectPos = positions.get(object);
 
-            if (squareContains(objectPos, searchPoint, maxDistance)) {
+            if (objectPos.isContainedInSquare(searchPoint, maxDistance)) {
                 closePositions.put(object, objectPos);
             }
         }
@@ -206,12 +201,12 @@ public final class ObservedSky {
         CelestialObject closestObject = null; // The closest object to the search point
 
         // Determines which of the celestial objects on the map is closest to the given point
-        for (CelestialObject closeObject : closePositions.keySet()) {
-            double distanceToObject = distanceBetween(closePositions.get(closeObject), searchPoint);
+        for (CelestialObject nearObject : closePositions.keySet()) {
+            double distanceToObject = searchPoint.distanceTo(closePositions.get(nearObject));
 
             if (distanceToObject < minDistance) {
                 minDistance = distanceToObject;
-                closestObject = closeObject;
+                closestObject = nearObject;
             }
         }
         // Returns a full cell when a non null celestial object closer than the maximum distance from the given point
@@ -229,7 +224,7 @@ public final class ObservedSky {
      * @param equToCart
      *            The conversion from equatorial to Cartesian coordinates of one celestial object
      * @param positions
-     *            The map which associated to each Celestial object its position on the plan
+     *            The map which associates to each Celestial object its position on the plane
      */
     private double[] multiplePositions(List<? extends CelestialObject> list, EquatorialToCartesianConversion equToCart,
                                          Map<CelestialObject, CartesianCoordinates> positions) {
@@ -246,39 +241,5 @@ public final class ObservedSky {
             positions.put(object, cartesianPos);
         }
         return tempPositions;
-    }
-
-    /**
-     * Additional method.
-     * Checks if another celestial object is contained a square centered in the search point and whose side is twice
-     * the maximum search distance. // A METTRE DANS CartesianCoordinates
-     *
-     * @param otherPos
-     *            The other celestial object's position on the plan
-     * @param center
-     *            The center of the square, i.e. the search point
-     * @param halfSide
-     *            The half side of the square, i.e. the maximum search distance
-     * @return true if the other celestial object is contained in the square
-     */
-    private boolean squareContains(CartesianCoordinates otherPos, CartesianCoordinates center, double halfSide) {
-        ClosedInterval xSide = ClosedInterval.of(center.x() - halfSide, center.x() + halfSide);
-        ClosedInterval ySide = ClosedInterval.of(center.y() - halfSide, center.y() + halfSide);
-        return (xSide.contains(otherPos.x()) && ySide.contains(otherPos.y()));
-    }
-
-    /**
-     * Additional method.
-     * Derives the distance between the two given points on the plan. // A METTRE DANS CartesianCoordinates
-     *
-     * @param point1
-     *            The Cartesian coordinates of the first point on the plan
-     * @param point2
-     *            The Cartesian coordinates of the second point on the plan
-     * @return the distance between the two points on the plan
-     */
-    private double distanceBetween(CartesianCoordinates point1, CartesianCoordinates point2) {
-        double x1 = point1.x(), x2 = point2.x(), y1 = point1.y(), y2 = point2.y();
-        return hypot(x1 - x2, y1 - y2);
     }
 }

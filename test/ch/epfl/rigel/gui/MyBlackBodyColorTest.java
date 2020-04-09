@@ -5,6 +5,9 @@ import javafx.scene.paint.Color;
 import org.junit.jupiter.api.Test;
 
 import java.io.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -42,7 +45,6 @@ class MyBlackBodyColorTest {
         assertEquals(29600, closestMultipleTo(29550));
         assertEquals(10000, closestMultipleTo(9950));
         assertEquals(9900, closestMultipleTo(9949));
-
     }
 
     private static int closestMultipleTo(int number) {

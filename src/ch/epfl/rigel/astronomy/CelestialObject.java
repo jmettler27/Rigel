@@ -2,6 +2,8 @@ package ch.epfl.rigel.astronomy;
 
 import ch.epfl.rigel.Preconditions;
 import ch.epfl.rigel.coordinates.EquatorialCoordinates;
+import ch.epfl.rigel.math.Angle;
+import ch.epfl.rigel.math.ClosedInterval;
 
 import java.util.Objects;
 
@@ -22,6 +24,15 @@ public abstract class CelestialObject {
 
     // The apparent magnitude (unitless), i.e. the luminosity of the object as perceived from the Earth
     private final float magnitude;
+
+    // The diameter of the disc representing this celestial object, according to its magnitude
+    private final double discSize;
+
+    // Used to clip this celestial object's magnitude to [-2,5]
+    private static final ClosedInterval MAGNITUDE_INTERVAL = ClosedInterval.of(-2, 5);
+
+    // The diameter of the disc of a celestial object with an angular size of 0.5 degrees.
+    private static final double DISC_SIZE_HALF_DEGREE = 2.0 * Math.tan(Angle.ofDeg(0.5) / 4.0);
 
     /**
      * Constructs a celestial object with the given name, equatorial position, angular size and magnitude.
@@ -47,6 +58,13 @@ public abstract class CelestialObject {
         this.angularSize = angularSize;
 
         this.magnitude = magnitude;
+
+        // The magnitude is clipped to [-2, 5]
+        double clippedMagnitude = MAGNITUDE_INTERVAL.clip(magnitude);
+        // The size factor (between 10% and 95% of the diameter of an object whose angular size is 0.5 degrees)
+        double sizeFactor = (99.0 - 17.0 * clippedMagnitude) / 140.0;
+
+        this.discSize = sizeFactor * DISC_SIZE_HALF_DEGREE;
     }
 
     /**
@@ -87,6 +105,15 @@ public abstract class CelestialObject {
      */
     public String info() {
         return name();
+    }
+
+    /**
+     * Additional method.
+     * Returns the size of the disc corresponding to this celestial object
+     * @return the size of the disc corresponding to this celestial object
+     */
+    public double discSize() {
+        return discSize;
     }
 
     /**

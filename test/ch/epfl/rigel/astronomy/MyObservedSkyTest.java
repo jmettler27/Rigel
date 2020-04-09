@@ -48,62 +48,53 @@ class MyObservedSkyTest {
     void planetPositions() throws IOException {
         StarCatalogue catalogue = buildCatalogue();
         ObservedSky sky = new ObservedSky(ZDT_20200404, WHERE, PROJECTION, catalogue);
-
-      /*  double[][] planetPositions = sky.planetPositions();
-        List<Planet> planets = sky.planets();
-        for (int i = 0; i < planetPositions[0].length; ++i) {
-            System.out.println(planetPositions[0][i]);
-        }*/
-
-
     }
 
-        @Test
-        void stars () {
-        }
-
-        @Test
-        void starPositions () throws IOException {
-        }
-
-        @Test
-        void asterisms () {
-        }
-
-        @Test
-        void asterismsIndices () {
-        }
-
-        @Test
-        void objectClosestTo () throws IOException {
-            StarCatalogue catalogue = buildCatalogue();
-            ObservedSky sky = new ObservedSky(ZDT_20200404, WHERE, PROJECTION, catalogue);
-
-            CartesianCoordinates searchPoint = EQU_TO_CART
-                    .apply(EquatorialCoordinates.of(0.004696959812148989, -0.861893035343076));
-
-            Optional<CelestialObject> closestObject = sky.objectClosestTo(searchPoint, 0.1);
-            assertEquals("Tau Phe", closestObject.get().name());
-
-            Optional<CelestialObject> closestObject1 = sky.objectClosestTo(searchPoint, 0.001);
-            assertEquals(Optional.empty(), closestObject1);
-
-        }
-
-        @Test
-        void addPositionsWorks () {
-        }
-
-
-        private StarCatalogue buildCatalogue () throws IOException {
-            StarCatalogue catalogue;
-            try (InputStream hygStream = getClass().getResourceAsStream(MyHygDatabaseLoaderTest.HYG_CATALOGUE_NAME);
-                 InputStream astStream = getClass().getResourceAsStream(MyAsterismLoaderTest.AST_CATALOGUE_NAME)) {
-                catalogue = new StarCatalogue.Builder()
-                        .loadFrom(hygStream, HygDatabaseLoader.INSTANCE)
-                        .loadFrom(astStream, AsterismLoader.INSTANCE)
-                        .build();
-            }
-            return catalogue;
-        }
+    @Test
+    void stars() {
     }
+
+    @Test
+    void starPositions() throws IOException {
+    }
+
+    @Test
+    void asterisms() {
+    }
+
+    @Test
+    void asterismsIndices() {
+    }
+
+    @Test
+    void objectClosestTo() throws IOException {
+        StarCatalogue catalogue = buildCatalogue();
+        ObservedSky sky = new ObservedSky(ZDT_20200404, WHERE, PROJECTION, catalogue);
+
+        CartesianCoordinates searchPoint = EQU_TO_CART
+                .apply(EquatorialCoordinates.of(0.004696959812148989, -0.861893035343076));
+
+        Optional<CelestialObject> closestObject = sky.objectClosestTo(searchPoint, 0.1);
+        assertEquals("Tau Phe", closestObject.get().name());
+
+        Optional<CelestialObject> closestObject1 = sky.objectClosestTo(searchPoint, 0.001);
+        assertEquals(Optional.empty(), closestObject1);
+    }
+
+    @Test
+    void addPositionsWorks() {
+    }
+
+
+    private StarCatalogue buildCatalogue() throws IOException {
+        StarCatalogue catalogue;
+        try (InputStream hygStream = getClass().getResourceAsStream(MyHygDatabaseLoaderTest.HYG_CATALOGUE_NAME);
+             InputStream astStream = getClass().getResourceAsStream(MyAsterismLoaderTest.AST_CATALOGUE_NAME)) {
+            catalogue = new StarCatalogue.Builder()
+                    .loadFrom(hygStream, HygDatabaseLoader.INSTANCE)
+                    .loadFrom(astStream, AsterismLoader.INSTANCE)
+                    .build();
+        }
+        return catalogue;
+    }
+}

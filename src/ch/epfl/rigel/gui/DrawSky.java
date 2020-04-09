@@ -48,6 +48,9 @@ public final class DrawSky extends Application {
 
             painter.clear();
             painter.drawStars(sky, planeToCanvas);
+            painter.drawPlanets(sky, planeToCanvas);
+            painter.drawSun(sky, projection, planeToCanvas);
+            painter.drawMoon(sky, projection, planeToCanvas);
             painter.drawHorizon(projection, planeToCanvas);
 
             WritableImage fxImage = canvas.snapshot(null, null);

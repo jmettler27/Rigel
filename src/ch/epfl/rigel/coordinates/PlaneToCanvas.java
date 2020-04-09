@@ -3,6 +3,8 @@ package ch.epfl.rigel.coordinates;
 import javafx.geometry.Point2D;
 import javafx.scene.transform.Transform;
 
+import java.util.Arrays;
+
 /**
  * Additional class.
  * The methods allowing to transform Cartesian coordinates produced by a stereographic projection into coordinates of
@@ -40,16 +42,13 @@ public final class PlaneToCanvas {
      * @return the coordinates of the given points in the canvas coordinate system
      */
     public static double[] applyToAllPoints(double[] cartesianPositions, Transform planeToCanvas){
-        double[] transformedPositions = new double[cartesianPositions.length];
+        double[] canvasPositions = new double[cartesianPositions.length];
         Transform concatenation = concatenation(planeToCanvas);
-        concatenation.transform2DPoints(cartesianPositions, 0, transformedPositions, 0,
+        concatenation.transform2DPoints(cartesianPositions, 0, canvasPositions, 0,
                 cartesianPositions.length / 2);
 
         // The positions of the images of the celestial objects
-        double[] canvasPositions = new double[cartesianPositions.length];
-        System.arraycopy(transformedPositions, 0, canvasPositions,0, transformedPositions.length);
-
-        return canvasPositions;
+        return Arrays.copyOf(canvasPositions, cartesianPositions.length);
     }
 
     /**
