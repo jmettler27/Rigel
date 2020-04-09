@@ -1,7 +1,6 @@
 package ch.epfl.rigel.gui;
 
 import ch.epfl.rigel.Preconditions;
-import ch.epfl.rigel.math.RightOpenInterval;
 import javafx.scene.paint.Color;
 
 import java.io.*;
@@ -15,10 +14,15 @@ import java.util.Map;
  * @author Mathias Bouilloud (309979)
  * @author Julien Mettler (309999)
  */
-public abstract class BlackBodyColor {
+public final class BlackBodyColor {
 
     private static final String COLOR_FILE_NAME = "/bbr_color.txt";
     private static final Map<Integer, String> TEMPERATURE_COLOR_MAP = temperatureColorMap();
+
+    /**
+     * Default constructor.
+     */
+    private BlackBodyColor() {}
 
     /**
      * Constructs ecliptic coordinates (in radians) with the given longitude and latitude (in radians).
@@ -76,7 +80,7 @@ public abstract class BlackBodyColor {
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
-        return Map.copyOf(map);
+        return map;
     }
 
     /**
