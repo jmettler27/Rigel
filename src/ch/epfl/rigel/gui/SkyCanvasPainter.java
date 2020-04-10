@@ -39,9 +39,10 @@ public final class SkyCanvasPainter {
      * Clears the canvas.
      */
     void clear() {
-        // Sets the color of the image to black
-        canvas.getGraphicsContext2D().setFill(Color.BLACK);
-        canvas.getGraphicsContext2D().fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+        ctx.clearRect(0,0, canvas.getWidth(), canvas.getHeight());
+        // Sets the color of the image to black=
+        ctx.setFill(Color.BLACK);
+        ctx.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
     }
 
     /**
@@ -69,8 +70,7 @@ public final class SkyCanvasPainter {
             double starCanvasDiameter = PlaneToCanvas.applyToDistance(s.discSize(), planeToCanvas);
 
             // Draws and colors the star according to its color temperature
-            ctx.setFill(BlackBodyColor.colorForTemperature(s.colorTemperature()));
-            drawFilledCircle(starCanvasPos, starCanvasDiameter);
+            drawFilledCircle(starCanvasPos, starCanvasDiameter, BlackBodyColor.colorForTemperature(s.colorTemperature()));
 
             ++index;
         }
@@ -99,8 +99,7 @@ public final class SkyCanvasPainter {
             CartesianCoordinates planetCanvasPos = CartesianCoordinates.of(
                     planetCanvasPositions[index * 2], planetCanvasPositions[index * 2 + 1]);
 
-            ctx.setFill(Color.LIGHTGRAY);
-            drawFilledCircle(planetCanvasPos, planetCanvasDiameter);
+            drawFilledCircle(planetCanvasPos, planetCanvasDiameter, Color.LIGHTGRAY);
 
             ++index;
         }
@@ -128,14 +127,9 @@ public final class SkyCanvasPainter {
         double sunCanvasDiameter = PlaneToCanvas.applyToDistance(sunDiameter, planeToCanvas);
 
         // Draws the three concentric discs composing the image of the Sun, from the largest to the smallest
-        ctx.setFill(Color.YELLOW.deriveColor(0, 0, 0, 0.25));
-        drawFilledCircle(sunCanvasPosition, sunCanvasDiameter * 2.2);
-
-        ctx.setFill(Color.YELLOW);
-        drawFilledCircle(sunCanvasPosition, sunCanvasDiameter + 2.0);
-
-        ctx.setFill(Color.WHITE);
-        drawFilledCircle(sunCanvasPosition, sunCanvasDiameter);
+        drawFilledCircle(sunCanvasPosition, sunCanvasDiameter * 2.2, Color.YELLOW.deriveColor(0, 0, 0, 0.25));
+        drawFilledCircle(sunCanvasPosition, sunCanvasDiameter + 2.0, Color.YELLOW);
+        drawFilledCircle(sunCanvasPosition, sunCanvasDiameter, Color.WHITE);
     }
 
     /**
@@ -159,8 +153,7 @@ public final class SkyCanvasPainter {
         CartesianCoordinates moonCanvasPosition = PlaneToCanvas.applyToPoint(moonPosition, planeToCanvas);
         double moonCanvasDiameter = PlaneToCanvas.applyToDistance(moonDiameter, planeToCanvas);
 
-        ctx.setFill(Color.WHITE);
-        drawFilledCircle(moonCanvasPosition, moonCanvasDiameter);
+        drawFilledCircle(moonCanvasPosition, moonCanvasDiameter, Color.WHITE);
     }
 
     /**
@@ -220,8 +213,8 @@ public final class SkyCanvasPainter {
                 int index2 = asterismIndices.get(i + 1);
                 Point2D end = new Point2D(starCanvasPositions[index2 * 2], starCanvasPositions[index2 * 2 + 1]);
 
-                // Adds a segment between the two stars if they are both within the limits of the canvas.
-                if (borders.contains(beginning) && borders.contains(end)) {
+                // Adds a segment between the two stars if at least one star has its center within the limits of the canvas.
+                if (borders.contains(beginning) || borders.contains(end)) {
                     ctx.lineTo(end.getX(), end.getY());
                 }
                 ctx.fill(); // Colors the segment in blue
@@ -239,7 +232,8 @@ public final class SkyCanvasPainter {
      * @param diameter
      *            The diameter of the circle
      */
-    private void drawFilledCircle(CartesianCoordinates upperLeftBound, double diameter) {
+    private void drawFilledCircle(CartesianCoordinates upperLeftBound, double diameter, Color color) {
+        ctx.setFill(color);
         ctx.fillOval(upperLeftBound.x() - diameter / 2.0, upperLeftBound.y() - diameter / 2.0,
                 diameter, diameter);
     }

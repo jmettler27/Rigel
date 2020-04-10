@@ -1,6 +1,7 @@
 package ch.epfl.rigel.gui;
 
 import ch.epfl.rigel.astronomy.*;
+import ch.epfl.rigel.coordinates.CardinalPoint;
 import ch.epfl.rigel.coordinates.GeographicCoordinates;
 import ch.epfl.rigel.coordinates.HorizontalCoordinates;
 import ch.epfl.rigel.coordinates.StereographicProjection;
@@ -30,7 +31,7 @@ public final class DrawSky extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         try (InputStream hs = resourceStream("/hygdata_v3.csv");
-            InputStream as = resourceStream("/asterisms.txt")) {
+             InputStream as = resourceStream("/asterisms.txt")) {
             StarCatalogue catalogue = new StarCatalogue.Builder()
                     .loadFrom(hs, HygDatabaseLoader.INSTANCE)
                     .loadFrom(as, AsterismLoader.INSTANCE)
@@ -38,9 +39,19 @@ public final class DrawSky extends Application {
 
             ZonedDateTime when = ZonedDateTime.parse("2020-02-17T20:15:00+01:00");
             GeographicCoordinates where = GeographicCoordinates.ofDeg(6.57, 46.52);
-            HorizontalCoordinates projCenter = HorizontalCoordinates.ofDeg(180, 23);
+            HorizontalCoordinates projCenter = HorizontalCoordinates.ofDeg(0, 23);
             StereographicProjection projection = new StereographicProjection(projCenter);
             ObservedSky sky = new ObservedSky(when, where, projection, catalogue);
+
+            // Soleil (az=277.6075°, alt=-23.6281°)
+            // Lune (az=3.6945°, alt=-65.3622°)
+            // Mercure (az=273.5008°, alt=-9.0768°)
+            // Vénus (az=260.0222°, alt=15.7877°)
+            // Mars (az=340.5677°, alt=-66.1499°)
+            // Jupiter (az=310.1084°, alt=-57.9559°)
+            // Saturne (az=298.4731°, alt=-50.7679°)
+            // Uranus (az=282.1674°, alt=-33.1451°)
+            // Neptune (az=268.5595°, alt=-6.6930°)
 
             Canvas canvas = new Canvas(800, 600);
             Transform planeToCanvas = Transform.affine(1300, 0, 0, -1300, 400, 300);
