@@ -31,8 +31,8 @@ public enum CardinalPoint {
      *            The azimuth of the cardinal point (in degrees)
      */
     CardinalPoint(double azDeg) {
-        this.hor = HorizontalCoordinates.ofDeg(azDeg, 0);
-        this.name = hor.azOctantName("N", "E", "S", "W");
+        this.hor = HorizontalCoordinates.ofDeg(azDeg, -0.5);
+        this.name = hor.azOctantName("N", "E", "S", "O");
     }
 
     /**

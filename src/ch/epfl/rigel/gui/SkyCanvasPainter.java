@@ -2,7 +2,6 @@ package ch.epfl.rigel.gui;
 
 import ch.epfl.rigel.astronomy.*;
 import ch.epfl.rigel.coordinates.*;
-import ch.epfl.rigel.math.Angle;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.geometry.VPos;
@@ -174,7 +173,7 @@ public final class SkyCanvasPainter {
      *            The affine transform
      */
     void drawHorizon(StereographicProjection projection, Transform planeToCanvas) {
-        // The parallel of latitude 0 degree. Note : the azimuth chosen does not matter in the calculations
+        // The parallel of latitude 0 degree. Note : the arbitrarily chosen azimuth does not matter in the calculations
         HorizontalCoordinates parallel = HorizontalCoordinates.ofDeg(0, 0);
 
         // Projects the parallel of latitude 0 degree on the plane (resulting in the horizon) and expresses its center
@@ -188,38 +187,7 @@ public final class SkyCanvasPainter {
         ctx.strokeOval(center.x() - canvasRadius, center.y() - canvasRadius,  2.0 * canvasRadius,
                 2.0 * canvasRadius);
 
-        // The middle point at the bottom of the circle, expressed in the canvas coordinate system
-        CartesianCoordinates horizonCanvasPos = CartesianCoordinates.of(center.x(), center.y() - canvasRadius);
-
-        // The previous point expressed in horizontal coordinates
-        HorizontalCoordinates horizonHor = projection.inverseApply(horizonCanvasPos);
-
-        // The altitude corresponding to half a degree below the horizon
-        double topTextPosition = Angle.ofDeg(horizonHor.altDeg() - 0.5);
-
-        HorizontalCoordinates south = HorizontalCoordinates.ofDeg(180, topTextPosition);
-        drawCardinalPoint(south, projection, planeToCanvas);
-
-        HorizontalCoordinates southWest = HorizontalCoordinates.ofDeg(225, topTextPosition);
-        drawCardinalPoint(southWest, projection, planeToCanvas);
-
-        HorizontalCoordinates west = HorizontalCoordinates.ofDeg(270, topTextPosition);
-        drawCardinalPoint(west, projection, planeToCanvas);
-
-        HorizontalCoordinates northWest = HorizontalCoordinates.ofDeg(315, topTextPosition);
-        drawCardinalPoint(northWest, projection, planeToCanvas);
-
-        HorizontalCoordinates north = HorizontalCoordinates.ofDeg(0, topTextPosition);
-        drawCardinalPoint(north, projection, planeToCanvas);
-
-        HorizontalCoordinates northEast = HorizontalCoordinates.ofDeg(45, topTextPosition);
-        drawCardinalPoint(northEast, projection, planeToCanvas);
-
-        HorizontalCoordinates east = HorizontalCoordinates.ofDeg(90, topTextPosition);
-        drawCardinalPoint(east, projection, planeToCanvas);
-
-        HorizontalCoordinates southEast = HorizontalCoordinates.ofDeg(135, topTextPosition);
-        drawCardinalPoint(southEast, projection, planeToCanvas);
+        drawCardinalPoints(projection, planeToCanvas);
     }
 
     /**
@@ -277,22 +245,22 @@ public final class SkyCanvasPainter {
     }
 
     /**
-     * Draws the given cardinal point on the canvas under the horizon, using a stereographic projection and an affine
+     * Draws the eight cardinal points on the canvas under the horizon, using a stereographic projection and an affine
      * transform.
      *
-     * @param hor
-     *            The horizontal coordinates of the cardinal point
      * @param projection
      *            The stereographic projection
      * @param planeToCanvas
      *            The affine transform
      */
-    private void drawCardinalPoint(HorizontalCoordinates hor, StereographicProjection projection, Transform planeToCanvas){
+    private void drawCardinalPoints(StereographicProjection projection, Transform planeToCanvas) {
         ctx.setFill(Color.RED);
         ctx.setTextAlign(TextAlignment.CENTER);
         ctx.setTextBaseline(VPos.TOP);
 
-        CartesianCoordinates canvasPos = PlaneToCanvas.applyToPoint(projection.apply(hor), planeToCanvas);
-        ctx.fillText(hor.azOctantName("N","E","S","O"), canvasPos.x(), canvasPos.y());
+        for (CardinalPoint cardinalPoint : CardinalPoint.ALL) {
+            CartesianCoordinates canvasPos = PlaneToCanvas.applyToPoint(projection.apply(cardinalPoint.hor()), planeToCanvas);
+            ctx.fillText(cardinalPoint.octantName(), canvasPos.x(), canvasPos.y());
+        }
     }
 }
