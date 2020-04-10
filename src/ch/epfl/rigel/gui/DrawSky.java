@@ -1,7 +1,6 @@
 package ch.epfl.rigel.gui;
 
 import ch.epfl.rigel.astronomy.*;
-import ch.epfl.rigel.coordinates.CardinalPoint;
 import ch.epfl.rigel.coordinates.GeographicCoordinates;
 import ch.epfl.rigel.coordinates.HorizontalCoordinates;
 import ch.epfl.rigel.coordinates.StereographicProjection;
@@ -39,7 +38,7 @@ public final class DrawSky extends Application {
 
             ZonedDateTime when = ZonedDateTime.parse("2020-02-17T20:15:00+01:00");
             GeographicCoordinates where = GeographicCoordinates.ofDeg(6.57, 46.52);
-            HorizontalCoordinates projCenter = HorizontalCoordinates.ofDeg(0, 23);
+            HorizontalCoordinates projCenter = HorizontalCoordinates.ofDeg(277, -23);
             StereographicProjection projection = new StereographicProjection(projCenter);
             ObservedSky sky = new ObservedSky(when, where, projection, catalogue);
 

@@ -127,7 +127,7 @@ public final class SkyCanvasPainter {
         double sunCanvasDiameter = PlaneToCanvas.applyToDistance(sunDiameter, planeToCanvas);
 
         // Draws the three concentric discs composing the image of the Sun, from the largest to the smallest
-        drawFilledCircle(sunCanvasPosition, sunCanvasDiameter * 2.2, Color.YELLOW.deriveColor(0, 0, 0, 0.25));
+        drawFilledCircle(sunCanvasPosition, sunCanvasDiameter * 2.2, Color.YELLOW.deriveColor(1, 1, 1, 0.25));
         drawFilledCircle(sunCanvasPosition, sunCanvasDiameter + 2.0, Color.YELLOW);
         drawFilledCircle(sunCanvasPosition, sunCanvasDiameter, Color.WHITE);
     }
