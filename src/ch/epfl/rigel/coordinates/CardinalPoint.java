@@ -3,7 +3,7 @@ package ch.epfl.rigel.coordinates;
 import java.util.List;
 
 /**
- * The eight cardinal points.
+ * The eight cardinal and intercardinal points.
  *
  * @author Mathias Bouilloud (309979)
  * @author Julien Mettler (309999)

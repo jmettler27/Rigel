@@ -226,7 +226,7 @@ public final class ObservedSky {
      * @param positions
      *            The map which associates to each Celestial object its position on the plane
      */
-    private double[] multiplePositions(List<? extends CelestialObject> list, EquatorialToCartesianConversion equToCart,
+    private <T extends CelestialObject> double[] multiplePositions(List<T> list, EquatorialToCartesianConversion equToCart,
                                          Map<CelestialObject, CartesianCoordinates> positions) {
 
         double[] tempPositions = new double[2 * list.size()];
