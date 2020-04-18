@@ -38,7 +38,7 @@ public final class DrawSky extends Application {
 
             ZonedDateTime when = ZonedDateTime.parse("2020-02-17T20:15:00+01:00");
             GeographicCoordinates where = GeographicCoordinates.ofDeg(6.57, 46.52);
-            HorizontalCoordinates projCenter = HorizontalCoordinates.ofDeg(277, -23);
+            HorizontalCoordinates projCenter = HorizontalCoordinates.ofDeg(180, 45  );
             StereographicProjection projection = new StereographicProjection(projCenter);
             ObservedSky sky = new ObservedSky(when, where, projection, catalogue);
 
@@ -53,7 +53,7 @@ public final class DrawSky extends Application {
             // Neptune (az=268.5595°, alt=-6.6930°)
 
             Canvas canvas = new Canvas(800, 600);
-            Transform planeToCanvas = Transform.affine(1300, 0, 0, -1300, 400, 300);
+            Transform planeToCanvas =   Transform.affine(1300, 0, 0, -1300, 400, 300);
             SkyCanvasPainter painter = new SkyCanvasPainter(canvas);
 
             painter.clear();

@@ -63,21 +63,21 @@ public final class CartesianCoordinates {
      * Checks if this point is contained in a square centered in the search point and whose side is twice
      * the maximum search distance.
      *
-     * @param squareCenter
+     * @param center
      *            The center of the square, i.e. the search point
      * @param halfSide
      *            The half side of the square, i.e. the maximum search distance
      * @return true if this point is contained in the square
      */
-    public boolean isContainedInSquare(CartesianCoordinates squareCenter, double halfSide) {
-        ClosedInterval xSide = ClosedInterval.of(squareCenter.x() - halfSide, squareCenter.x() + halfSide);
-        ClosedInterval ySide = ClosedInterval.of(squareCenter.y() - halfSide, squareCenter.y() + halfSide);
+    public boolean isContainedInSquare(CartesianCoordinates center, double halfSide) {
+        ClosedInterval xSide = ClosedInterval.of(center.x() - halfSide, center.x() + halfSide);
+        ClosedInterval ySide = ClosedInterval.of(center.y() - halfSide, center.y() + halfSide);
         return (xSide.contains(this.x()) && ySide.contains(this.y()));
     }
 
     /**
      * Additional method.
-     * Derives the distance between this point and the given point on the plane.
+     * Calculates the distance between this point and the given point on the plane.
      *
      * @param that
      *            The Cartesian coordinates of the other point on the plane

@@ -20,12 +20,12 @@ public final class PlaneToCanvas {
      *
      * @param cartesianPos
      *            The point coordinates, as described in the stereographic projection coordinate system
-     * @param planeToCanvas
+     * @param transform
      *            The affine transform
      * @return the coordinates of the given point in the canvas coordinate system.
      */
-    public static CartesianCoordinates applyToPoint(CartesianCoordinates cartesianPos, Transform planeToCanvas) {
-        Transform concatenation = concatenation(planeToCanvas);
+    public static CartesianCoordinates applyToPoint(CartesianCoordinates cartesianPos, Transform transform) {
+        Transform concatenation = concatenation(transform);
         Point2D canvasPoint = concatenation.transform(cartesianPos.x(), cartesianPos.y());
 
         return CartesianCoordinates.of(canvasPoint.getX(), canvasPoint.getY());
@@ -37,13 +37,13 @@ public final class PlaneToCanvas {
      *
      * @param cartesianPositions
      *            The coordinates of the given points on the plane
-     * @param planeToCanvas
+     * @param transform
      *            The affine transform
      * @return the coordinates of the given points in the canvas coordinate system
      */
-    public static double[] applyToAllPoints(double[] cartesianPositions, Transform planeToCanvas){
+    public static double[] applyToAllPoints(double[] cartesianPositions, Transform transform){
         double[] canvasPositions = new double[cartesianPositions.length];
-        Transform concatenation = concatenation(planeToCanvas);
+        Transform concatenation = concatenation(transform);
         concatenation.transform2DPoints(cartesianPositions, 0, canvasPositions, 0,
                 cartesianPositions.length / 2);
 
@@ -57,12 +57,12 @@ public final class PlaneToCanvas {
      *
      * @param x
      *            The vector magnitude in the direction of the X axis of the stereographic projection coordinate system
-     * @param planeToCanvas
+     * @param transform
      *            The affine transform
      * @return the magnitude of the given horizontal vector in the canvas coordinate system
      */
-    public static double applyToDistance(double x, Transform planeToCanvas) {
-        Transform concatenation = concatenation(planeToCanvas);
+    public static double applyToDistance(double x, Transform transform) {
+        Transform concatenation = concatenation(transform);
         Point2D canvasVector = concatenation.deltaTransform(x, 0);
 
         return canvasVector.magnitude(); // The magnitude of the vector
@@ -72,16 +72,16 @@ public final class PlaneToCanvas {
      * Composition of a dilatation and then a translation, i.e. a change of coordinate system from that of the
      * stereographic projection to that of the canvas, using an affine transform.
      *
-     * @param planeToCanvas
+     * @param transform
      *            The affine transform
      * @return the concatenation of the dilatation and translation transforms
      */
-    private static Transform concatenation(Transform planeToCanvas) {
+    private static Transform concatenation(Transform transform) {
         // Scales the image and reverses the direction of the Y axis
-        Transform dilatation = Transform.scale(planeToCanvas.getMxx(), planeToCanvas.getMyy());
+        Transform dilatation = Transform.scale(transform.getMxx(), transform.getMyy());
 
-        // Moves the origin of the coordinate system
-        Transform translation = Transform.translate(planeToCanvas.getTx(), planeToCanvas.getTy());
+        // Translates the origin of the coordinate system
+        Transform translation = Transform.translate(transform.getTx(), transform.getTy());
 
         // Concatenates the translation transform to the dilatation transform
         return translation.createConcatenation(dilatation);

@@ -40,7 +40,8 @@ public final class SkyCanvasPainter {
      */
     void clear() {
         ctx.clearRect(0,0, canvas.getWidth(), canvas.getHeight());
-        // Sets the color of the image to black=
+
+        // Fills the entire canvas with black
         ctx.setFill(Color.BLACK);
         ctx.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
     }
@@ -50,24 +51,22 @@ public final class SkyCanvasPainter {
      *
      * @param sky
      *            The observed sky
-     * @param planeToCanvas
+     * @param transform
      *            The affine transform
      */
-    void drawStars(ObservedSky sky, Transform planeToCanvas) {
-        List<Star> stars = sky.stars();
-        double[] starPositions = sky.starPositions(); // The positions of the stars on the plan
-
-        double[] starCanvasPositions = PlaneToCanvas.applyToAllPoints(starPositions, planeToCanvas);
+    void drawStars(ObservedSky sky, Transform transform) {
+        // The positions of the observed stars on the canvas
+        double[] starCanvasPositions = PlaneToCanvas.applyToAllPoints(sky.starPositions(), transform);
 
         drawAsterisms(sky, starCanvasPositions);
 
         int index = 0;
-        for (Star s : stars) {
+        for (Star s : sky.stars()) {
             CartesianCoordinates starCanvasPos = CartesianCoordinates.of(
                     starCanvasPositions[index * 2], starCanvasPositions[index * 2 + 1]);
 
             // The diameter of the image of the star
-            double starCanvasDiameter = PlaneToCanvas.applyToDistance(s.discSize(), planeToCanvas);
+            double starCanvasDiameter = PlaneToCanvas.applyToDistance(s.discSize(), transform);
 
             // Draws and colors the star according to its color temperature
             drawFilledCircle(starCanvasPos, starCanvasDiameter, BlackBodyColor.colorForTemperature(s.colorTemperature()));
@@ -81,20 +80,17 @@ public final class SkyCanvasPainter {
      *
      * @param sky
      *            The observed sky
-     * @param planeToCanvas
+     * @param transform
      *            The affine transform
      */
-    void drawPlanets(ObservedSky sky, Transform planeToCanvas) {
-        List<Planet> planets = sky.planets();
-        double[] planetPositions = sky.planetPositions(); // The positions of the planets on the plan
-
-        // The positions of the images of the planets
-        double[] planetCanvasPositions = PlaneToCanvas.applyToAllPoints(planetPositions, planeToCanvas);
+    void drawPlanets(ObservedSky sky, Transform transform) {
+        // The positions of the observed planets of the solar system on the canvas
+        double[] planetCanvasPositions = PlaneToCanvas.applyToAllPoints(sky.planetPositions(), transform);
 
         int index = 0;
-        for (Planet p : planets) {
-            // The diameter of the image of the planet
-            double planetCanvasDiameter = PlaneToCanvas.applyToDistance(p.discSize(), planeToCanvas);
+        for (Planet p : sky.planets()) {
+            // The diameter of the planet of the canvas
+            double planetCanvasDiameter = PlaneToCanvas.applyToDistance(p.discSize(), transform);
 
             CartesianCoordinates planetCanvasPos = CartesianCoordinates.of(
                     planetCanvasPositions[index * 2], planetCanvasPositions[index * 2 + 1]);
@@ -112,19 +108,17 @@ public final class SkyCanvasPainter {
      *            The observed sky
      * @param projection
      *            The stereographic projection
-     * @param planeToCanvas
+     * @param transform
      *            The affine transform
      */
-    void drawSun(ObservedSky sky, StereographicProjection projection, Transform planeToCanvas) {
-        Sun sun = sky.sun(); // The observed Sun
-
-        // The position and projected diameter of the Sun on the plane
+    void drawSun(ObservedSky sky, StereographicProjection projection, Transform transform) {
+        // The position and projected diameter of the observed Sun on the plane
         CartesianCoordinates sunPosition = sky.sunPosition();
-        double sunDiameter = projection.applyToAngle(sun.angularSize());
+        double sunDiameter = projection.applyToAngle(sky.sun().angularSize());
 
-        // The position and diameter of the image of the Sun
-        CartesianCoordinates sunCanvasPosition = PlaneToCanvas.applyToPoint(sunPosition, planeToCanvas);
-        double sunCanvasDiameter = PlaneToCanvas.applyToDistance(sunDiameter, planeToCanvas);
+        // The position and diameter of the observed Sun on the canvas
+        CartesianCoordinates sunCanvasPosition = PlaneToCanvas.applyToPoint(sunPosition, transform);
+        double sunCanvasDiameter = PlaneToCanvas.applyToDistance(sunDiameter, transform);
 
         // Draws the three concentric discs composing the image of the Sun, from the largest to the smallest
         drawFilledCircle(sunCanvasPosition, sunCanvasDiameter * 2.2, Color.YELLOW.deriveColor(1, 1, 1, 0.25));
@@ -139,19 +133,17 @@ public final class SkyCanvasPainter {
      *            The observed sky
      * @param projection
      *            The stereographic projection
-     * @param planeToCanvas
+     * @param transform
      *            The affine transform
      */
-    void drawMoon(ObservedSky sky, StereographicProjection projection, Transform planeToCanvas) {
-        Moon moon = sky.moon(); // The observed Moon
-
-        // The position and projected diameter of the Moon on the plane
+    void drawMoon(ObservedSky sky, StereographicProjection projection, Transform transform) {
+        // The position and projected diameter of the observed Moon on the plane
         CartesianCoordinates moonPosition = sky.moonPosition();
-        double moonDiameter = projection.applyToAngle(moon.angularSize());
+        double moonDiameter = projection.applyToAngle(sky.moon().angularSize());
 
-        // The position and diameter of the image of the Moon
-        CartesianCoordinates moonCanvasPosition = PlaneToCanvas.applyToPoint(moonPosition, planeToCanvas);
-        double moonCanvasDiameter = PlaneToCanvas.applyToDistance(moonDiameter, planeToCanvas);
+        // The position and diameter of the observed Moon on the canvas
+        CartesianCoordinates moonCanvasPosition = PlaneToCanvas.applyToPoint(moonPosition, transform);
+        double moonCanvasDiameter = PlaneToCanvas.applyToDistance(moonDiameter, transform);
 
         drawFilledCircle(moonCanvasPosition, moonCanvasDiameter, Color.WHITE);
     }
@@ -162,17 +154,17 @@ public final class SkyCanvasPainter {
      *
      * @param projection
      *            The stereographic projection
-     * @param planeToCanvas
+     * @param transform
      *            The affine transform
      */
-    void drawHorizon(StereographicProjection projection, Transform planeToCanvas) {
+    void drawHorizon(StereographicProjection projection, Transform transform) {
         // The parallel of latitude 0 degree. Note : the arbitrarily chosen azimuth does not matter in the calculations
-        HorizontalCoordinates parallel = HorizontalCoordinates.ofDeg(0, 0);
+        HorizontalCoordinates parallel = HorizontalCoordinates.of(0, 0);
 
         // Projects the parallel of latitude 0 degree on the plane (resulting in the horizon) and expresses its center
         // and radius in the canvas coordinate system
-        CartesianCoordinates center = PlaneToCanvas.applyToPoint(projection.circleCenterForParallel(parallel), planeToCanvas);
-        double canvasRadius = PlaneToCanvas.applyToDistance(projection.circleRadiusForParallel(parallel), planeToCanvas);
+        CartesianCoordinates center = PlaneToCanvas.applyToPoint(projection.circleCenterForParallel(parallel), transform);
+        double canvasRadius = PlaneToCanvas.applyToDistance(projection.circleRadiusForParallel(parallel), transform);
 
         // Draws the empty red circle corresponding to the horizon
         ctx.setLineWidth(2.0);
@@ -180,7 +172,23 @@ public final class SkyCanvasPainter {
         ctx.strokeOval(center.x() - canvasRadius, center.y() - canvasRadius,  2.0 * canvasRadius,
                 2.0 * canvasRadius);
 
-        drawCardinalPoints(projection, planeToCanvas);
+        drawCardinalPoints(projection, transform);
+    }
+
+    /**
+     * Draws a filled circle of given diameter.
+     *
+     * @param center
+     *            The coordinates of the center of the circle, expressed in the canvas coordinate system
+     * @param diameter
+     *            The diameter of the circle, expressed in the canvas coordinate system
+     */
+    private void drawFilledCircle(CartesianCoordinates center, double diameter, Color color) {
+        ctx.setFill(color);
+
+        // Translates the coordinates of the center of the circle to the coordinates of its upper left bound
+        ctx.fillOval(center.x() - diameter / 2.0, center.y() - diameter / 2.0,
+                diameter, diameter);
     }
 
     /**
@@ -189,7 +197,7 @@ public final class SkyCanvasPainter {
      * @param sky
      *            The observed sky
      * @param starCanvasPositions
-     *            The positions of the asterisms' stars expressed in the canvas coordinate system
+     *            The positions of the observed asterisms' stars, expressed in the canvas coordinate system
      */
     private void drawAsterisms(ObservedSky sky, double[] starCanvasPositions) {
         Bounds borders = canvas.getBoundsInLocal(); // The borders of the canvas
@@ -225,35 +233,21 @@ public final class SkyCanvasPainter {
     }
 
     /**
-     * Draws a filled circle of given diameter.
-     *
-     * @param upperLeftBound
-     *            The coordinates of the upper left bound of the circle
-     * @param diameter
-     *            The diameter of the circle
-     */
-    private void drawFilledCircle(CartesianCoordinates upperLeftBound, double diameter, Color color) {
-        ctx.setFill(color);
-        ctx.fillOval(upperLeftBound.x() - diameter / 2.0, upperLeftBound.y() - diameter / 2.0,
-                diameter, diameter);
-    }
-
-    /**
      * Draws the eight cardinal points on the canvas under the horizon, using a stereographic projection and an affine
      * transform.
      *
      * @param projection
      *            The stereographic projection
-     * @param planeToCanvas
+     * @param transform
      *            The affine transform
      */
-    private void drawCardinalPoints(StereographicProjection projection, Transform planeToCanvas) {
+    private void drawCardinalPoints(StereographicProjection projection, Transform transform) {
         ctx.setFill(Color.RED);
         ctx.setTextAlign(TextAlignment.CENTER);
         ctx.setTextBaseline(VPos.TOP);
 
         for (CardinalPoint cardinalPoint : CardinalPoint.ALL) {
-            CartesianCoordinates canvasPos = PlaneToCanvas.applyToPoint(projection.apply(cardinalPoint.hor()), planeToCanvas);
+            CartesianCoordinates canvasPos = PlaneToCanvas.applyToPoint(projection.apply(cardinalPoint.hor()), transform);
             ctx.fillText(cardinalPoint.octantName(), canvasPos.x(), canvasPos.y());
         }
     }
