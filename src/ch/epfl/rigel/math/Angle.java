@@ -60,6 +60,7 @@ public final class Angle {
      * @return the angle in radians
      */
     public static double ofDMS(int deg, int min, double sec) {
+        Preconditions.checkArgument(deg >= 0);
         double validMin = Preconditions.checkInInterval(DMS_INTERVAL, min);
         double validSec = Preconditions.checkInInterval(DMS_INTERVAL, sec);
 

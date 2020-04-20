@@ -40,21 +40,21 @@ public enum HygDatabaseLoader implements StarCatalogue.Loader {
                              new InputStreamReader(
                                      inputStream, StandardCharsets.US_ASCII))) {
 
-            reader.readLine(); // Ignores the header line, giving the names of the columns (which is thus unusable))
+            reader.readLine(); // Ignores the header line, giving the names of the columns (which is thus unusable)
 
             String line; // The current line of data (i.e. the current star in the HYG catalogue)
             while ((line = reader.readLine()) != null) {
                 String[] columns = line.split(","); // The 37 informations on the current star
 
                 // The star's Hipparcos identification number (0 by default)
-                int hipparcosId = columns[HIP - 1].equals("") ? 0 : Integer.parseInt(columns[HIP - 1]);
+                int hipparcosId = columns[HIP - 1].isEmpty() ? 0 : Integer.parseInt(columns[HIP - 1]);
 
                 // The star's name
                 String name;
 
-                if (columns[PROPER - 1].equals("")) {
+                if (columns[PROPER - 1].isEmpty()) {
                     StringBuilder nameBuilder = new StringBuilder();
-                    if (columns[BAYER - 1].equals("")) {
+                    if (columns[BAYER - 1].isEmpty()) {
                         nameBuilder.append("?");
                     } else {
                         nameBuilder.append(columns[BAYER - 1]);
@@ -73,10 +73,10 @@ public enum HygDatabaseLoader implements StarCatalogue.Loader {
                 EquatorialCoordinates equatorialCoordinates = EquatorialCoordinates.of(raRad, decRad);
 
                 // The star's magnitude (0 by default)
-                float magnitude = columns[MAG - 1].equals("") ? 0f : (float) Double.parseDouble(columns[MAG - 1]);
+                float magnitude = columns[MAG - 1].isEmpty() ? 0f : (float) Double.parseDouble(columns[MAG - 1]);
 
                 // The star's color index (0 by default)
-                float colorIndex = columns[CI - 1].equals("") ? 0f : (float) Double.parseDouble(columns[CI - 1]);
+                float colorIndex = columns[CI - 1].isEmpty() ? 0f : (float) Double.parseDouble(columns[CI - 1]);
 
                 builder.addStar(new Star(hipparcosId, name, equatorialCoordinates, magnitude, colorIndex));
             }

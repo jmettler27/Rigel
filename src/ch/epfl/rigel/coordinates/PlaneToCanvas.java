@@ -41,7 +41,7 @@ public final class PlaneToCanvas {
      *            The affine transform
      * @return the coordinates of the given points in the canvas coordinate system
      */
-    public static double[] applyToAllPoints(double[] cartesianPositions, Transform transform){
+    public static double[] applyToAllPoints(double[] cartesianPositions, Transform transform) {
         double[] canvasPositions = new double[cartesianPositions.length];
         Transform concatenation = concatenation(transform);
         concatenation.transform2DPoints(cartesianPositions, 0, canvasPositions, 0,

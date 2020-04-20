@@ -105,6 +105,9 @@ public final class StereographicProjection implements Function<HorizontalCoordin
         // The abscissa and ordinate of the projected point
         double x = xy.x();
         double y = xy.y();
+        if (x == 0 && y == 0) {
+            return HorizontalCoordinates.of(center.az(), center.alt());
+        }
 
         // The radius of the projected parallel (a circle) centered in (x,y)
         double radius = hypot(x, y);
