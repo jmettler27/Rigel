@@ -248,7 +248,7 @@ public final class SkyCanvasPainter {
 
         for (CardinalPoint cardinalPoint : CardinalPoint.ALL) {
             CartesianCoordinates canvasPos = PlaneToCanvas.applyToPoint(projection.apply(cardinalPoint.hor()), transform);
-            ctx.fillText(cardinalPoint.octantName(), canvasPos.x(), canvasPos.y());
+            ctx.fillText(cardinalPoint.getName(), canvasPos.x(), canvasPos.y());
         }
     }
 }

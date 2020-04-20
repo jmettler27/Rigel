@@ -50,7 +50,7 @@ public final class TimeAnimator extends AnimationTimer {
 
         // 1min36s = 2 * 48s de entre Nouvelle heure 1 et Nouvelle heure 2
         // 48s entre les autres nouvelles heures
-        if (getRunning()) {
+        if (isRunning()) {
             bean.setZonedDateTime(getAccelerator().adjust(T0, nanos - elapsedNanos));
             System.out.println("Temps écoulé = " + (nanos - elapsedNanos) / 1e9 + " s");
             System.out.println();
@@ -113,7 +113,7 @@ public final class TimeAnimator extends AnimationTimer {
      * Returns the running property's content.
      * @return the running property's content
      */
-    public boolean getRunning() {
+    public boolean isRunning() {
         return running.getValue();
     }
 }

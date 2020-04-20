@@ -47,7 +47,7 @@ public enum CardinalPoint {
      * Returns the name of this cardinal point.
      * @return the name of this cardinal point
      */
-    public String octantName() {
+    public String getName() {
         return name;
     }
 }

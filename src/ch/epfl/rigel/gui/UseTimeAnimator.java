@@ -26,9 +26,7 @@ public final class UseTimeAnimator extends Application {
             System.out.printf(" Nouvelle date : %s%n", n);
             Platform.exit();
         });
-        dateTimeB.timeProperty().addListener((p, o, n) -> {
-            System.out.printf("Nouvelle heure : %s%n", n);
-        });
+        dateTimeB.timeProperty().addListener((p, o, n) -> System.out.printf("Nouvelle heure : %s%n", n));
         timeAnimator.start();
     }
 }
