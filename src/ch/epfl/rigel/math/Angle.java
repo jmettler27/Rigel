@@ -56,7 +56,8 @@ public final class Angle {
      * @param sec
      *            The number of seconds
      * @throws IllegalArgumentException
-     *             if the number of minutes and/or seconds is not contained in its valid interval
+     *             if the number of degrees is < 0
+     *             and/or the number of minutes and/or seconds is not contained in its valid interval
      * @return the angle in radians
      */
     public static double ofDMS(int deg, int min, double sec) {
