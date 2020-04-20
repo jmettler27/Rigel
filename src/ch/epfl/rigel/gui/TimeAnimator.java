@@ -6,17 +6,21 @@ import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 
+import java.time.ZonedDateTime;
+
 public final class TimeAnimator extends AnimationTimer {
 
     private final DateTimeBean bean;
     private boolean firstStep = true;
     private long startNano;
+    private final ZonedDateTime startZonedDateTime;
 
     private ObjectProperty<TimeAccelerator> accelerator = new SimpleObjectProperty<>();
     private SimpleBooleanProperty running = new SimpleBooleanProperty();
 
     public TimeAnimator(DateTimeBean bean) {
         this.bean = bean;
+        startZonedDateTime = bean.getZonedDateTime();
     }
 
     @Override
@@ -26,7 +30,7 @@ public final class TimeAnimator extends AnimationTimer {
             firstStep = false;
         }
         if (getRunning()) {
-            bean.setZonedDateTime(getAccelerator().adjust(bean.getZonedDateTime(), nbNanoSeconds - startNano));
+            bean.setZonedDateTime(getAccelerator().adjust(startZonedDateTime, nbNanoSeconds - startNano));
         }
     }
 

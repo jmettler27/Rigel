@@ -4,12 +4,12 @@ import java.time.Duration;
 
 public enum NamedTimeAccelerator {
 
-    TIMES_1("TIMES_1", TimeAccelerator.continuous(1)),
-    TIMES_30("TIMES_30", TimeAccelerator.continuous(30)),
-    TIMES_300("TIMES_300", TimeAccelerator.continuous(300)),
-    TIMES_3000("TIMES_3000", TimeAccelerator.continuous(3000)),
-    DAY("DAY", TimeAccelerator.discrete(60, Duration.ofHours(24))),
-    SIDEREAL_DAY("SIDEREAL_DAY", TimeAccelerator.discrete(60, Duration.ofSeconds(23 * 3600 + 56 * 60 + 4)));
+    TIMES_1("1×", TimeAccelerator.continuous(1)),
+    TIMES_30("30x", TimeAccelerator.continuous(30)),
+    TIMES_300("300x", TimeAccelerator.continuous(300)),
+    TIMES_3000("3000x", TimeAccelerator.continuous(3000)),
+    DAY("jour", TimeAccelerator.discrete(60, Duration.ofHours(24))),
+    SIDEREAL_DAY("jour sidéral", TimeAccelerator.discrete(60, Duration.ofSeconds(23 * 3600 + 56 * 60 + 4)));
 
     private final String name;
     private final TimeAccelerator accelerator;
@@ -31,5 +31,4 @@ public enum NamedTimeAccelerator {
     public String toString() {
         return getName();
     }
-
 }

@@ -14,8 +14,7 @@ public final class UseTimeAnimator extends Application {
     @Override
     public void start(Stage primaryStage) {
         ZonedDateTime simulatedStart = ZonedDateTime.parse("2020-06-01T23:55:00+01:00");
-        TimeAccelerator accelerator =
-                NamedTimeAccelerator.TIMES_3000.getAccelerator();
+        TimeAccelerator accelerator = NamedTimeAccelerator.TIMES_3000.getAccelerator();
 
         DateTimeBean dateTimeB = new DateTimeBean();
         dateTimeB.setZonedDateTime(simulatedStart);
