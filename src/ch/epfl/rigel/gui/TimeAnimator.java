@@ -16,45 +16,63 @@ import java.time.ZonedDateTime;
  */
 public final class TimeAnimator extends AnimationTimer {
 
-    private final DateTimeBean bean; // The date time bean
-    private boolean firstStep = true;
-    private long startNano; // The number of seconds elapsed since the beginning of the timer
-    private final ZonedDateTime whenStart;
+    private final DateTimeBean bean;
+    private final ZonedDateTime T0; // The initial simulated time (at the beginning of the animation)
 
-    private final ObjectProperty<TimeAccelerator> accelerator = new SimpleObjectProperty<>(); // The time accelerator property
-    private final SimpleBooleanProperty running = new SimpleBooleanProperty(); // The running property
+    private final ObjectProperty<TimeAccelerator> accelerator; // The time accelerator property
+    private final SimpleBooleanProperty running; // The state of the time animator
+
+    private boolean firstStep = true;
+    private long elapsedNanos; // The number of nanoseconds elapsed since the beginning of an animation
 
     /**
      * Constructs a time animator through its date/time bean.
      *
-     * @param bean The date/time bean
+     * @param bean
+     *            The date/time bean
      */
     public TimeAnimator(DateTimeBean bean) {
         this.bean = bean;
-        whenStart = bean.getZonedDateTime();
+        T0 = bean.getZonedDateTime();
+        accelerator = new SimpleObjectProperty<>();
+        running = new SimpleBooleanProperty();
     }
 
+    /**
+     * @see AnimationTimer#handle(long)
+     */
     @Override
-    public void handle(long nbNanoSeconds) {
-        if (firstStep) {
-            startNano = nbNanoSeconds;
+    public void handle(long nanos) {
+        if (firstStep) { // The method is called for the first time after the timer starts (beginning of an animation)
+            elapsedNanos = nanos;
             firstStep = false;
         }
+
+        // 1min36s = 2 * 48s de entre Nouvelle heure 1 et Nouvelle heure 2
+        // 48s entre les autres nouvelles heures
         if (getRunning()) {
-            bean.setZonedDateTime(getAccelerator().adjust(whenStart, nbNanoSeconds - startNano));
+            bean.setZonedDateTime(getAccelerator().adjust(T0, nanos - elapsedNanos));
+            System.out.println("Temps écoulé = " + (nanos - elapsedNanos) / 1e9 + " s");
+            System.out.println();
         }
     }
 
+    /**
+     * @see AnimationTimer#start()
+     */
     @Override
     public void start() {
-        running.setValue(true);
         super.start();
+        running.setValue(true);
     }
 
+    /**
+     * @see AnimationTimer#stop()
+     */
     @Override
     public void stop() {
-        running.setValue(false);
         super.stop();
+        running.setValue(false);
     }
 
     /**
@@ -76,10 +94,11 @@ public final class TimeAnimator extends AnimationTimer {
     /**
      * Sets the time accelerator property's content
      *
-     * @param accelerator The new time accelerator of the time accelerator's property
+     * @param newAccelerator
+     *            The new time accelerator of the time accelerator's property
      */
-    public void setAccelerator(TimeAccelerator accelerator) {
-        this.accelerator.setValue(accelerator);
+    public void setAccelerator(TimeAccelerator newAccelerator) {
+        accelerator.setValue(newAccelerator);
     }
 
     /**

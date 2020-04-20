@@ -16,12 +16,13 @@ import java.time.ZonedDateTime;
  */
 public final class DateTimeBean {
 
-    private final ObjectProperty<LocalDate> dateProperty;
-    private final ObjectProperty<LocalTime> timeProperty;
-    private final ObjectProperty<ZoneId> zoneProperty;
+    private final ObjectProperty<LocalDate> dateProperty; // The date property
+    private final ObjectProperty<LocalTime> timeProperty; // The time property
+    private final ObjectProperty<ZoneId> zoneProperty; // The time-zone property
 
     /**
      * Default constructor.
+     * Constructs a date/time bean such that the values of the properties are initially null.
      */
     public DateTimeBean() {
         dateProperty = new SimpleObjectProperty<>();
@@ -38,7 +39,7 @@ public final class DateTimeBean {
     }
 
     /**
-     * Returns the date property's content.
+     * Returns the date property's content, i.e. the date of observation.
      * @return the date property's content
      */
     public LocalDate getDate() {
@@ -47,7 +48,9 @@ public final class DateTimeBean {
 
     /**
      * Sets the date property's content using the given date.
-     * @param date The new date of the date property
+     *
+     * @param date
+     *            The new date of the date property
      */
     public void setDate(LocalDate date) {
         dateProperty.setValue(date);
@@ -62,7 +65,7 @@ public final class DateTimeBean {
     }
 
     /**
-     * Returns the time property's content.
+     * Returns the time property's content, i.e. the hour of observation.
      * @return the time property's content
      */
     public LocalTime getTime() {
@@ -71,31 +74,35 @@ public final class DateTimeBean {
 
     /**
      * Sets the time property's content using the given time.
-     * @param time The new time of the time property
+     *
+     * @param time
+     *            The new time of the time property
      */
     public void setTime(LocalTime time) {
         timeProperty.setValue(time);
     }
 
     /**
-     * Returns the zone property.
-     * @return the zone property
+     * Returns the time-zone property.
+     * @return the time-zone property
      */
     public ObjectProperty<ZoneId> zoneProperty() {
         return zoneProperty;
     }
 
     /**
-     * Returns the zone property's content.
-     * @return the zone property's content
+     * Returns the time-zone property's content, i.e. the time-zone of observation.
+     * @return the time-zone property's content
      */
     public ZoneId getZone() {
         return zoneProperty.getValue();
     }
 
     /**
-     * Sets the zone property's content using the given zone ID.
-     * @param id The new zone ID of the zone property
+     * Sets the time-zone property's content using the given zone ID.
+     *
+     * @param id
+     *            The new zone ID of the time-zone property
      */
     public void setZone(ZoneId id) {
         zoneProperty.setValue(id);
@@ -111,7 +118,9 @@ public final class DateTimeBean {
 
     /**
      * Sets the epoch of observation using the given epoch.
-     * @param when The new epoch of observation
+     *
+     * @param when
+     *            The new epoch of observation
      */
     public void setZonedDateTime(ZonedDateTime when) {
         setDate(when.toLocalDate());
