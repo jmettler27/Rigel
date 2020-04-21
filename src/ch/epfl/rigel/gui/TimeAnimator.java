@@ -23,7 +23,7 @@ public final class TimeAnimator extends AnimationTimer {
     private final SimpleBooleanProperty running; // The state of the time animator
 
     private boolean firstStep = true;
-    private long elapsedNanos; // The number of nanoseconds elapsed since the beginning of an animation
+    private long previousNano; // The number of nanoseconds elapsed since the beginning of an animation
 
     /**
      * Constructs a time animator through its date/time bean.
@@ -42,18 +42,15 @@ public final class TimeAnimator extends AnimationTimer {
      * @see AnimationTimer#handle(long)
      */
     @Override
-    public void handle(long nanos) {
+    public void handle(long nbNanos) {
         if (firstStep) { // The method is called for the first time after the timer starts (beginning of an animation)
-            elapsedNanos = nanos;
+            previousNano = nbNanos;
             firstStep = false;
         }
 
-        // 1min36s = 2 * 48s de entre Nouvelle heure 1 et Nouvelle heure 2
-        // 48s entre les autres nouvelles heures
         if (isRunning()) {
-            bean.setZonedDateTime(getAccelerator().adjust(T0, nanos - elapsedNanos));
-            System.out.println("Temps écoulé = " + (nanos - elapsedNanos) / 1e9 + " s");
-            System.out.println();
+            bean.setZonedDateTime(getAccelerator().adjust(bean.getZonedDateTime(), nbNanos - previousNano));
+            previousNano = nbNanos;
         }
     }
 
