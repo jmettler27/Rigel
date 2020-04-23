@@ -17,13 +17,11 @@ import java.time.ZonedDateTime;
 public final class TimeAnimator extends AnimationTimer {
 
     private final DateTimeBean bean;
-    private final ZonedDateTime T0; // The initial simulated time (at the beginning of the animation)
-
     private final ObjectProperty<TimeAccelerator> accelerator; // The time accelerator property
     private final SimpleBooleanProperty running; // The state of the time animator
 
     private boolean firstStep = true;
-    private long previousNano; // The number of nanoseconds elapsed since the beginning of an animation
+    private long elapsedNanos; // The number of nanoseconds elapsed since the beginning of an animation
 
     /**
      * Constructs a time animator through its date/time bean.
@@ -33,7 +31,6 @@ public final class TimeAnimator extends AnimationTimer {
      */
     public TimeAnimator(DateTimeBean bean) {
         this.bean = bean;
-        T0 = bean.getZonedDateTime();
         accelerator = new SimpleObjectProperty<>();
         running = new SimpleBooleanProperty();
     }
@@ -42,15 +39,16 @@ public final class TimeAnimator extends AnimationTimer {
      * @see AnimationTimer#handle(long)
      */
     @Override
-    public void handle(long nbNanos) {
+    public void handle(long nanos) {
         if (firstStep) { // The method is called for the first time after the timer starts (beginning of an animation)
-            previousNano = nbNanos;
+            elapsedNanos = nanos;
             firstStep = false;
         }
 
         if (isRunning()) {
-            bean.setZonedDateTime(getAccelerator().adjust(bean.getZonedDateTime(), nbNanos - previousNano));
-            previousNano = nbNanos;
+            ZonedDateTime simulatedTime = getAccelerator().adjust(bean.getZonedDateTime(), nanos - elapsedNanos);
+            bean.setZonedDateTime(simulatedTime);
+            elapsedNanos = nanos;
         }
     }
 
@@ -89,7 +87,7 @@ public final class TimeAnimator extends AnimationTimer {
     }
 
     /**
-     * Sets the time accelerator property's content
+     * Sets the time accelerator property's content.
      *
      * @param newAccelerator
      *            The new time accelerator of the time accelerator's property

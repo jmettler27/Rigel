@@ -22,7 +22,7 @@ public final class DateTimeBean {
 
     /**
      * Default constructor.
-     * Constructs a date/time bean such that the values of the properties are initially null.
+     * Constructs a date/time bean such that the values of its properties are initially null.
      */
     public DateTimeBean() {
         dateProperty = new SimpleObjectProperty<>();
@@ -47,7 +47,7 @@ public final class DateTimeBean {
     }
 
     /**
-     * Sets the date property's content using the given date.
+     * Sets the date property's content to the given date.
      *
      * @param date
      *            The new date of the date property
@@ -73,7 +73,7 @@ public final class DateTimeBean {
     }
 
     /**
-     * Sets the time property's content using the given time.
+     * Sets the time property's content to the given time.
      *
      * @param time
      *            The new time of the time property
@@ -99,7 +99,7 @@ public final class DateTimeBean {
     }
 
     /**
-     * Sets the time-zone property's content using the given zone ID.
+     * Sets the time-zone property's content to the given zone ID.
      *
      * @param id
      *            The new zone ID of the time-zone property
@@ -117,7 +117,7 @@ public final class DateTimeBean {
     }
 
     /**
-     * Sets the epoch of observation using the given epoch.
+     * Sets the epoch of observation to the given epoch.
      *
      * @param when
      *            The new epoch of observation

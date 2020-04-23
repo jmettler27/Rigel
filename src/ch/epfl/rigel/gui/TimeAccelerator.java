@@ -44,6 +44,11 @@ public interface TimeAccelerator {
      * @return the discrete accelerator
      */
     static TimeAccelerator discrete(int frequency, Duration S) {
-        return (T0, deltaNano) -> T0.plus(S.multipliedBy((long) Math.floor(frequency * (deltaNano / 1e9))));
+        return (T0, deltaNano) -> {
+            double deltaSecond = deltaNano / 1e9; // The real time (in seconds) elapsed since the beginning of the animation
+            long temp = (long) Math.floor(frequency * deltaSecond);
+
+            return T0.plus(S.multipliedBy(temp));
+        };
     }
 }
