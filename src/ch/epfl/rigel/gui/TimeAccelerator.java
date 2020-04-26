@@ -27,7 +27,7 @@ public interface TimeAccelerator {
      * Returns a continuous accelerator as a function of the acceleration factor.
      *
      * @param alpha
-     *            The acceleration factor
+     *            The acceleration factor (unitless)
      * @return the continuous accelerator
      */
      static TimeAccelerator continuous(int alpha) {
@@ -38,9 +38,9 @@ public interface TimeAccelerator {
      * Returns a discrete accelerator as a function of the frequency and the step of the simulated time.
      *
      * @param frequency
-     *            The stepping frequency of the simulated time
+     *            The stepping frequency (in Hertz) of the simulated time
      * @param S
-     *            The discrete step of the simulated time
+     *            The discrete step (in seconds) of the simulated time
      * @return the discrete accelerator
      */
     static TimeAccelerator discrete(int frequency, Duration S) {

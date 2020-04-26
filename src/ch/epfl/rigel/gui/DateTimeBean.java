@@ -25,9 +25,9 @@ public final class DateTimeBean {
      * Constructs a date/time bean such that the values of its properties are initially null.
      */
     public DateTimeBean() {
-        dateProperty = new SimpleObjectProperty<>();
-        timeProperty = new SimpleObjectProperty<>();
-        zoneProperty = new SimpleObjectProperty<>();
+        dateProperty = new SimpleObjectProperty<>(null);
+        timeProperty = new SimpleObjectProperty<>(null);
+        zoneProperty = new SimpleObjectProperty<>(null);
     }
 
     /**
