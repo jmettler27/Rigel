@@ -12,6 +12,7 @@ import javafx.beans.binding.DoubleBinding;
 import javafx.beans.binding.ObjectBinding;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.input.KeyCode;
@@ -27,17 +28,15 @@ public class SkyCanvasManager {
     private final ViewingParametersBean viewingParameters;
     private final ObserverLocationBean observerLocation;
 
-    public DoubleProperty mouseAzDeg, mouseAltDeg; // The horizontal coordinates of the mouse cursor
+
     public ObjectBinding<CelestialObject> objectUnderMouse; // The celestial object closest to the mouse cursor
-
-
     private ObjectBinding<StereographicProjection> projection;
     private ObjectBinding<Transform> planeToCanvas;
     private ObjectBinding<ObservedSky> observedSky;
-
-    private ObjectProperty<CartesianCoordinates> mousePosition;
     private ObjectBinding<HorizontalCoordinates> mouseHorizontalPosition;
 
+    public DoubleProperty mouseAzDeg, mouseAltDeg; // The horizontal coordinates of the mouse cursor
+    private ObjectProperty<CartesianCoordinates> mousePosition;
     private ObjectProperty<CelestialObject> objectUnderMouseProperty;
 
     private Canvas canvas;
@@ -59,6 +58,8 @@ public class SkyCanvasManager {
         SkyCanvasPainter painter = new SkyCanvasPainter(canvas);
 
         mousePosition = new SimpleObjectProperty<>();
+        mouseAzDeg = new SimpleDoubleProperty();
+
 
         canvas.setOnMouseMoved((event) -> mousePosition.setValue(CartesianCoordinates.of(event.getX(), event.getY())));
         canvas.setOnScroll((event) -> viewingParameters.setFieldOfViewDeg(viewingParameters.getFieldOfViewDeg()
@@ -66,6 +67,12 @@ public class SkyCanvasManager {
         canvas.setOnKeyPressed(keyEvent -> {
             keyEvent.consume();
             keyHandler(keyEvent.getCode(), viewingParameters.centerProperty());
+        });
+
+        canvas.setOnMousePressed((event) -> {
+            if (event.isPrimaryButtonDown()) {
+                canvas.requestFocus();
+            }
         });
 
         projection = Bindings.createObjectBinding(
@@ -79,7 +86,6 @@ public class SkyCanvasManager {
                     //mouseAltDeg.setValue(hor.altDeg());
                     return hor;
                 }, projection, mousePosition);
-
 
         observedSky = Bindings.createObjectBinding(
                 () -> new ObservedSky(
@@ -139,7 +145,7 @@ public class SkyCanvasManager {
         }
     }
 
-    public void draw(SkyCanvasPainter painter, ObservedSky sky){
+    public void draw(SkyCanvasPainter painter, ObservedSky sky) {
         painter.clear();
         painter.drawStars(sky, planeToCanvas.get());
         painter.drawPlanets(sky, planeToCanvas.get());
