@@ -13,7 +13,11 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.input.KeyCode;
+import javafx.scene.transform.NonInvertibleTransformException;
 import javafx.scene.transform.Transform;
+import javafx.geometry.Point2D;
+
+
 
 import java.time.ZonedDateTime;
 
@@ -45,7 +49,6 @@ public final class SkyCanvasManager {
     private final ObjectBinding<ObservedSky> observedSky; // The observed sky binding
     private final ObjectBinding<HorizontalCoordinates> mouseHorizontalPosition; // The cursor's horizontal position binding
 
-    // private final ObjectBinding<CelestialObject> objectUnderMouseBind;
 
 
     /**
@@ -72,28 +75,7 @@ public final class SkyCanvasManager {
 
 
         // Informs about the movements of the mouse cursor above the canvas
-        canvas.setOnMouseMoved(mouseEvent ->
-                setMousePosition(CartesianCoordinates.of(mouseEvent.getX(), mouseEvent.getY())));
 
-        // Detects the mouse clicks on the canvas
-        canvas.setOnMousePressed(mouseEvent -> {
-            if (mouseEvent.isPrimaryButtonDown()) {
-                canvas.requestFocus(); // Makes the mouse the focus of the keyboard events
-            }
-        });
-
-        // Reacts to the mouse wheel and/or trackpad movements above the canvas and changes the field of view accordingly
-        canvas.setOnScroll(scrollEvent -> {
-            double fovDeg = viewingParameters.getFieldOfViewDeg();
-            double scrolledFovDeg = fovDeg + scrollMax(scrollEvent.getDeltaX(), scrollEvent.getDeltaY());
-            viewingParameters.setFieldOfViewDeg(scrolledFovDeg);
-        });
-
-        // Reacts to pressing the cursor keys and changes the direction of observation (i.e. the projection center) accordingly
-        canvas.setOnKeyPressed(keyEvent -> {
-            keyEvent.consume();
-            changeDirection(keyEvent.getCode());
-        });
 
         // Inform about changes in the bindings and properties that have an impact on the drawing of the sky, and ask
         // the painter to redraw it
@@ -120,6 +102,38 @@ public final class SkyCanvasManager {
                             canvas.getWidth() / 2, canvas.getHeight() / 2);
                 }, viewingParameters.fieldOfViewDegProperty(), projection, canvas.widthProperty());
 
+        canvas.setOnMouseMoved(mouseEvent -> {
+                    setMousePosition(CartesianCoordinates.of(mouseEvent.getX(), mouseEvent.getY()));
+                    //double maxCanvasDistance = PlaneToCanvas.applyToDistance(10, planeToCanvas.get());
+            try {
+                Transform invert = planeToCanvas.get().createInverse();
+                Point2D p = invert.transform(new Point2D(getMousePosition().x(), getMousePosition().y()));
+                CartesianCoordinates coords = CartesianCoordinates.of(p.getX(), p.getY());
+                CelestialObject object = observedSky.get().objectClosestTo(coords, 10).get();
+                setObjectUnderMouse(object);
+            } catch (NonInvertibleTransformException e) {}
+
+        });
+
+        // Detects the mouse clicks on the canvas
+        canvas.setOnMousePressed(mouseEvent -> {
+            if (mouseEvent.isPrimaryButtonDown()) {
+                canvas.requestFocus(); // Makes the mouse the focus of the keyboard events
+            }
+        });
+
+        // Reacts to the mouse wheel and/or trackpad movements above the canvas and changes the field of view accordingly
+        canvas.setOnScroll(scrollEvent -> {
+            double fovDeg = viewingParameters.getFieldOfViewDeg();
+            double scrolledFovDeg = fovDeg + scrollMax(scrollEvent.getDeltaX(), scrollEvent.getDeltaY());
+            viewingParameters.setFieldOfViewDeg(scrolledFovDeg);
+        });
+
+        // Reacts to pressing the cursor keys and changes the direction of observation (i.e. the projection center) accordingly
+        canvas.setOnKeyPressed(keyEvent -> {
+            keyEvent.consume();
+            changeDirection(keyEvent.getCode());
+        });
 
         mouseHorizontalPosition = Bindings.createObjectBinding(
                 () -> {
