@@ -43,7 +43,7 @@ public final class DateTimeBean {
      * @return the date property's content
      */
     public LocalDate getDate() {
-        return dateProperty.getValue();
+        return dateProperty.get();
     }
 
     /**
@@ -53,7 +53,7 @@ public final class DateTimeBean {
      *            The new date of the date property
      */
     public void setDate(LocalDate date) {
-        dateProperty.setValue(date);
+        dateProperty.set(date);
     }
 
     /**
@@ -69,7 +69,7 @@ public final class DateTimeBean {
      * @return the time property's content
      */
     public LocalTime getTime() {
-        return timeProperty.getValue();
+        return timeProperty.get();
     }
 
     /**
@@ -79,7 +79,7 @@ public final class DateTimeBean {
      *            The new time of the time property
      */
     public void setTime(LocalTime time) {
-        timeProperty.setValue(time);
+        timeProperty.set(time);
     }
 
     /**
@@ -95,7 +95,7 @@ public final class DateTimeBean {
      * @return the time-zone property's content
      */
     public ZoneId getZone() {
-        return zoneProperty.getValue();
+        return zoneProperty.get();
     }
 
     /**
@@ -105,7 +105,7 @@ public final class DateTimeBean {
      *            The new zone ID of the time-zone property
      */
     public void setZone(ZoneId id) {
-        zoneProperty.setValue(id);
+        zoneProperty.set(id);
     }
 
     /**

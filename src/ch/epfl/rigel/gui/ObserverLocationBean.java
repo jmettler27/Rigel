@@ -20,11 +20,8 @@ public final class ObserverLocationBean {
     private final DoubleProperty latDeg; // The latitude property
     private final ObjectProperty<GeographicCoordinates> coordinates; // The geographic coordinates property
 
-    private final ObjectBinding<GeographicCoordinates> coordinatesBind;
-
     /**
-     * Default constructor.
-     * Constructs an observer location bean such that the values of its properties are initially null.
+     * Default constructor..
      */
     public ObserverLocationBean() {
         lonDeg = new SimpleDoubleProperty();
@@ -32,7 +29,7 @@ public final class ObserverLocationBean {
         coordinates = new SimpleObjectProperty<>(null);
 
         // Binds the coordinates to the longitude and latitude
-        coordinatesBind = Bindings.createObjectBinding(
+        ObjectBinding<GeographicCoordinates> coordinatesBind = Bindings.createObjectBinding(
                 () -> {
                     setCoordinates(GeographicCoordinates.ofDeg(getLonDeg(), getLatDeg()));
                     return getCoordinates();
@@ -49,11 +46,11 @@ public final class ObserverLocationBean {
     }
 
     /**
-     * Returns the longitude property's content, i.e. the longitude of the observer.
+     * Returns the longitude property's content, i.e. the longitude of the observer (in degrees).
      * @return the longitude property's content
      */
     public double getLonDeg() {
-        return lonDeg.getValue();
+        return lonDeg.get();
     }
 
     /**
@@ -63,7 +60,7 @@ public final class ObserverLocationBean {
      *            The new longitude (in degrees) of the longitude property
      */
     public void setLonDeg(double lon) {
-        lonDeg.setValue(lon);
+        lonDeg.set(lon);
     }
 
     /**
@@ -75,21 +72,21 @@ public final class ObserverLocationBean {
     }
 
     /**
-     * Returns the latitude property's content, i.e. the latitude (in degrees) of the observer.
+     * Returns the latitude property's content, i.e. the latitude of the observer (in degrees).
      * @return the latitude property's content
      */
     public double getLatDeg() {
-        return latDeg.getValue();
+        return latDeg.get();
     }
 
     /**
      * Sets the latitude property's content to the given latitude (in degrees).
      *
      * @param lat
-     *            The new latitude (in degrees) of the latitude property
+     *            The new latitude of the latitude property (in degrees)
      */
     public void setLatDeg(double lat) {
-        latDeg.setValue(lat);
+        latDeg.set(lat);
     }
 
     /**
@@ -105,13 +102,13 @@ public final class ObserverLocationBean {
      * @return the geographic coordinates property's content
      */
     public GeographicCoordinates getCoordinates() {
-        return coordinates.getValue();
+        return coordinates.get();
     }
 
     /**
      * Sets the geographic coordinates property's content to the given geographic coordinates
      */
     public void setCoordinates(GeographicCoordinates coords) {
-        coordinates.setValue(coords);
+        coordinates.set(coords);
     }
 }

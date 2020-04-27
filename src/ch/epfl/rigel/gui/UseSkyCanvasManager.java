@@ -23,26 +23,23 @@ public final class UseSkyCanvasManager extends Application {
 
     @Override
     public void start(Stage primaryStage) throws IOException {
-        try (InputStream hs = resourceStream("/hygdata_v3.csv")) { // InputStream as = resourceStream("/asterisms.txt")
+        try (InputStream hs = resourceStream("/hygdata_v3.csv")/*;
+             InputStream as = resourceStream("/asterisms.txt")*/) {
             StarCatalogue catalogue = new StarCatalogue.Builder()
                     .loadFrom(hs, HygDatabaseLoader.INSTANCE)
+                    /*.loadFrom(as, AsterismLoader.INSTANCE)*/
                     .build();
 
-            ZonedDateTime when =
-                    ZonedDateTime.parse("2020-02-17T20:15:00+01:00");
+            ZonedDateTime when = ZonedDateTime.parse("2020-02-17T20:15:00+01:00");
             DateTimeBean dateTimeBean = new DateTimeBean();
             dateTimeBean.setZonedDateTime(when);
 
-            ObserverLocationBean observerLocationBean =
-                    new ObserverLocationBean();
-            observerLocationBean.setCoordinates(
-                    GeographicCoordinates.ofDeg(6.57, 46.52));
+            ObserverLocationBean observerLocationBean = new ObserverLocationBean();
+            observerLocationBean.setCoordinates(GeographicCoordinates.ofDeg(6.57, 46.52));
 
-            ViewingParametersBean viewingParametersBean =
-                    new ViewingParametersBean();
-            viewingParametersBean.setCenter(
-                    HorizontalCoordinates.ofDeg(180, 42));
-            viewingParametersBean.setFieldOfViewDeg(70);
+            ViewingParametersBean viewingParametersBean = new ViewingParametersBean();
+            viewingParametersBean.setCenter(HorizontalCoordinates.ofDeg(180, 42));
+            viewingParametersBean.setFieldOfViewDeg(68.4);
 
             SkyCanvasManager canvasManager = new SkyCanvasManager(
                     catalogue,
@@ -50,7 +47,7 @@ public final class UseSkyCanvasManager extends Application {
                     observerLocationBean,
                     viewingParametersBean);
 
-            canvasManager.objectUnderMouseProperty().addListener(
+            canvasManager.objectUnderMouseBindProperty().addListener(
                     (p, o, n) -> {if (n != null) System.out.println(n);});
 
             Canvas sky = canvasManager.canvas();

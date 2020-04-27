@@ -15,7 +15,7 @@ import javafx.beans.property.SimpleObjectProperty;
  */
 public final class ViewingParametersBean {
 
-    private final DoubleProperty fieldOfViewDeg; // The field of view (in degrees) property
+    private final DoubleProperty fieldOfViewDeg; // The field of view property
     private final ObjectProperty<HorizontalCoordinates> center; // The stereographic projection property
 
     /**
@@ -36,7 +36,7 @@ public final class ViewingParametersBean {
     }
 
     /**
-     * Returns the field of view property's content, i.e. the field of view.
+     * Returns the field of view property's content, i.e. the field of view (in degrees).
      * @return the field of view property's content
      */
     public double getFieldOfViewDeg() {
@@ -44,7 +44,7 @@ public final class ViewingParametersBean {
     }
 
     /**
-     * Sets the field of view property's content to the given field of view.
+     * Sets the field of view property's content to the given field of view (in degrees)
      *
      * @param fovDeg
      *            The new field of view (in degrees) of the field of view property
