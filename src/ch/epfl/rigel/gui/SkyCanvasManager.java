@@ -16,9 +16,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.transform.NonInvertibleTransformException;
 import javafx.scene.transform.Transform;
 import javafx.geometry.Point2D;
-
-
-
 import java.time.ZonedDateTime;
 
 import static java.lang.Math.*;
@@ -49,8 +46,6 @@ public final class SkyCanvasManager {
     private final ObjectBinding<ObservedSky> observedSky; // The observed sky binding
     private final ObjectBinding<HorizontalCoordinates> mouseHorizontalPosition; // The cursor's horizontal position binding
 
-
-
     /**
      * Constructs a sky canvas manager.
      *
@@ -73,14 +68,6 @@ public final class SkyCanvasManager {
         mouseAltDeg = new SimpleDoubleProperty();
         objectUnderMouse = new SimpleObjectProperty<>(null);
 
-
-        // Informs about the movements of the mouse cursor above the canvas
-
-
-        // Inform about changes in the bindings and properties that have an impact on the drawing of the sky, and ask
-        // the painter to redraw it
-
-
         projection = Bindings.createObjectBinding(
                 () -> new StereographicProjection(viewingParameters.getCenter()), viewingParameters.centerProperty()
         );
@@ -102,16 +89,17 @@ public final class SkyCanvasManager {
                             canvas.getWidth() / 2, canvas.getHeight() / 2);
                 }, viewingParameters.fieldOfViewDegProperty(), projection, canvas.widthProperty());
 
+        // Informs about the movements of the mouse cursor above the canvas
         canvas.setOnMouseMoved(mouseEvent -> {
-                    setMousePosition(CartesianCoordinates.of(mouseEvent.getX(), mouseEvent.getY()));
-                    //double maxCanvasDistance = PlaneToCanvas.applyToDistance(10, planeToCanvas.get());
+            setMousePosition(CartesianCoordinates.of(mouseEvent.getX(), mouseEvent.getY()));
             try {
-                Transform invert = planeToCanvas.get().createInverse();
-                Point2D p = invert.transform(new Point2D(getMousePosition().x(), getMousePosition().y()));
+                Transform inverse = planeToCanvas.get().createInverse();
+                Point2D p = inverse.transform(new Point2D(getMousePosition().x(), getMousePosition().y()));
                 CartesianCoordinates coords = CartesianCoordinates.of(p.getX(), p.getY());
                 CelestialObject object = observedSky.get().objectClosestTo(coords, 10).get();
                 setObjectUnderMouse(object);
-            } catch (NonInvertibleTransformException e) {}
+            } catch (NonInvertibleTransformException e) {
+            }
 
         });
 
@@ -126,6 +114,7 @@ public final class SkyCanvasManager {
         canvas.setOnScroll(scrollEvent -> {
             double fovDeg = viewingParameters.getFieldOfViewDeg();
             double scrolledFovDeg = fovDeg + scrollMax(scrollEvent.getDeltaX(), scrollEvent.getDeltaY());
+            System.out.println(scrolledFovDeg);
             viewingParameters.setFieldOfViewDeg(scrolledFovDeg);
         });
 
@@ -137,23 +126,17 @@ public final class SkyCanvasManager {
 
         mouseHorizontalPosition = Bindings.createObjectBinding(
                 () -> {
-                    // Il faut inverser la transformation
-                    CartesianCoordinates mouseStereoPosition = PlaneToCanvas.applyToPoint(mousePosition.get(), planeToCanvas.get());
-                    HorizontalCoordinates hor = projection.get().inverseApply(mouseStereoPosition);
+                    Transform inverse = planeToCanvas.get().createInverse();
+                    Point2D p = inverse.transform(new Point2D(getMousePosition().x(), getMousePosition().y()));
+                    CartesianCoordinates coords = CartesianCoordinates.of(p.getX(), p.getY());
+                    HorizontalCoordinates hor = projection.get().inverseApply(coords);
                     mouseAzDeg.setValue(hor.azDeg());
                     mouseAltDeg.setValue(hor.altDeg());
                     return hor;
                 }, mousePosition, projection, planeToCanvas);
 
-
-        /*objectUnderMouseBind = Bindings.createObjectBinding(
-                () -> {
-                    double maxCanvasDistance = PlaneToCanvas.applyToDistance(10, planeToCanvas.get());
-                    return observedSky.get().objectClosestTo(getMousePosition(), maxCanvasDistance).get();
-                },observedSky, mousePosition, planeToCanvas);
-
-        setObjectUnderMouse(objectUnderMouseBind.get());*/
-
+        // Inform about changes in the bindings and properties that have an impact on the drawing of the sky, and ask
+        // the painter to redraw it
         projection.addListener(o -> draw(painter, observedSky.get()));
         planeToCanvas.addListener(o -> draw(painter, observedSky.get()));
 
@@ -286,9 +269,15 @@ public final class SkyCanvasManager {
 
         switch (keyCode) {
             case LEFT:
-                movedCenter = (projCenter.azDeg() < 10) ?
-                        HorizontalCoordinates.ofDeg((projCenter.azDeg() - 10) + 360, projCenter.altDeg()) :
-                        HorizontalCoordinates.ofDeg(projCenter.azDeg() - 10, projCenter.altDeg());
+                if (projCenter.azDeg() < 10) {
+                    if (((projCenter.azDeg() - 10) + 360) != 360.0) {
+                        movedCenter = HorizontalCoordinates.ofDeg((projCenter.azDeg() - 10) + 360, projCenter.altDeg());
+                    } else {
+                        movedCenter = HorizontalCoordinates.ofDeg(0, projCenter.altDeg());
+                    }
+                } else {
+                    movedCenter = HorizontalCoordinates.ofDeg((projCenter.azDeg() - 10), projCenter.altDeg());
+                }
                 break;
             case RIGHT:
                 movedCenter = (projCenter.azDeg() >= 350) ?

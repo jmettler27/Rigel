@@ -1,6 +1,8 @@
 package ch.epfl.rigel.coordinates;
 
+import ch.epfl.rigel.astronomy.CelestialObject;
 import javafx.geometry.Point2D;
+import javafx.scene.transform.NonInvertibleTransformException;
 import javafx.scene.transform.Transform;
 
 import java.util.Arrays;
@@ -66,6 +68,21 @@ public final class PlaneToCanvas {
         Point2D canvasVector = concatenation.deltaTransform(x, 0);
 
         return canvasVector.magnitude(); // The magnitude of the vector
+    }
+
+    /**
+     *
+     *
+     * @param canvasPosition
+     * @param transform
+     * @return
+     * @throws NonInvertibleTransformException
+     */
+    public static CartesianCoordinates inverseApplyTo(CartesianCoordinates canvasPosition, Transform transform)
+            throws NonInvertibleTransformException {
+            Transform inverse = transform.createInverse();
+            Point2D point2D = inverse.transform(new Point2D(canvasPosition.x(), canvasPosition.y()));
+            return CartesianCoordinates.of(point2D.getX(), point2D.getY());
     }
 
     /**

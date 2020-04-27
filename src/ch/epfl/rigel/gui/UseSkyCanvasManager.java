@@ -1,5 +1,6 @@
 package ch.epfl.rigel.gui;
 
+import ch.epfl.rigel.astronomy.AsterismLoader;
 import ch.epfl.rigel.astronomy.HygDatabaseLoader;
 import ch.epfl.rigel.astronomy.StarCatalogue;
 import ch.epfl.rigel.coordinates.GeographicCoordinates;
@@ -23,11 +24,11 @@ public final class UseSkyCanvasManager extends Application {
 
     @Override
     public void start(Stage primaryStage) throws IOException {
-        try (InputStream hs = resourceStream("/hygdata_v3.csv")/*;
-             InputStream as = resourceStream("/asterisms.txt")*/) {
+        try (InputStream hs = resourceStream("/hygdata_v3.csv");
+             InputStream as = resourceStream("/asterisms.txt")) {
             StarCatalogue catalogue = new StarCatalogue.Builder()
                     .loadFrom(hs, HygDatabaseLoader.INSTANCE)
-                    /*.loadFrom(as, AsterismLoader.INSTANCE)*/
+                    .loadFrom(as, AsterismLoader.INSTANCE)
                     .build();
 
             ZonedDateTime when = ZonedDateTime.parse("2020-02-17T20:15:00+01:00");
@@ -39,7 +40,7 @@ public final class UseSkyCanvasManager extends Application {
 
             ViewingParametersBean viewingParametersBean = new ViewingParametersBean();
             viewingParametersBean.setCenter(HorizontalCoordinates.ofDeg(180, 42));
-            viewingParametersBean.setFieldOfViewDeg(68.4);
+            viewingParametersBean.setFieldOfViewDeg(70);
 
             SkyCanvasManager canvasManager = new SkyCanvasManager(
                     catalogue,
