@@ -7,7 +7,6 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ObservableObjectValue;
 
 /**
  * An observer location bean.
@@ -21,6 +20,8 @@ public final class ObserverLocationBean {
     private final DoubleProperty latDeg; // The latitude property
     private final ObjectProperty<GeographicCoordinates> coordinates; // The geographic coordinates property
 
+    private final ObjectBinding<GeographicCoordinates> coordinatesBind;
+
     /**
      * Default constructor.
      * Constructs an observer location bean such that the values of its properties are initially null.
@@ -31,14 +32,12 @@ public final class ObserverLocationBean {
         coordinates = new SimpleObjectProperty<>(null);
 
         // Binds the coordinates to the longitude and latitude
-        ObjectBinding<GeographicCoordinates> coordinatesBind = Bindings.createObjectBinding(
+        coordinatesBind = Bindings.createObjectBinding(
                 () -> {
                     setCoordinates(GeographicCoordinates.ofDeg(getLonDeg(), getLatDeg()));
                     return getCoordinates();
                 },
                 coordinates, lonDeg, latDeg);
-        coordinatesBind.addListener(o -> System.out.println(coordinatesBind.get()));
-
     }
 
     /**
@@ -113,6 +112,6 @@ public final class ObserverLocationBean {
      * Sets the geographic coordinates property's content to the given geographic coordinates
      */
     public void setCoordinates(GeographicCoordinates coords) {
-        coordinates.setValue(GeographicCoordinates.ofDeg(coords.lonDeg(), coords.latDeg()));
+        coordinates.setValue(coords);
     }
 }
