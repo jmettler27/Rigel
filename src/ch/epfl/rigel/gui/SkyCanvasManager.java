@@ -58,6 +58,8 @@ public class SkyCanvasManager {
         canvas = new Canvas(800, 600);
         SkyCanvasPainter painter = new SkyCanvasPainter(canvas);
 
+        mousePosition = new SimpleObjectProperty<>();
+
         canvas.setOnMouseMoved((event) -> mousePosition.setValue(CartesianCoordinates.of(event.getX(), event.getY())));
         canvas.setOnScroll((event) -> viewingParameters.setFieldOfViewDeg(viewingParameters.getFieldOfViewDeg()
                 + scrollMax(event.getDeltaX(), event.getDeltaY())));
@@ -73,18 +75,20 @@ public class SkyCanvasManager {
         mouseHorizontalPosition = Bindings.createObjectBinding(
                 () -> {
                     HorizontalCoordinates hor = projection.get().inverseApply(mousePosition.getValue());
-                    mouseAzDeg.setValue(hor.azDeg());
-                    mouseAltDeg.setValue(hor.altDeg());
+                    //mouseAzDeg.setValue(hor.azDeg());
+                    //mouseAltDeg.setValue(hor.altDeg());
                     return hor;
                 }, projection, mousePosition);
 
-        objectUnderMouse = Bindings.createObjectBinding(
-                () -> observedSky.get().objectClosestTo(mousePosition.get(), 10).get(), observedSky, mousePosition);
 
         observedSky = Bindings.createObjectBinding(
                 () -> new ObservedSky(
                         dateTime.getZonedDateTime(), observerLocation.getCoordinates(), projection.get(), catalogue),
                 dateTime.dateProperty(), observerLocation.coordinatesProperty(), projection);
+
+        objectUnderMouse = Bindings.createObjectBinding(
+                () -> observedSky.get().objectClosestTo(mousePosition.get(), 10).get(), observedSky, mousePosition);
+
 
         planeToCanvas = Bindings.createObjectBinding(
                 () -> {
@@ -103,8 +107,8 @@ public class SkyCanvasManager {
      *
      * @return the longitude property
      */
-    public ObjectProperty<CelestialObject> objectUnderMouseProperty() {
-        return objectUnderMouseProperty;
+    public ObjectBinding<CelestialObject> objectUnderMouseProperty() {
+        return objectUnderMouse;
     }
 
     public Canvas canvas() {
