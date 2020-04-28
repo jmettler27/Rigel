@@ -83,10 +83,28 @@ public final class PlaneToCanvas {
      */
     public static CartesianCoordinates inverseAtPoint(CartesianCoordinates canvasPosition, Transform transform)
             throws NonInvertibleTransformException {
-
         // The point on the plane
         Point2D planePosition2D = transform.inverseTransform(canvasPosition.x(), canvasPosition.y());
         return CartesianCoordinates.of(planePosition2D.getX(), planePosition2D.getY());
+    }
+
+    /**
+     * Expresses the distance of the given canvas point in the place coordinate system, using the inverse of an
+     * affine transform.
+     *
+     * @param xC
+     *            The distance on the canvas
+     * @param transform
+     *            The affine transform, to be inverted
+     * @return the distance of the given canvas point in the plane coordinate system
+     * @throws NonInvertibleTransformException
+     *            if the transform cannot be inverted
+     */
+    public static double inverseAtDistance(double xC, Transform transform)
+            throws NonInvertibleTransformException {
+        // The vector on the plane
+        Point2D planeVector = transform.inverseDeltaTransform(xC, 0);
+        return planeVector.magnitude(); // The magnitude of the vector
     }
 
     /**

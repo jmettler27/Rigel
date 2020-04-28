@@ -38,11 +38,7 @@ public final class Polynomial {
      */
     public static Polynomial of(double coefficientN, double... coefficients) {
         Preconditions.checkArgument(coefficientN != 0);
-
-        double[] coeffsWithoutN = new double[coefficients.length];
-        System.arraycopy(coefficients, 0, coeffsWithoutN, 0, coefficients.length);
-
-        return new Polynomial(coefficientN, coeffsWithoutN);
+        return new Polynomial(coefficientN, coefficients);
     }
 
     /**

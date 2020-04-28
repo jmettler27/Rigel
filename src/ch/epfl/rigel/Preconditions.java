@@ -41,7 +41,9 @@ public final class Preconditions {
      * @return The given value if contained in the given interval
      */
     public static double checkInInterval(Interval interval, double value) {
-        checkArgument(interval.contains(value));
+        if (!interval.contains(value)) {
+            throw new IllegalArgumentException("La valeur donnée n'est pas incluse dans l'intervalle donné");
+        }
         return value;
     }
 }

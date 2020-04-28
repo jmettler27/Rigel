@@ -30,10 +30,10 @@ public final class ObservedSky {
      *
      * @param when
      *            The epoch of observation, in the UTC time-zone
-     * @param projection
-     *            The stereographic projection of the celestial objects
      * @param where
      *            The place of observation
+     * @param projection
+     *            The stereographic projection of the celestial objects
      * @param catalogue
      *            The catalogue of the observed stars
      */
@@ -53,6 +53,8 @@ public final class ObservedSky {
 
         // The models of the extraterrestrial planets of the solar system
         List<PlanetModel> planetModels = new ArrayList<>();
+
+        // A modifier
         planetModels.addAll(PlanetModel.INNER_PLANETS);
         planetModels.addAll(PlanetModel.OUTER_PLANETS);
 
@@ -211,7 +213,9 @@ public final class ObservedSky {
         }
         // Returns a full cell when a non null celestial object closer than the maximum distance from the given point
         // has been found, or an empty cell otherwise.
-        return (closestObject != null && minDistance < maxDistance) ? Optional.of(closestObject) : Optional.empty();
+        return (closestObject != null && minDistance < maxDistance) ?
+                Optional.of(closestObject) :
+                Optional.empty();
     }
 
     /**

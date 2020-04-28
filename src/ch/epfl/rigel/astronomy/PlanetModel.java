@@ -36,7 +36,8 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
     private final String frenchName;
 
     private final double tropicalYear, lonJ2010, lonPerigee, eccentricity, axis, inclination, lonAscending,
-            angularSize1AU, magnitude1AU;
+            angularSize1AU, magnitude1AU, cosInclination, sinInclination, eccentricityTemp;
+
 
     // The average angular velocity of the Earth's rotation around the Sun
     private static final double ANGULAR_VELOCITY = Angle.TAU / 365.242191;
@@ -44,6 +45,7 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
     // The eight planets of the solar system, following elliptical orbits around the Sun
     public static final List<PlanetModel> ALL = List.copyOf(List.of(values()));
 
+    // A ENLEVER
     // The planets that orbit closer to the Sun than the Earth (i.e. Mercury and Venus)
     public static final List<PlanetModel> INNER_PLANETS = List.copyOf(ALL.subList(MERCURY.ordinal(), EARTH.ordinal()));
 
@@ -87,6 +89,10 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
         this.lonAscending = Angle.ofDeg(lonAscendingDeg);
         this.angularSize1AU = Angle.ofArcsec(angularSize1AUArc);
         this.magnitude1AU = magnitude1AU;
+
+        this.cosInclination = cos(inclination);
+        this.sinInclination = sin(inclination);
+        this.eccentricityTemp = 1.0 - eccentricity * eccentricity;
     }
 
     /**
@@ -108,13 +114,13 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
         // heliocentric ecliptic coordinates
 
         // The planet's heliocentric ecliptic latitude (in radians, in its valid interval [-PI/2,PI/2])
-        double helioEclipticLat = asin(sin(helioLon - lonAscending) * sin(inclination));
+        double helioEclipticLat = asin(sin(helioLon - lonAscending) * sinInclination);
 
         // The projection of the orbital radius on the ecliptic plane (in AU)
         double eclipticRadius = orbitalRadius * cos(helioEclipticLat);
 
         // Calculation of the planet's heliocentric ecliptic longitude (in radians)
-        double numeratorEclipticLon = sin(helioLon - lonAscending) * cos(inclination);
+        double numeratorEclipticLon = sin(helioLon - lonAscending) * cosInclination;
         double denominatorEclipticLon = cos(helioLon - lonAscending);
         double helioEclipticLon = Angle.normalizePositive(atan2(numeratorEclipticLon, denominatorEclipticLon)
                 + lonAscending);
@@ -135,7 +141,7 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
 
         // The planet's geocentric ecliptic coordinates
         // Note : We assume that the method at will never be applied to the Earth
-        EclipticCoordinates eclipticPos = INNER_PLANETS.contains(this) ?
+        EclipticCoordinates eclipticPos = (axis < 1.0) ?
                 innerPlanetsCoords(earthOrbitalRadius, earthHelioLon, eclipticRadius, helioEclipticLon, helioEclipticLat) :
                 outerPlanetsCoords(earthOrbitalRadius, earthHelioLon, eclipticRadius, helioEclipticLon, helioEclipticLat);
 
@@ -187,7 +193,7 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
      * @return the planet's orbital radius (in AU)
      */
     private double orbitalRadius(double trueAnomaly) {
-        double numeratorRadius = axis * (1.0 - eccentricity * eccentricity);
+        double numeratorRadius = axis * eccentricityTemp;
         double denominatorRadius = 1.0 + eccentricity * cos(trueAnomaly);
         return numeratorRadius / denominatorRadius;
     }

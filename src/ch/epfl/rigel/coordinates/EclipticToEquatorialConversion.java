@@ -17,6 +17,12 @@ import static java.lang.Math.*;
  */
 public final class EclipticToEquatorialConversion implements Function<EclipticCoordinates, EquatorialCoordinates> {
 
+    private static final Polynomial POLYNOMIAL_OBLIQUITY = Polynomial.of(
+            Angle.ofArcsec(0.00181),
+            -Angle.ofArcsec(0.0006),
+            -Angle.ofArcsec(46.815),
+            Angle.ofDMS(23, 26, 21.45));
+
     private final double cosObliquity, sinObliquity; // The cosine and sine of the obliquity of the ecliptic
 
     /**
@@ -29,14 +35,8 @@ public final class EclipticToEquatorialConversion implements Function<EclipticCo
         // The number of Julian centuries elapsed since January 1st, 2000 at 12h00 UTC.
         double nbJulianCenturies = Epoch.J2000.julianCenturiesUntil(when);
 
-        // Calculation of the obliquity of the ecliptic, i.e. the angle of inclination of the Earth's axis of rotation
-        // relative to the ecliptic
-        double coeff0 = Angle.ofArcsec(0.00181);
-        double coeff1 = -Angle.ofArcsec(0.0006);
-        double coeff2 = -Angle.ofArcsec(46.815);
-        double coeff3 = Angle.ofDMS(23, 26, 21.45);
-        double obliquity = Polynomial.of(coeff0, coeff1, coeff2, coeff3).at(nbJulianCenturies);
-
+        // The obliquity of the ecliptic, i.e. the angle of inclination of the Earth's axis of rotation relative to the ecliptic
+        double obliquity = POLYNOMIAL_OBLIQUITY.at(nbJulianCenturies);
         cosObliquity = cos(obliquity);
         sinObliquity = sin(obliquity);
     }

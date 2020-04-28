@@ -13,11 +13,16 @@ public final class Angle {
     public static final double TAU = 2.0 * Math.PI; // The perimeter of the trigonometric circle
 
     private static final double
-            RAD_PER_HOUR = TAU / 24.0, // Conversion from hours to radians
-            HOUR_PER_RAD = 24.0 / TAU; // Conversion from radians to hours
+            HOURS_PER_DAY = 24.0, // The number of hours in a day
+            MINUTES_PER_HOUR = 60.0, // The number of minutes in an hour
+            SECONDS_PER_HOUR = 3600.0, // The number of seconds in an hour
+            RADS_PER_HOUR = TAU / HOURS_PER_DAY, // Conversion from hours to radians
+            HOURS_PER_RAD = HOURS_PER_DAY / TAU; // Conversion from radians to hours
 
     // The valid right open interval [0,60[ for the number of minutes and seconds
-    private static final RightOpenInterval DMS_INTERVAL = RightOpenInterval.of(0, 60);
+    private static final RightOpenInterval
+            NORMALIZE_INTERVAL = RightOpenInterval.of(0, TAU),
+            DMS_INTERVAL = RightOpenInterval.of(0, MINUTES_PER_HOUR);
 
     /**
      * Default constructor.
@@ -32,7 +37,7 @@ public final class Angle {
      * @return the normalized angle
      */
     public static double normalizePositive(double rad) {
-        return RightOpenInterval.of(0, TAU).reduce(rad);
+        return NORMALIZE_INTERVAL.reduce(rad);
     }
 
     /**
@@ -43,7 +48,7 @@ public final class Angle {
      * @return the angle in radians
      */
     public static double ofArcsec(double sec) {
-        return Math.toRadians(sec / 3600.0);
+        return Math.toRadians(sec / SECONDS_PER_HOUR);
     }
 
     /**
@@ -65,7 +70,7 @@ public final class Angle {
         double validMin = Preconditions.checkInInterval(DMS_INTERVAL, min);
         double validSec = Preconditions.checkInInterval(DMS_INTERVAL, sec);
 
-        return Math.toRadians((double) deg + validMin / 60.0 + validSec / 3600.0);
+        return Math.toRadians((double) deg + validMin / MINUTES_PER_HOUR + validSec / SECONDS_PER_HOUR);
     }
 
     /**
@@ -98,7 +103,7 @@ public final class Angle {
      * @return the angle in radians
      */
     public static double ofHr(double hr) {
-        return hr * RAD_PER_HOUR;
+        return hr * RADS_PER_HOUR;
     }
 
     /**
@@ -109,6 +114,6 @@ public final class Angle {
      * @return the angle in hours
      */
     public static double toHr(double rad) {
-        return rad * HOUR_PER_RAD;
+        return rad * HOURS_PER_RAD;
     }
 }

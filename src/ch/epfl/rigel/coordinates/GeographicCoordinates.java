@@ -76,6 +76,7 @@ public final class GeographicCoordinates extends SphericalCoordinates {
      * Returns the longitude, in radians.
      * @return the longitude, in radians
      */
+    @Override
     public double lon() {
         return super.lon();
     }
@@ -84,6 +85,7 @@ public final class GeographicCoordinates extends SphericalCoordinates {
      * Returns the longitude, in degrees.
      * @return the longitude, in degrees
      */
+    @Override
     public double lonDeg() {
         return super.lonDeg();
     }
@@ -92,6 +94,7 @@ public final class GeographicCoordinates extends SphericalCoordinates {
      * Returns the latitude, in radians.
      * @return the latitude, in radians
      */
+    @Override
     public double lat() {
         return super.lat();
     }
@@ -100,6 +103,7 @@ public final class GeographicCoordinates extends SphericalCoordinates {
      * Returns the latitude, in degrees.
      * @return the latitude, in degrees
      */
+    @Override
     public double latDeg() {
         return super.latDeg();
     }

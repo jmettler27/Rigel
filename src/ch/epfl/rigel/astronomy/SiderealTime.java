@@ -22,12 +22,7 @@ public final class SiderealTime {
     private static final double MILLIS_PER_HOUR = 1000.0 * 3600.0;
 
     // Used for the calculations of the Greenwich sidereal time
-    private static final Polynomial
-            POLYNOMIAL_S0 = Polynomial.of(0.000025862, 2400.051336, 6.697374558),
-            POLYNOMIAL_S1 = Polynomial.of(1.002737909, 0);
-
-    // Used for the normalization of values to the hours of a day
-    private static final RightOpenInterval DAY_NORMALIZATION = RightOpenInterval.of(0,24);
+    private static final Polynomial POLYNOMIAL_S0 = Polynomial.of(0.000025862, 2400.051336, 6.697374558);
 
     /**
      * Default constructor.
@@ -60,15 +55,10 @@ public final class SiderealTime {
 
         // S0 and S1 (in hours)
         double S0 = POLYNOMIAL_S0.at(nbJulianCenturies);
-        double S1 = POLYNOMIAL_S1.at(nbMillis_hr);
-        double normalized_S0 = DAY_NORMALIZATION.reduce(S0);
-        double normalized_S1 = DAY_NORMALIZATION.reduce(S1);
-
-        // The Greenwich sidereal time (in hours)
-        double siderealGreenwich_hr = DAY_NORMALIZATION.reduce(normalized_S0 + normalized_S1);
+        double S1 = 1.002737909 * nbMillis_hr;
 
         // The Greenwich sidereal time (in radians)
-        return Angle.normalizePositive(Angle.ofHr(siderealGreenwich_hr));
+        return Angle.normalizePositive(Angle.ofHr(S0 + S1));
     }
 
     /**

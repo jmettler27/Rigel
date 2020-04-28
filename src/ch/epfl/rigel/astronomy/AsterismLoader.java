@@ -42,6 +42,7 @@ public enum AsterismLoader implements StarCatalogue.Loader {
                 for (String col : columns) {
                     int hipparcosID = Integer.parseInt(col);
 
+                    // A modifier
                     for (Star s : stars) {
                         if (s.hipparcosId() == hipparcosID) {
                             asterismStars.add(s);

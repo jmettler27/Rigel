@@ -19,14 +19,14 @@ public enum HygDatabaseLoader implements StarCatalogue.Loader {
     INSTANCE();
 
     private static final int
-            HIP = 2, // The column number of the star's Hipparcos identification number
-            PROPER = 7, // The column number of the star's proper name
-            MAG = 14, // The column number of the star's magnitude
-            CI = 17, // The column number of the star's B-V color index
-            RARAD = 24, // The column number of the star's right ascension (in radians)
-            DECRAD = 25, // The column number of the star's declination (in radians)
-            BAYER = 28, // The column number of the star's Bayer designation
-            CON = 30; // The column number of the short name of the constellation
+            HIP = 1, // The index of the star's Hipparcos identification number
+            PROPER = 6, // The index of the star's proper name
+            MAG = 13, // The index of the star's magnitude
+            CI = 16, // The index of the star's B-V color index
+            RARAD = 23, // The index of the star's right ascension (in radians)
+            DECRAD = 24, // The index of the star's declination (in radians)
+            BAYER = 27, // The index of the star's Bayer designation
+            CON = 29; // The index of the short name of the constellation
 
     /**
      * @see StarCatalogue.Loader#load(InputStream, StarCatalogue.Builder)
@@ -47,39 +47,51 @@ public enum HygDatabaseLoader implements StarCatalogue.Loader {
                 String[] columns = line.split(","); // The 37 informations on the current star
 
                 // The star's Hipparcos identification number (0 by default)
-                int hipparcosId = columns[HIP - 1].isEmpty() ? 0 : Integer.parseInt(columns[HIP - 1]);
+                int hipparcosId = columns[HIP].isEmpty() ? 0 : Integer.parseInt(columns[HIP]);
 
                 // The star's name
                 String name;
 
-                if (columns[PROPER - 1].isEmpty()) {
+                if (columns[PROPER].isEmpty()) {
                     StringBuilder nameBuilder = new StringBuilder();
-                    if (columns[BAYER - 1].isEmpty()) {
+                    if (columns[BAYER].isEmpty()) {
                         nameBuilder.append("?");
                     } else {
-                        nameBuilder.append(columns[BAYER - 1]);
+                        nameBuilder.append(columns[BAYER]);
                     }
-                    nameBuilder.append(" ").append(columns[CON - 1]);
+                    nameBuilder.append(" ").append(columns[CON]);
                     name = nameBuilder.toString();
                 } else {
-                    name = columns[PROPER - 1];
+                    name = columns[PROPER];
                 }
 
                 // The star's right ascension and declination (in radians)
-                double raRad = Double.parseDouble(columns[RARAD - 1]);
-                double decRad = Double.parseDouble(columns[DECRAD - 1]);
+                double raRad = Double.parseDouble(columns[RARAD]);
+                double decRad = Double.parseDouble(columns[DECRAD]);
 
                 // The star's equatorial position (in radians)
                 EquatorialCoordinates equatorialCoordinates = EquatorialCoordinates.of(raRad, decRad);
 
                 // The star's magnitude (0 by default)
-                float magnitude = columns[MAG - 1].isEmpty() ? 0f : (float) Double.parseDouble(columns[MAG - 1]);
+                float magnitude = defaultCases(columns, MAG);
 
                 // The star's color index (0 by default)
-                float colorIndex = columns[CI - 1].isEmpty() ? 0f : (float) Double.parseDouble(columns[CI - 1]);
+                float colorIndex = defaultCases(columns, CI);
 
                 builder.addStar(new Star(hipparcosId, name, equatorialCoordinates, magnitude, colorIndex));
             }
         }
+    }
+
+    /**
+     * Additional method.
+     * Returns the float value of the string at the given index of the given array.
+     *
+     * @param columns The array of strings
+     * @param index The index of the string
+     * @return the float value of the string
+     */
+    private static float defaultCases(String[] columns, int index) {
+        return columns[index].isEmpty() ? 0f : (float) Double.parseDouble(columns[index]);
     }
 }

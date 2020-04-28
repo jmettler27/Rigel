@@ -83,13 +83,15 @@ public final class StereographicProjection implements Function<HorizontalCoordin
         // The azimuth and the altitude of the point to be projected
         double az = azAlt.az();
         double alt = azAlt.alt();
+        double cosAlt = cos(alt), sinAlt = sin(alt);
 
         // Calculation variables
         double lambdaDelta = az - centerLon;
-        double d = 1.0 / (1.0 + sin(alt) * sinCenterAlt + cos(alt) * cosCenterAlt * cos(lambdaDelta));
+        double cosLambdaDelta = cos(lambdaDelta);
+        double d = 1.0 / (1.0 + sinAlt * sinCenterAlt + cosAlt * cosCenterAlt * cosLambdaDelta);
 
-        double abscissa = d * cos(alt) * sin(lambdaDelta);
-        double ordinate = d * (sin(alt) * cosCenterAlt - cos(alt) * sinCenterAlt * cos(lambdaDelta));
+        double abscissa = d * cosAlt * sin(lambdaDelta);
+        double ordinate = d * (sinAlt * cosCenterAlt - cosAlt * sinCenterAlt * cosLambdaDelta);
 
         return CartesianCoordinates.of(abscissa, ordinate);
     }
@@ -109,11 +111,12 @@ public final class StereographicProjection implements Function<HorizontalCoordin
             return HorizontalCoordinates.of(center.az(), center.alt());
         }
 
-        // The radius of the projected parallel (a circle) centered in (x,y)
-        double radius = hypot(x, y);
+        // The squared radius and radius of the projected parallel (a circle) centered in (x,y)
+        double squaredRadius = x * x + y * y;
+        double radius = sqrt(squaredRadius);
 
-        double sinC = (2.0 * radius) / (radius * radius + 1.0);
-        double cosC = (1.0 - radius * radius) / (radius * radius + 1.0);
+        double sinC = (2.0 * radius) / (squaredRadius + 1.0);
+        double cosC = (1.0 - squaredRadius) / (squaredRadius + 1.0);
 
         // Calculation of the azimuth (first horizontal coordinate, in radians)
         double numeratorAz = x * sinC;

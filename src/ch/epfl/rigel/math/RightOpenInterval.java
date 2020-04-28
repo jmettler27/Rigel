@@ -82,7 +82,7 @@ public final class RightOpenInterval extends Interval {
      *            The second value
      * @return the remain of the floor
      */
-    private double floorMod(double x, double y) {
+    private static double floorMod(double x, double y) {
         return x - y * Math.floor(x / y);
     }
 
@@ -91,6 +91,6 @@ public final class RightOpenInterval extends Interval {
      */
     @Override
     public String toString() {
-        return String.format(Locale.ROOT, "[%s,%s[", low(), high());
+        return String.format(Locale.ROOT, "[%f,%f[", low(), high());
     }
 }

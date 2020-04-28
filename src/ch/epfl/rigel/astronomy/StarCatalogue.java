@@ -28,6 +28,7 @@ public final class StarCatalogue {
      *             if at least one asterism contains a star that is not on the given list of stars
      */
     public StarCatalogue(List<Star> stars, List<Asterism> asterisms) {
+        // A modifier
         for (Asterism ast : asterisms) {
             for (Star s : ast.stars()) {
                 Preconditions.checkArgument(stars.contains(s));
@@ -69,7 +70,7 @@ public final class StarCatalogue {
      */
     public List<Integer> asterismIndices(Asterism asterism) {
         Preconditions.checkArgument(asterisms().contains(asterism));
-        return List.copyOf(asterismsWithIndices.get(asterism));
+        return Collections.unmodifiableList(asterismsWithIndices.get(asterism));
     }
 
     /**
@@ -99,8 +100,8 @@ public final class StarCatalogue {
      */
     public final static class Builder {
 
-        private List<Star> stars;
-        private List<Asterism> asterisms;
+        private final List<Star> stars;
+        private final List<Asterism> asterisms;
 
         /**
          * Default constructor.

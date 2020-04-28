@@ -11,11 +11,11 @@ import java.time.temporal.ChronoUnit;
  */
 public enum Epoch {
 
-    J2000(2000, Month.JANUARY, 1, 12, 0, ZoneOffset.UTC),
+    J2000(ZonedDateTime.of(LocalDate.of(2000, Month.JANUARY, 1), LocalTime.NOON, ZoneOffset.UTC)),
 
-    J2010(2009, Month.DECEMBER, 31, 0, 0, ZoneOffset.UTC);
+    J2010(ZonedDateTime.of(LocalDate.of(2009, Month.DECEMBER, 31), LocalTime.MIDNIGHT, ZoneOffset.UTC));
 
-    private final ZonedDateTime zonedDateTime; // The date/time pair associated to its time-zone
+    private final ZonedDateTime zonedDateTime;
 
     // The number of milliseconds per day and the number of days per Julian century
     private static final double MILLIS_PER_DAY = 1000.0 * 3600 * 24.0;
@@ -25,24 +25,11 @@ public enum Epoch {
     /**
      * Constructs an astronomical epoch through its time and spatial information.
      *
-     * @param year
-     *            The year of the reference time
-     * @param month
-     *            The month of the reference time
-     * @param dayOfMonth
-     *            The day of the reference time
-     * @param hour
-     *            The hour of the reference time (in the associated time-zone)
-     * @param minute
-     *            The minute of the reference time (in the associated time-zone)
-     * @param zoneOffset
-     *            The associated time-zone
+     * @param zonedDateTime
+     *            The date/time pair associated to its time-zone
      */
-    Epoch(int year, Month month, int dayOfMonth, int hour, int minute, ZoneOffset zoneOffset) {
-        zonedDateTime = ZonedDateTime.of(
-                LocalDate.of(year, month, dayOfMonth),
-                LocalTime.of(hour, minute),
-                zoneOffset);
+    Epoch(ZonedDateTime zonedDateTime) {
+        this.zonedDateTime = zonedDateTime;
     }
 
     /**

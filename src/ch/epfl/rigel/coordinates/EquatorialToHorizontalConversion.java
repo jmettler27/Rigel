@@ -16,23 +16,20 @@ import static java.lang.Math.*;
  */
 public final class EquatorialToHorizontalConversion implements Function<EquatorialCoordinates, HorizontalCoordinates> {
 
-    private final ZonedDateTime when; // The astronomical epoch of the conversion
-    private final GeographicCoordinates where; // The location of the conversion
-
     private final double cosLat, sinLat; // The cosine and sine of the observer's latitude
 
+    private final double siderealTime;
     /**
      * Constructs a change of coordinate system between equatorial and horizontal coordinates for the given
      * date/time pair and location.
      *
      * @param when
-     *            The given date/time pair
+     *            The astronomical epoch of the conversion
      * @param where
-     *            The given location
+     *            The location of the conversion
      */
     public EquatorialToHorizontalConversion(ZonedDateTime when, GeographicCoordinates where) {
-        this.when = when;
-        this.where = where;
+        this.siderealTime = SiderealTime.local(when, where);
 
         double latitude = where.lat(); // The observer's latitude (in radians)
         cosLat = cos(latitude);
@@ -48,7 +45,7 @@ public final class EquatorialToHorizontalConversion implements Function<Equatori
         double decRad = equ.dec(); // The declination (in radians)
 
         // The hour angle
-        double hourAngle = SiderealTime.local(when, where) - raRad;
+        double hourAngle = siderealTime - raRad;
 
         // Calculation of the altitude (second horizontal coordinate, in radians, in its valid interval [-PI/2, PI/2])
         double tempAltitude = sin(decRad) * sinLat + cos(decRad) * cosLat * cos(hourAngle);

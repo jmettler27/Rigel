@@ -14,6 +14,7 @@ public final class Star extends CelestialObject {
 
     private final int hipparcosId;
     private final float colorIndex;
+    private final int colorTemperature;
 
     // The valid closed interval [-0.5,5.5] (unitless) for the star's color index
     private static final ClosedInterval COLOR_INDEX_INTERVAL = ClosedInterval.of(-0.5f, 5.5f);
@@ -43,6 +44,9 @@ public final class Star extends CelestialObject {
         Preconditions.checkArgument(hipparcosId >= 0);
         this.colorIndex = (float) Preconditions.checkInInterval(COLOR_INDEX_INTERVAL, colorIndex);
         this.hipparcosId = hipparcosId;
+
+        double T = 4600.0 * (1.0 / (0.92 * colorIndex + 1.7) + 1.0 / (0.92 * colorIndex + 0.62));
+        this.colorTemperature = (int) T;
     }
 
     /**
@@ -58,7 +62,6 @@ public final class Star extends CelestialObject {
      * @return the color temperature of this star (in degrees Kelvin)
      */
     public int colorTemperature() {
-        double T = 4600.0 * (1.0 / (0.92 * colorIndex + 1.7) + 1.0 / (0.92 * colorIndex + 0.62));
-        return (int) T;
+        return colorTemperature;
     }
 }

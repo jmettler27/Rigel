@@ -22,7 +22,10 @@ public enum MoonModel implements CelestialObjectModel<Moon> {
             MEAN_LONGITUDE_PERIGEE = Angle.ofDeg(130.143076), // The mean longitude at the perigee (in radians)
             ASCENDING_NODE_LON = Angle.ofDeg(291.682547), // The longitude of the ascending node (in radians)
             ORBIT_INCLINATION = Angle.ofDeg(5.145396), // The inclination of the orbit (in radians)
-            ECCENTRICITY = 0.0549, // The eccentricity of the orbit (unitless)
+            ECCENTRICITY = 0.0549,// The eccentricity of the orbit (unitless)
+            ECCENTRICITY_TEMP = 1.0 - ECCENTRICITY * ECCENTRICITY,
+            SIN_INCLINATION = sin(ORBIT_INCLINATION),
+            COS_INCLINATION = cos(ORBIT_INCLINATION),
 
             // Constant angles (in radians) used in calculations
             ANGLE_ORBITAL_LONGITUDE = Angle.ofDeg(13.1763966),
@@ -46,6 +49,7 @@ public enum MoonModel implements CelestialObjectModel<Moon> {
         Sun sun = SunModel.SUN.at(daysSinceJ2010, eclipticToEquatorialConversion);
         double sunMeanAnomaly = Angle.normalizePositive(sun.meanAnomaly());
         double sunLon = sun.eclipticPos().lon();
+        double sinSunMeanAnomaly = sin(sunMeanAnomaly);
 
         // Step 1 : Deriving the Moon's orbital longitude
 
@@ -60,10 +64,10 @@ public enum MoonModel implements CelestialObjectModel<Moon> {
         double evection = ANGLE_EVECTION * sin(2.0 * (meanOrbitalLon - sunLon) - meanAnomaly);
 
         // The correction of the annual equation
-        double correctionAnnualEqu = ANGLE_ANNUAL_EQUATION * sin(sunMeanAnomaly);
+        double correctionAnnualEqu = ANGLE_ANNUAL_EQUATION * sinSunMeanAnomaly;
 
         // The 3rd correction
-        double correction3 = ANGLE_CORRECTION_3 * sin(sunMeanAnomaly);
+        double correction3 = ANGLE_CORRECTION_3 * sinSunMeanAnomaly;
 
         // The Moon's corrected anomaly
         double correctedAnomaly = meanAnomaly + evection - correctionAnnualEqu - correction3;
@@ -93,12 +97,12 @@ public enum MoonModel implements CelestialObjectModel<Moon> {
         double correctionAscending = meanLonAscending - ANGLE_CORRECTED_LON * sin(sunMeanAnomaly);
 
         // Calculation of the Moon's ecliptic longitude (in radians)
-        double numeratorLon = sin(trueOrbitalLon - correctionAscending) * cos(ORBIT_INCLINATION);
+        double numeratorLon = sin(trueOrbitalLon - correctionAscending) * COS_INCLINATION;
         double denominatorLon = cos(trueOrbitalLon - correctionAscending);
         double moonEclipticLon = Angle.normalizePositive(atan2(numeratorLon, denominatorLon) + correctionAscending);
 
         // The Moon's ecliptic latitude (in radians)
-        double moonEclipticLat = asin(sin(trueOrbitalLon - correctionAscending) * sin(ORBIT_INCLINATION));
+        double moonEclipticLat = asin(sin(trueOrbitalLon - correctionAscending) * SIN_INCLINATION);
 
         // The Moon's ecliptic position (in radians)
         EclipticCoordinates eclipticPos = EclipticCoordinates.of(moonEclipticLon, moonEclipticLat);
@@ -110,7 +114,7 @@ public enum MoonModel implements CelestialObjectModel<Moon> {
         double phase = (1.0 - cos(trueOrbitalLon - sunLon)) / 2.0;
 
         // Calculation of the distance between the Earth and the Moon
-        double numeratorDistance = 1.0 - ECCENTRICITY * ECCENTRICITY;
+        double numeratorDistance = ECCENTRICITY_TEMP;
         double denominatorDistance = 1.0 + ECCENTRICITY * cos(correctedAnomaly + correctedCenterEqu);
         double earthMoonDistance = numeratorDistance / denominatorDistance;
 

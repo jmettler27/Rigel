@@ -52,33 +52,33 @@ public final class EclipticCoordinates extends SphericalCoordinates {
     }
 
     /**
-     * Returns the longitude, in radians.
-     * @return the longitude, in radians
+     * @see SphericalCoordinates#lon()
      */
+    @Override
     public double lon() {
         return super.lon();
     }
 
     /**
-     * Returns the longitude, in degrees.
-     * @return the longitude, in degrees
+     * @see SphericalCoordinates#lonDeg()
      */
+    @Override
     public double lonDeg() {
         return super.lonDeg();
     }
 
     /**
-     * Returns the latitude, in radians.
-     * @return the latitude, in radians
+     * @see SphericalCoordinates#lat()
      */
+    @Override
     public double lat() {
         return super.lat();
     }
 
     /**
-     * Returns the latitude, in degrees.
-     * @return the latitude, in degrees
+     * @see SphericalCoordinates#latDeg()
      */
+    @Override
     public double latDeg() {
         return super.latDeg();
     }
