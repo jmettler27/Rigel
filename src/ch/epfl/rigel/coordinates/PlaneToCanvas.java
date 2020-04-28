@@ -1,6 +1,5 @@
 package ch.epfl.rigel.coordinates;
 
-import ch.epfl.rigel.astronomy.CelestialObject;
 import javafx.geometry.Point2D;
 import javafx.scene.transform.NonInvertibleTransformException;
 import javafx.scene.transform.Transform;
@@ -20,15 +19,15 @@ public final class PlaneToCanvas {
     /**
      * Expresses the coordinates of the given point in the canvas coordinate system, using an affine transform.
      *
-     * @param cartesianPos
+     * @param planePosition
      *            The point coordinates, as described in the stereographic projection coordinate system
      * @param transform
      *            The affine transform
-     * @return the coordinates of the given point in the canvas coordinate system.
+     * @return the coordinates of the given point in the canvas coordinate system
      */
-    public static CartesianCoordinates applyToPoint(CartesianCoordinates cartesianPos, Transform transform) {
+    public static CartesianCoordinates applyToPoint(CartesianCoordinates planePosition, Transform transform) {
         Transform concatenation = concatenation(transform);
-        Point2D canvasPoint = concatenation.transform(cartesianPos.x(), cartesianPos.y());
+        Point2D canvasPoint = concatenation.transform(planePosition.x(), planePosition.y());
 
         return CartesianCoordinates.of(canvasPoint.getX(), canvasPoint.getY());
     }
@@ -37,20 +36,20 @@ public final class PlaneToCanvas {
      * Returns an array containing the positions of the given points in the canvas coordinate system, using an affine
      * transform.
      *
-     * @param cartesianPositions
+     * @param planePositions
      *            The coordinates of the given points on the plane
      * @param transform
      *            The affine transform
      * @return the coordinates of the given points in the canvas coordinate system
      */
-    public static double[] applyToAllPoints(double[] cartesianPositions, Transform transform) {
-        double[] canvasPositions = new double[cartesianPositions.length];
+    public static double[] applyToAllPoints(double[] planePositions, Transform transform) {
+        double[] canvasPositions = new double[planePositions.length];
         Transform concatenation = concatenation(transform);
-        concatenation.transform2DPoints(cartesianPositions, 0, canvasPositions, 0,
-                cartesianPositions.length / 2);
+        concatenation.transform2DPoints(planePositions, 0, canvasPositions, 0,
+                planePositions.length / 2);
 
         // The positions of the images of the celestial objects
-        return Arrays.copyOf(canvasPositions, cartesianPositions.length);
+        return Arrays.copyOf(canvasPositions, planePositions.length);
     }
 
     /**
@@ -71,18 +70,23 @@ public final class PlaneToCanvas {
     }
 
     /**
-     *
+     * Expresses the coordinates of the given canvas point in the plane coordinate system, using the inverse of an
+     * affine transform.
      *
      * @param canvasPosition
+     *            The canvas point
      * @param transform
-     * @return
+     *            The affine transform, to be inverted
+     * @return the coordinates of the given canvas point in the plane coordinate system
      * @throws NonInvertibleTransformException
+     *            if the transform cannot be inverted
      */
-    public static CartesianCoordinates inverseApplyTo(CartesianCoordinates canvasPosition, Transform transform)
+    public static CartesianCoordinates inverseAtPoint(CartesianCoordinates canvasPosition, Transform transform)
             throws NonInvertibleTransformException {
-            Transform inverse = transform.createInverse();
-            Point2D point2D = inverse.transform(new Point2D(canvasPosition.x(), canvasPosition.y()));
-            return CartesianCoordinates.of(point2D.getX(), point2D.getY());
+
+        // The point on the plane
+        Point2D planePosition2D = transform.inverseTransform(canvasPosition.x(), canvasPosition.y());
+        return CartesianCoordinates.of(planePosition2D.getX(), planePosition2D.getY());
     }
 
     /**

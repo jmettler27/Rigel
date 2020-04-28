@@ -85,6 +85,7 @@ public final class SkyCanvasManager {
                 () -> {
                     double fovRad = Angle.ofDeg(viewingParameters.getFieldOfViewDeg());
                     double dilatationFactor = canvas.getWidth() / projection.get().applyToAngle(fovRad);
+
                     return Transform.affine(dilatationFactor, 0, 0, -dilatationFactor,
                             canvas.getWidth() / 2, canvas.getHeight() / 2);
                 }, viewingParameters.fieldOfViewDegProperty(), projection, canvas.widthProperty());
@@ -92,15 +93,16 @@ public final class SkyCanvasManager {
         // Informs about the movements of the mouse cursor above the canvas
         canvas.setOnMouseMoved(mouseEvent -> {
             setMousePosition(CartesianCoordinates.of(mouseEvent.getX(), mouseEvent.getY()));
-            try {
-                Transform inverse = planeToCanvas.get().createInverse();
-                Point2D p = inverse.transform(new Point2D(getMousePosition().x(), getMousePosition().y()));
-                CartesianCoordinates coords = CartesianCoordinates.of(p.getX(), p.getY());
-                CelestialObject object = observedSky.get().objectClosestTo(coords, 10).get();
-                setObjectUnderMouse(object);
-            } catch (NonInvertibleTransformException e) {
-            }
 
+            try {
+                CartesianCoordinates planePosition = PlaneToCanvas.inverseAtPoint(getMousePosition(),
+                        planeToCanvas.get());
+
+                CelestialObject closestObject = observedSky.get().objectClosestTo(planePosition, 10).get();
+                setObjectUnderMouse(closestObject);
+            } catch (NonInvertibleTransformException e) {
+                e.printStackTrace();
+            }
         });
 
         // Detects the mouse clicks on the canvas
@@ -115,7 +117,10 @@ public final class SkyCanvasManager {
             double fovDeg = viewingParameters.getFieldOfViewDeg();
             double scrolledFovDeg = fovDeg + scrollMax(scrollEvent.getDeltaX(), scrollEvent.getDeltaY());
             System.out.println(scrolledFovDeg);
-            viewingParameters.setFieldOfViewDeg(scrolledFovDeg);
+
+            if (30 <= scrolledFovDeg && scrolledFovDeg <= 150) {
+                viewingParameters.setFieldOfViewDeg(scrolledFovDeg);
+            }
         });
 
         // Reacts to pressing the cursor keys and changes the direction of observation (i.e. the projection center) accordingly
@@ -126,14 +131,14 @@ public final class SkyCanvasManager {
 
         mouseHorizontalPosition = Bindings.createObjectBinding(
                 () -> {
-                    Transform inverse = planeToCanvas.get().createInverse();
-                    Point2D p = inverse.transform(new Point2D(getMousePosition().x(), getMousePosition().y()));
-                    CartesianCoordinates coords = CartesianCoordinates.of(p.getX(), p.getY());
-                    HorizontalCoordinates hor = projection.get().inverseApply(coords);
+                    CartesianCoordinates planePosition = PlaneToCanvas.inverseAtPoint(getMousePosition(),
+                            planeToCanvas.get());
+
+                    HorizontalCoordinates hor = projection.get().inverseApply(planePosition);
                     mouseAzDeg.setValue(hor.azDeg());
                     mouseAltDeg.setValue(hor.altDeg());
                     return hor;
-                }, mousePosition, projection, planeToCanvas);
+                }, mousePosition, planeToCanvas, projection);
 
         // Inform about changes in the bindings and properties that have an impact on the drawing of the sky, and ask
         // the painter to redraw it
@@ -153,6 +158,7 @@ public final class SkyCanvasManager {
     }
 
     /**
+     * Returns the azimuth of the mouse cursor (in degrees)
      * @return the azimuth of the mouse cursor (in degrees)
      */
     public double getMouseAzDeg() {
@@ -160,6 +166,7 @@ public final class SkyCanvasManager {
     }
 
     /**
+     * Sets the azimuth of the mouse cursor (in degrees)
      * @param azDeg The new azimuth of the mouse cursor (in degrees)
      */
     public void setMouseAzDeg(double azDeg) {
@@ -167,13 +174,16 @@ public final class SkyCanvasManager {
     }
 
     /**
-     * @return the mouse cursor's altitude property.
+     * Returns the mouse cursor's altitude property.
+     * @return the mouse cursor's altitude property
      */
     public DoubleProperty mouseAltDegProperty() {
         return mouseAltDeg;
     }
 
     /**
+     * Returns the altitude of the mouse cursor (in degrees).
+     *
      * @return the altitude of the mouse cursor (in degrees)
      */
     public double getMouseAltDeg() {
@@ -181,6 +191,8 @@ public final class SkyCanvasManager {
     }
 
     /**
+     * Sets the altitude of the mouse cursor (in degrees).
+     *
      * @param altDeg The new altitude of the mouse cursor (in degrees)
      */
     public void setMouseAltDeg(double altDeg) {
@@ -197,14 +209,18 @@ public final class SkyCanvasManager {
     }
 
     /**
-     * @return the mouse position on the canvas
+     * Returns the position of the mouse on the canvas.
+     *
+     * @return the position of the mouse on the canvas
      */
     public CartesianCoordinates getMousePosition() {
         return mousePosition.get();
     }
 
     /**
-     * @param cart The new mouse position on the canvas
+     * Sets the position of the mouse on the canvas.
+     *
+     * @param cart The new position of the mouse on the canvas
      */
     public void setMousePosition(CartesianCoordinates cart) {
         mousePosition.set(cart);
@@ -270,18 +286,18 @@ public final class SkyCanvasManager {
         switch (keyCode) {
             case LEFT:
                 if (projCenter.azDeg() < 10) {
-                    if (((projCenter.azDeg() - 10) + 360) != 360.0) {
-                        movedCenter = HorizontalCoordinates.ofDeg((projCenter.azDeg() - 10) + 360, projCenter.altDeg());
-                    } else {
-                        movedCenter = HorizontalCoordinates.ofDeg(0, projCenter.altDeg());
-                    }
+                    double normalizedAzDeg = (projCenter.azDeg() - 10) + 360;
+                    movedCenter = (normalizedAzDeg != 360.0) ?
+                            HorizontalCoordinates.ofDeg(normalizedAzDeg, projCenter.altDeg()) :
+                            HorizontalCoordinates.ofDeg(0, projCenter.altDeg());
                 } else {
                     movedCenter = HorizontalCoordinates.ofDeg((projCenter.azDeg() - 10), projCenter.altDeg());
                 }
                 break;
             case RIGHT:
+                double normalizedAzDeg = (projCenter.azDeg() + 10) - 360;
                 movedCenter = (projCenter.azDeg() >= 350) ?
-                        HorizontalCoordinates.ofDeg((projCenter.azDeg() + 10) - 360, projCenter.altDeg()) :
+                        HorizontalCoordinates.ofDeg(normalizedAzDeg, projCenter.altDeg()) :
                         HorizontalCoordinates.ofDeg(projCenter.azDeg() + 10, projCenter.altDeg());
                 break;
             case UP:

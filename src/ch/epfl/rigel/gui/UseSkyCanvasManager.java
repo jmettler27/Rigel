@@ -48,8 +48,8 @@ public final class UseSkyCanvasManager extends Application {
                     observerLocationBean,
                     viewingParametersBean);
 
-            canvasManager.objectUnderMouseBindProperty().addListener(
-                    (p, o, n) -> {if (n != null) System.out.println(n);});
+            /*canvasManager.objectUnderMouseBindProperty().addListener(
+                    (p, o, n) -> {if (n != null) System.out.println(n);});*/
 
             Canvas sky = canvasManager.canvas();
             BorderPane root = new BorderPane(sky);

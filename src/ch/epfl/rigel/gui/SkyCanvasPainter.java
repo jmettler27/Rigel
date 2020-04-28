@@ -113,12 +113,12 @@ public final class SkyCanvasPainter {
      */
     void drawSun(ObservedSky sky, StereographicProjection projection, Transform transform) {
         // The position and projected diameter of the observed Sun on the plane
-        CartesianCoordinates sunPosition = sky.sunPosition();
-        double sunDiameter = projection.applyToAngle(sky.sun().angularSize());
+        CartesianCoordinates sunPlanePosition = sky.sunPosition();
+        double sunPlaneDiameter = projection.applyToAngle(sky.sun().angularSize());
 
         // The position and diameter of the observed Sun on the canvas
-        CartesianCoordinates sunCanvasPosition = PlaneToCanvas.applyToPoint(sunPosition, transform);
-        double sunCanvasDiameter = PlaneToCanvas.applyToDistance(sunDiameter, transform);
+        CartesianCoordinates sunCanvasPosition = PlaneToCanvas.applyToPoint(sunPlanePosition, transform);
+        double sunCanvasDiameter = PlaneToCanvas.applyToDistance(sunPlaneDiameter, transform);
 
         // Draws the three concentric discs composing the image of the Sun, from the largest to the smallest
         drawFilledCircle(sunCanvasPosition, sunCanvasDiameter * 2.2, Color.YELLOW.deriveColor(1, 1, 1, 0.25));
@@ -138,12 +138,12 @@ public final class SkyCanvasPainter {
      */
     void drawMoon(ObservedSky sky, StereographicProjection projection, Transform transform) {
         // The position and projected diameter of the observed Moon on the plane
-        CartesianCoordinates moonPosition = sky.moonPosition();
-        double moonDiameter = projection.applyToAngle(sky.moon().angularSize());
+        CartesianCoordinates moonPlanePosition = sky.moonPosition();
+        double moonPlaneDiameter = projection.applyToAngle(sky.moon().angularSize());
 
         // The position and diameter of the observed Moon on the canvas
-        CartesianCoordinates moonCanvasPosition = PlaneToCanvas.applyToPoint(moonPosition, transform);
-        double moonCanvasDiameter = PlaneToCanvas.applyToDistance(moonDiameter, transform);
+        CartesianCoordinates moonCanvasPosition = PlaneToCanvas.applyToPoint(moonPlanePosition, transform);
+        double moonCanvasDiameter = PlaneToCanvas.applyToDistance(moonPlaneDiameter, transform);
 
         drawFilledCircle(moonCanvasPosition, moonCanvasDiameter, Color.WHITE);
     }
