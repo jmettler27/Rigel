@@ -16,9 +16,7 @@ import static java.lang.Math.*;
  */
 public final class EquatorialToHorizontalConversion implements Function<EquatorialCoordinates, HorizontalCoordinates> {
 
-    private final double cosLat, sinLat; // The cosine and sine of the observer's latitude
-
-    private final double siderealTime;
+    private final double localSiderealTime, cosLat, sinLat;
     /**
      * Constructs a change of coordinate system between equatorial and horizontal coordinates for the given
      * date/time pair and location.
@@ -29,7 +27,7 @@ public final class EquatorialToHorizontalConversion implements Function<Equatori
      *            The location of the conversion
      */
     public EquatorialToHorizontalConversion(ZonedDateTime when, GeographicCoordinates where) {
-        this.siderealTime = SiderealTime.local(when, where);
+        this.localSiderealTime = SiderealTime.local(when, where);
 
         double latitude = where.lat(); // The observer's latitude (in radians)
         cosLat = cos(latitude);
@@ -43,17 +41,18 @@ public final class EquatorialToHorizontalConversion implements Function<Equatori
     public HorizontalCoordinates apply(EquatorialCoordinates equ) {
         double raRad = equ.ra(); // The right ascension (in radians)
         double decRad = equ.dec(); // The declination (in radians)
+        double cosDecRad = cos(decRad), sinDecRad = sin(decRad);
 
-        // The hour angle
-        double hourAngle = siderealTime - raRad;
+        // The hour angle (in radians)
+        double hourAngle = localSiderealTime - raRad;
 
         // Calculation of the altitude (second horizontal coordinate, in radians, in its valid interval [-PI/2, PI/2])
-        double tempAltitude = sin(decRad) * sinLat + cos(decRad) * cosLat * cos(hourAngle);
-        double altRad = asin(tempAltitude);
+        double tempAlt = sinDecRad * sinLat + cosDecRad * cosLat * cos(hourAngle);
+        double altRad = asin(tempAlt);
 
         // Calculation of the azimuth (first horizontal coordinate)
-        double numeratorAz = -cos(decRad) * cosLat * sin(hourAngle);
-        double denominatorAz = sin(decRad) - sinLat * sin(altRad);
+        double numeratorAz = -cosDecRad * cosLat * sin(hourAngle);
+        double denominatorAz = sinDecRad - sinLat * tempAlt;
         double azRad = Angle.normalizePositive(atan2(numeratorAz, denominatorAz));
 
         return HorizontalCoordinates.of(azRad, altRad);

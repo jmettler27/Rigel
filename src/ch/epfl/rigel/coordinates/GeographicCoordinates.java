@@ -73,8 +73,7 @@ public final class GeographicCoordinates extends SphericalCoordinates {
     }
 
     /**
-     * Returns the longitude, in radians.
-     * @return the longitude, in radians
+     * @see SphericalCoordinates#lon()
      */
     @Override
     public double lon() {
@@ -82,8 +81,7 @@ public final class GeographicCoordinates extends SphericalCoordinates {
     }
 
     /**
-     * Returns the longitude, in degrees.
-     * @return the longitude, in degrees
+     * @see SphericalCoordinates#lonDeg()
      */
     @Override
     public double lonDeg() {
@@ -91,8 +89,7 @@ public final class GeographicCoordinates extends SphericalCoordinates {
     }
 
     /**
-     * Returns the latitude, in radians.
-     * @return the latitude, in radians
+     * @see SphericalCoordinates#lat()
      */
     @Override
     public double lat() {
@@ -100,8 +97,7 @@ public final class GeographicCoordinates extends SphericalCoordinates {
     }
 
     /**
-     * Returns the latitude, in degrees.
-     * @return the latitude, in degrees
+     * @see SphericalCoordinates#latDeg()
      */
     @Override
     public double latDeg() {

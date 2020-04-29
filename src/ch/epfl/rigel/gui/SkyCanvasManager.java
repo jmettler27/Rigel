@@ -15,7 +15,6 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.input.KeyCode;
 import javafx.scene.transform.NonInvertibleTransformException;
 import javafx.scene.transform.Transform;
-import javafx.geometry.Point2D;
 
 import java.time.ZonedDateTime;
 

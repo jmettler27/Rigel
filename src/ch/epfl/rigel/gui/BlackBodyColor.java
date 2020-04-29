@@ -33,8 +33,8 @@ public final class BlackBodyColor {
      *            if the closest multiple of 100 to the given temperature does not correspond to a temperature in the map
      * @return the color of the black body associated to the given color temperature
      */
-    public static Color colorForTemperature(int temperature) {
-        int closestTemperature = closestMultipleTo(temperature);
+    public static Color colorForTemperature(double temperature) {
+        int closestTemperature = (int) Math.round(temperature / 100.0) * 100;
         Preconditions.checkArgument(TEMPERATURE_COLOR_MAP.containsKey(closestTemperature));
 
         return Color.web(TEMPERATURE_COLOR_MAP.get(closestTemperature));
@@ -81,31 +81,5 @@ public final class BlackBodyColor {
             throw new UncheckedIOException(e);
         }
         return map;
-    }
-
-    /**
-     * Additional method.
-     * Returns the closest multiple of 100 to the given number.
-     *
-     * @param number
-     *            The given number
-     * @throws IllegalArgumentException
-     *            if the given number is < 0
-     * @return the closest multiple of 100 to the given number
-     */
-    private static int closestMultipleTo(int number) {
-        Preconditions.checkArgument(number >= 0);
-        int closestMultiple = number; // The closest multiple is the number itself if it is divisible by 100
-
-        // The number is not divisible by 100
-        if (number % 100 != 0) {
-            int temp = number / 100;
-            int remain = number % 100;
-
-            // Rounds the number to its closest lower or upper multiple of 100 according to its remainder in the
-            // euclidean division by 100.
-            closestMultiple = (0 < remain && remain < 50) ? (temp) * 100 : (temp + 1) * 100;
-        }
-        return closestMultiple;
     }
 }

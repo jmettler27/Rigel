@@ -99,8 +99,8 @@ public final class ObservedSky {
     }
 
     /**
-     * Returns the Cartesian coordinates of the Sun as projected in the plan.
-     * @return the Cartesian coordinates of the Sun as projected in the plan
+     * Returns the position of the Sun on the plane.
+     * @return the position of the Sun on the plane
      */
     public CartesianCoordinates sunPosition() {
         return sunPosition;
@@ -115,8 +115,8 @@ public final class ObservedSky {
     }
 
     /**
-     * Returns the Cartesian coordinates of the Moon as projected in the plan.
-     * @return the Cartesian coordinates of the Moon as projected in the plan
+     * Returns the position of the Moon on the plane.
+     * @return the position of the Moon on the plane
      */
     public CartesianCoordinates moonPosition() {
         return moonPosition;
@@ -131,8 +131,8 @@ public final class ObservedSky {
     }
 
     /**
-     * Returns the Cartesian coordinates of the extraterrestrial planets of the solar system as projected in the plan.
-     * @return the Cartesian coordinates of the extraterrestrial planets of the solar system as projected in the plan
+     * Returns the positions of the extraterrestrial planets of the solar system on the plane.
+     * @return the positions of the extraterrestrial planets of the solar system on the plane.
      */
     public double[] planetPositions() {
         return planetPositions;
@@ -147,8 +147,8 @@ public final class ObservedSky {
     }
 
     /**
-     * Returns the Cartesian coordinates of the stars of the catalogue in the plan.
-     * @return the Cartesian coordinates of the stars of the catalogue in the plan
+     * Returns the positions of the stars of the catalogue on the plane.
+     * @return the positions of the stars of the catalogue on the plane.
      */
     public double[] starPositions() {
         return starPositions;
@@ -192,10 +192,10 @@ public final class ObservedSky {
         // Adds to the map only the celestial objects who are contained in a square centered in the given search point
         // and whose sides are of length (2 * maxDistance)
         for (CelestialObject object : positions.keySet()) {
-            CartesianCoordinates objectPos = positions.get(object);
+            CartesianCoordinates planePosition = positions.get(object);
 
-            if (objectPos.isContainedInSquare(searchPoint, maxDistance)) {
-                closePositions.put(object, objectPos);
+            if (planePosition.isContainedInSquare(searchPoint, maxDistance)) {
+                closePositions.put(object, planePosition);
             }
         }
 
@@ -232,18 +232,18 @@ public final class ObservedSky {
      */
     private <T extends CelestialObject> double[] multiplePositions(List<T> list, EquatorialToCartesianConversion equToCart,
                                          Map<CelestialObject, CartesianCoordinates> positions) {
+        int size = list.size();
+        double[] multiplePositions = new double[2 * size];
 
-        double[] tempPositions = new double[2 * list.size()];
-
-        for (int i = 0; i < list.size(); i++) {
+        for (int i = 0; i < size; ++i) {
             CelestialObject object = list.get(i);
 
-            CartesianCoordinates cartesianPos = equToCart.apply(object.equatorialPos());
-            tempPositions[2 * i] = cartesianPos.x();
-            tempPositions[2 * i + 1] = cartesianPos.y();
+            CartesianCoordinates planePosition = equToCart.apply(object.equatorialPos());
+            multiplePositions[2 * i] = planePosition.x();
+            multiplePositions[2 * i + 1] = planePosition.y();
 
-            positions.put(object, cartesianPos);
+            positions.put(object, planePosition);
         }
-        return tempPositions;
+        return multiplePositions;
     }
 }

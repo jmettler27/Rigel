@@ -89,7 +89,7 @@ public final class PlaneToCanvas {
     }
 
     /**
-     * Expresses the distance of the given canvas point in the place coordinate system, using the inverse of an
+     * Expresses the distance of the given canvas point in the plane coordinate system, using the inverse of an
      * affine transform.
      *
      * @param xC
