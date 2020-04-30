@@ -48,14 +48,15 @@ public final class EclipticToEquatorialConversion implements Function<EclipticCo
     public EquatorialCoordinates apply(EclipticCoordinates ecl) {
         double eclipticLon = ecl.lon(); // The ecliptic longitude (in radians)
         double eclipticLat = ecl.lat(); // The ecliptic latitude (in radians)
+        double sinEclipticLon = sin(eclipticLon);
 
         // Calculation of the right ascension (first equatorial coordinate, in radians):
-        double numeratorRa = sin(eclipticLon) * cosObliquity - tan(eclipticLat) * sinObliquity;
+        double numeratorRa = sinEclipticLon * cosObliquity - tan(eclipticLat) * sinObliquity;
         double denominatorRa = cos(eclipticLon);
         double raRad = Angle.normalizePositive(atan2(numeratorRa, denominatorRa));
 
         // Calculation of the declination (second equatorial coordinate, in radians, in its valid interval [-PI/2, PI/2])
-        double tempDec = sin(eclipticLat) * cosObliquity + cos(eclipticLat) * sinObliquity * sin(eclipticLon);
+        double tempDec = sin(eclipticLat) * cosObliquity + cos(eclipticLat) * sinObliquity * sinEclipticLon;
         double decRad = asin(tempDec);
 
         // The equatorial coordinates corresponding to the given ecliptic coordinates

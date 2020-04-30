@@ -164,13 +164,14 @@ public final class SkyCanvasPainter {
         // Projects the parallel of latitude 0 degree on the plane (resulting in the horizon) and expresses its center
         // and radius in the canvas coordinate system
         CartesianCoordinates center = PlaneToCanvas.applyToPoint(projection.circleCenterForParallel(parallel), transform);
-        double canvasRadius = PlaneToCanvas.applyToDistance(projection.circleRadiusForParallel(parallel), transform);
+        double horizonRadius = PlaneToCanvas.applyToDistance(projection.circleRadiusForParallel(parallel), transform);
+        double horizonDiameter = 2.0 * horizonRadius;
 
         // Draws the empty red circle corresponding to the horizon
         ctx.setLineWidth(2.0);
         ctx.setStroke(Color.RED);
-        ctx.strokeOval(center.x() - canvasRadius, center.y() - canvasRadius,  2.0 * canvasRadius,
-                2.0 * canvasRadius);
+        ctx.strokeOval(center.x() - horizonRadius, center.y() - horizonRadius,  horizonDiameter,
+                horizonDiameter);
 
         drawCardinalPoints(projection, transform);
     }
@@ -184,10 +185,11 @@ public final class SkyCanvasPainter {
      *            The diameter of the circle, expressed in the canvas coordinate system
      */
     private void drawFilledCircle(CartesianCoordinates center, double diameter, Color color) {
+        double radius = diameter / 2.0;
         ctx.setFill(color);
 
         // Translates the coordinates of the center of the circle to the coordinates of its upper left bound
-        ctx.fillOval(center.x() - diameter / 2.0, center.y() - diameter / 2.0,
+        ctx.fillOval(center.x() - radius, center.y() - radius,
                 diameter, diameter);
     }
 
@@ -247,7 +249,7 @@ public final class SkyCanvasPainter {
         ctx.setTextBaseline(VPos.TOP);
 
         for (CardinalPoint cardinalPoint : CardinalPoint.ALL) {
-            CartesianCoordinates canvasPos = PlaneToCanvas.applyToPoint(projection.apply(cardinalPoint.hor()), transform);
+            CartesianCoordinates canvasPos = PlaneToCanvas.applyToPoint(projection.apply(cardinalPoint.getPosition()), transform);
             ctx.fillText(cardinalPoint.getName(), canvasPos.x(), canvasPos.y());
         }
     }

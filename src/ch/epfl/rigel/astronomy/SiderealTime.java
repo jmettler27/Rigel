@@ -3,8 +3,8 @@ package ch.epfl.rigel.astronomy;
 import ch.epfl.rigel.coordinates.GeographicCoordinates;
 import ch.epfl.rigel.math.Angle;
 import ch.epfl.rigel.math.Polynomial;
-import ch.epfl.rigel.math.RightOpenInterval;
 
+import java.time.LocalTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
@@ -23,6 +23,9 @@ public final class SiderealTime {
 
     // Used for the calculations of the Greenwich sidereal time
     private static final Polynomial POLYNOMIAL_S0 = Polynomial.of(0.000025862, 2400.051336, 6.697374558);
+
+    private static final LocalTime SIDEREAL_DAY_TIME = LocalTime.of(23, 56, 4, 0);
+    public static final int SECONDS_PER_SIDEREAL_DAY = SIDEREAL_DAY_TIME.toSecondOfDay();
 
     /**
      * Default constructor.

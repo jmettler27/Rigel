@@ -13,7 +13,6 @@ import ch.epfl.rigel.math.ClosedInterval;
 public final class Star extends CelestialObject {
 
     private final int hipparcosId;
-    private final float colorIndex;
     private final int colorTemperature;
 
     // The valid closed interval [-0.5,5.5] (unitless) for the star's color index
@@ -42,11 +41,13 @@ public final class Star extends CelestialObject {
         super(name, equatorialPos, 0, magnitude);
 
         Preconditions.checkArgument(hipparcosId >= 0);
-        this.colorIndex = (float) Preconditions.checkInInterval(COLOR_INDEX_INTERVAL, colorIndex);
+
+        float starColorIndex = (float) Preconditions.checkInInterval(COLOR_INDEX_INTERVAL, colorIndex);
+        double T = 4600.0 * (1.0 / (0.92 * starColorIndex + 1.7) + 1.0 / (0.92 * starColorIndex + 0.62));
+        this.colorTemperature = (int) T;
+
         this.hipparcosId = hipparcosId;
 
-        double T = 4600.0 * (1.0 / (0.92 * colorIndex + 1.7) + 1.0 / (0.92 * colorIndex + 0.62));
-        this.colorTemperature = (int) T;
     }
 
     /**

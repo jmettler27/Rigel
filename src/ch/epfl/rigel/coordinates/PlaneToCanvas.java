@@ -26,7 +26,7 @@ public final class PlaneToCanvas {
      * @return the coordinates of the given point in the canvas coordinate system
      */
     public static CartesianCoordinates applyToPoint(CartesianCoordinates planePosition, Transform transform) {
-        Transform concatenation = concatenation(transform);
+        Transform concatenation = concatenationOf(transform);
         Point2D canvasPoint = concatenation.transform(planePosition.x(), planePosition.y());
 
         return CartesianCoordinates.of(canvasPoint.getX(), canvasPoint.getY());
@@ -43,13 +43,15 @@ public final class PlaneToCanvas {
      * @return the coordinates of the given points in the canvas coordinate system
      */
     public static double[] applyToAllPoints(double[] planePositions, Transform transform) {
-        double[] canvasPositions = new double[planePositions.length];
-        Transform concatenation = concatenation(transform);
+        int numberOfCoordinates = planePositions.length;
+
+        double[] canvasPositions = new double[numberOfCoordinates];
+        Transform concatenation = concatenationOf(transform);
         concatenation.transform2DPoints(planePositions, 0, canvasPositions, 0,
-                planePositions.length / 2);
+                numberOfCoordinates / 2);
 
         // The positions of the images of the celestial objects
-        return Arrays.copyOf(canvasPositions, planePositions.length);
+        return Arrays.copyOf(canvasPositions, numberOfCoordinates);
     }
 
     /**
@@ -63,7 +65,7 @@ public final class PlaneToCanvas {
      * @return the magnitude of the given horizontal vector in the canvas coordinate system
      */
     public static double applyToDistance(double x, Transform transform) {
-        Transform concatenation = concatenation(transform);
+        Transform concatenation = concatenationOf(transform);
         Point2D canvasVector = concatenation.deltaTransform(x, 0);
 
         return canvasVector.magnitude(); // The magnitude of the vector
@@ -115,7 +117,7 @@ public final class PlaneToCanvas {
      *            The affine transform
      * @return the concatenation of the dilatation and translation transforms
      */
-    private static Transform concatenation(Transform transform) {
+    private static Transform concatenationOf(Transform transform) {
         // Scales the image and reverses the direction of the Y axis
         Transform dilatation = Transform.scale(transform.getMxx(), transform.getMyy());
 

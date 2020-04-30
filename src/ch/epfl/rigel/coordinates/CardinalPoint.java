@@ -21,6 +21,7 @@ public enum CardinalPoint {
 
     private final HorizontalCoordinates hor;
     private final String name;
+    private static final double ALTITUDE_UNDER_HORIZON_DEG = -0.5;
 
     public static final List<CardinalPoint> ALL = List.copyOf(List.of(values()));
 
@@ -31,7 +32,7 @@ public enum CardinalPoint {
      *            The azimuth of the cardinal point (in degrees)
      */
     CardinalPoint(double azDeg) {
-        this.hor = HorizontalCoordinates.ofDeg(azDeg, -0.5);
+        this.hor = HorizontalCoordinates.ofDeg(azDeg, ALTITUDE_UNDER_HORIZON_DEG);
         this.name = hor.azOctantName("N", "E", "S", "O");
     }
 
@@ -39,7 +40,7 @@ public enum CardinalPoint {
      * Returns the horizontal coordinates of this cardinal point (in radians).
      * @return the horizontal coordinates of this cardinal point (in radians)
      */
-    public HorizontalCoordinates hor() {
+    public HorizontalCoordinates getPosition() {
         return hor;
     }
 

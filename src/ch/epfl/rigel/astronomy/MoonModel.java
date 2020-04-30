@@ -97,12 +97,13 @@ public enum MoonModel implements CelestialObjectModel<Moon> {
         double correctionAscending = meanLonAscending - ANGLE_CORRECTED_LON * sin(sunMeanAnomaly);
 
         // Calculation of the Moon's ecliptic longitude (in radians)
-        double numeratorLon = sin(trueOrbitalLon - correctionAscending) * COS_INCLINATION;
+        double sin1 = sin(trueOrbitalLon - correctionAscending);
+        double numeratorLon = sin1 * COS_INCLINATION;
         double denominatorLon = cos(trueOrbitalLon - correctionAscending);
         double moonEclipticLon = Angle.normalizePositive(atan2(numeratorLon, denominatorLon) + correctionAscending);
 
         // The Moon's ecliptic latitude (in radians)
-        double moonEclipticLat = asin(sin(trueOrbitalLon - correctionAscending) * SIN_INCLINATION);
+        double moonEclipticLat = asin(sin1 * SIN_INCLINATION);
 
         // The Moon's ecliptic position (in radians)
         EclipticCoordinates eclipticPos = EclipticCoordinates.of(moonEclipticLon, moonEclipticLat);

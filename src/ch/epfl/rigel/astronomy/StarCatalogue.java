@@ -16,7 +16,7 @@ public final class StarCatalogue {
 
     private final List<Star> stars;
     private final Map<Asterism, List<Integer>> asterismsWithIndices;
-    private Map<Star, Integer> starIndices;
+    private final Map<Star, Integer> starIndices;
 
     /**
      * Constructs a catalogue composed of the given stars and asterisms.
@@ -32,10 +32,10 @@ public final class StarCatalogue {
         this.stars = List.copyOf(stars);
 
         this.starIndices = new HashMap<>();
-        int i = 0;
-        for(Star s : stars){
-           starIndices.put(s, i);
-           ++i;
+        int starIndex = 0;
+        for(Star star : stars){
+           starIndices.put(star, starIndex);
+           ++starIndex;
        }
 
         // Constructs the map by associating to each asterism (the key) its list of indices (the value)

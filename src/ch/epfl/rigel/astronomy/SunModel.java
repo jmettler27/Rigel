@@ -21,6 +21,8 @@ public enum SunModel implements CelestialObjectModel<Sun> {
             LONGITUDE_J2010 = Angle.ofDeg(279.557208), // The longitude of the Sun at the epoch J2010 (in radians)
             LONGITUDE_PERIGEE = Angle.ofDeg(283.112438), // The longitude of the Sun at the perigee (in radians)
             ECCENTRICITY = 0.016705, // The eccentricity of the Sun/Earth orbit (unitless)
+            ECCENTRICITY_DOUBLED = 2.0 * ECCENTRICITY,
+            ECCENTRICITY_TEMP = (1.0 - ECCENTRICITY * ECCENTRICITY),
             ANGULAR_SIZE_1AU = Angle.ofDeg(0.533128), // The angular size (in radians) of the Sun at a distance of 1 AU
             ANGULAR_VELOCITY = Angle.TAU / 365.242191; // The average angular velocity of the Earth's rotation around the Sun
 
@@ -34,13 +36,13 @@ public enum SunModel implements CelestialObjectModel<Sun> {
         double meanAnomaly = (ANGULAR_VELOCITY * daysSinceJ2010) + LONGITUDE_J2010 - LONGITUDE_PERIGEE;
 
         // The Sun's true anomaly (in radians) (for which the Sun occupies an elliptical orbit)
-        double trueAnomaly = meanAnomaly + 2.0 * ECCENTRICITY * sin(meanAnomaly);
+        double trueAnomaly = meanAnomaly + ECCENTRICITY_DOUBLED * sin(meanAnomaly);
 
         // The geocentric ecliptic longitude of the Sun (in radians)
         double geoEclipticLon = Angle.normalizePositive(trueAnomaly + LONGITUDE_PERIGEE);
 
         // Calculation of the Sun's angular size (in radians)
-        double tempAngularSize = (1.0 + ECCENTRICITY * cos(trueAnomaly)) / (1.0 - ECCENTRICITY * ECCENTRICITY);
+        double tempAngularSize = (1.0 + ECCENTRICITY * cos(trueAnomaly)) / ECCENTRICITY_TEMP;
         double angularSize = ANGULAR_SIZE_1AU * tempAngularSize;
 
         // The approximate position of the Sun in geocentric ecliptic coordinates (in radians) at the given epoch.

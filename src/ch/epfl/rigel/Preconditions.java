@@ -42,7 +42,7 @@ public final class Preconditions {
      */
     public static double checkInInterval(Interval interval, double value) {
         if (!interval.contains(value)) {
-            throw new IllegalArgumentException("La valeur donnée n'est pas incluse dans l'intervalle donné");
+            throw new IllegalArgumentException("The given interval does not contain the given value");
         }
         return value;
     }

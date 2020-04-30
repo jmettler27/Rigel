@@ -21,7 +21,7 @@ public final class HorizontalCoordinates extends SphericalCoordinates {
     private static final RightOpenInterval AZ_INTERVAL_DEG = RightOpenInterval.of(0, 360);
 
     // The valid right open interval [0,2*PI[ (in radians) for the azimuth
-    private static final RightOpenInterval AZ_INTERVAL_RAD = RightOpenInterval.of(0, Angle.ofDeg(360));
+    private static final RightOpenInterval AZ_INTERVAL_RAD = RightOpenInterval.of(0, Angle.TAU);
 
     // The valid closed interval [-90,90] (in degrees) for the altitude
     private static final ClosedInterval ALT_INTERVAL_DEG = ClosedInterval.of(-90, 90);
@@ -209,10 +209,10 @@ public final class HorizontalCoordinates extends SphericalCoordinates {
      * @return a right open interval centered in the given azimuth (in degrees)
      */
     private RightOpenInterval centeredInterval(double center) {
-        double HALVED_SIZE = 45.0 / 2.0;
+        double halvedSize = 45.0 / 2.0;
 
-        double lowBoundDeg = Preconditions.checkInInterval(AZ_INTERVAL_DEG, center - HALVED_SIZE);
-        double highBoundDeg = Preconditions.checkInInterval(AZ_INTERVAL_DEG, center + HALVED_SIZE);
+        double lowBoundDeg = Preconditions.checkInInterval(AZ_INTERVAL_DEG, center - halvedSize);
+        double highBoundDeg = Preconditions.checkInInterval(AZ_INTERVAL_DEG, center + halvedSize);
 
         return RightOpenInterval.of(lowBoundDeg,highBoundDeg);
     }

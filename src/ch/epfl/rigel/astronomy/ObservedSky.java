@@ -239,10 +239,10 @@ public final class ObservedSky {
             CelestialObject object = list.get(i);
 
             CartesianCoordinates planePosition = equToCart.apply(object.equatorialPos());
+            positions.put(object, planePosition);
+
             multiplePositions[2 * i] = planePosition.x();
             multiplePositions[2 * i + 1] = planePosition.y();
-
-            positions.put(object, planePosition);
         }
         return multiplePositions;
     }

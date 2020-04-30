@@ -1,5 +1,7 @@
 package ch.epfl.rigel.gui;
 
+import ch.epfl.rigel.astronomy.SiderealTime;
+
 import java.time.Duration;
 
 /**
@@ -15,7 +17,7 @@ public enum NamedTimeAccelerator {
     TIMES_300("300x", TimeAccelerator.continuous(300)),
     TIMES_3000("3000x", TimeAccelerator.continuous(3000)),
     DAY("jour", TimeAccelerator.discrete(60, Duration.ofHours(24))),
-    SIDEREAL_DAY("jour sidéral", TimeAccelerator.discrete(60, Duration.ofSeconds(23 * 3600 + 56 * 60 + 4)));
+    SIDEREAL_DAY("jour sidéral", TimeAccelerator.discrete(60, Duration.ofSeconds(SiderealTime.SECONDS_PER_SIDEREAL_DAY)));
 
     private final String name;
     private final TimeAccelerator accelerator;
