@@ -28,19 +28,17 @@ import static java.lang.Math.*;
  */
 public final class SkyCanvasManager {
 
-    private final ViewingParametersBean viewingParameters;
-
-    private final Canvas canvas;
-
     public final ObjectProperty<CelestialObject> objectUnderMouse;
     public final DoubleProperty mouseAzDeg; // The azimuth (in degrees) of the position of the mouse's cursor
     public final DoubleProperty mouseAltDeg; // The altitude (in degrees) of the position of the mouse's cursor
 
-    private final ObjectProperty<CartesianCoordinates> mousePosition; // The cursor's canvas position property
+    private final ViewingParametersBean viewingParameters;
+    private final Canvas canvas;
 
     private final ObjectBinding<StereographicProjection> projection; // The stereographic projection binding
     private final ObjectBinding<Transform> planeToCanvas; // The plane to canvas affine transform binding
     private final ObjectBinding<ObservedSky> observedSky; // The observed sky binding
+    private final ObjectProperty<CartesianCoordinates> mousePosition; // The cursor's canvas position property
     private final ObjectBinding<HorizontalCoordinates> mouseHorizontalPosition; // The cursor's horizontal position binding
 
     /**
@@ -269,7 +267,8 @@ public final class SkyCanvasManager {
      * @return The maximal number
      */
     private double scrollMax(double x, double y) {
-        return max(abs(x), abs(y)) == abs(x) ? x : y;
+        double absX = abs(x);
+        return max(absX, abs(y)) == absX ? x : y;
     }
 
     /**

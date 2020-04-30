@@ -16,6 +16,7 @@ public final class StarCatalogue {
 
     private final List<Star> stars;
     private final Map<Asterism, List<Integer>> asterismsWithIndices;
+    private Map<Star, Integer> starIndices;
 
     /**
      * Constructs a catalogue composed of the given stars and asterisms.
@@ -28,13 +29,14 @@ public final class StarCatalogue {
      *             if at least one asterism contains a star that is not on the given list of stars
      */
     public StarCatalogue(List<Star> stars, List<Asterism> asterisms) {
-        // A modifier
-        for (Asterism ast : asterisms) {
-            for (Star s : ast.stars()) {
-                Preconditions.checkArgument(stars.contains(s));
-            }
-        }
         this.stars = List.copyOf(stars);
+
+        this.starIndices = new HashMap<>();
+        int i = 0;
+        for(Star s : stars){
+           starIndices.put(s, i);
+           ++i;
+       }
 
         // Constructs the map by associating to each asterism (the key) its list of indices (the value)
         asterismsWithIndices = new HashMap<>();
@@ -56,7 +58,7 @@ public final class StarCatalogue {
      * @return an immutable view on the set of the asterisms of the catalogue
      */
     public Set<Asterism> asterisms() {
-        return Set.copyOf(asterismsWithIndices.keySet());
+        return Collections.unmodifiableSet(asterismsWithIndices.keySet());
     }
 
     /**
@@ -87,7 +89,8 @@ public final class StarCatalogue {
 
         // Adds the index of each star as indexed in the list of the stars of the catalogue
         for (Star s : asterism.stars()) {
-            indices.add(stars.indexOf(s));
+            Preconditions.checkArgument(stars.contains(s));
+            indices.add(starIndices.get(s));
         }
         return indices;
     }
