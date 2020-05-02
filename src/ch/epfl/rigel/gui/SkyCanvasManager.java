@@ -16,7 +16,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.transform.NonInvertibleTransformException;
 import javafx.scene.transform.Transform;
 
-import java.time.ZonedDateTime;
+import java.util.Optional;
 
 import static java.lang.Math.*;
 
@@ -72,14 +72,10 @@ public final class SkyCanvasManager {
 
                     return Transform.affine(dilatationFactor, 0, 0, -dilatationFactor,
                             canvas.getWidth() / 2, canvas.getHeight() / 2);
-                }, viewingParameters.fieldOfViewDegProperty(), projection, canvas.widthProperty());
+                }, viewingParameters.fieldOfViewDegProperty(), projection, canvas.widthProperty(), canvas.heightProperty());
 
         observedSky = Bindings.createObjectBinding(
-                () -> {
-                    ZonedDateTime when = dateTime.getZonedDateTime();
-                    GeographicCoordinates where = observerLocation.getCoordinates();
-                    return new ObservedSky(when, where, projection.get(), catalogue);
-                },
+                () -> new ObservedSky(dateTime.getZonedDateTime(), observerLocation.getCoordinates(), projection.get(), catalogue),
                 dateTime.dateProperty(), dateTime.timeProperty(), dateTime.zoneProperty(),
                 observerLocation.coordinatesProperty(), projection);
 
@@ -104,18 +100,29 @@ public final class SkyCanvasManager {
         canvas.setOnKeyPressed(keyEvent -> {
             keyEvent.consume();
             changeDirection(keyEvent.getCode());
+
+            try {
+                CartesianCoordinates mousePlanePosition = PlaneToCanvas.inverseAtPoint(getMousePosition(), planeToCanvas.get());
+                double maxPlaneDistance = PlaneToCanvas.inverseAtDistance(10, planeToCanvas.get());
+
+                Optional<CelestialObject> objectUnderMouse = observedSky.get().objectClosestTo(mousePlanePosition, maxPlaneDistance);
+                objectUnderMouse.ifPresent(this::setObjectUnderMouse);
+
+            } catch (NonInvertibleTransformException e) {
+                e.printStackTrace();
+            }
         });
 
         // Informs about the movements of the mouse cursor above the canvas
         canvas.setOnMouseMoved(mouseEvent -> {
             setMousePosition(CartesianCoordinates.of(mouseEvent.getX(), mouseEvent.getY()));
             try {
-                CartesianCoordinates planePosition = PlaneToCanvas.inverseAtPoint(getMousePosition(),
-                        planeToCanvas.get());
+                CartesianCoordinates mousePlanePosition = PlaneToCanvas.inverseAtPoint(getMousePosition(), planeToCanvas.get());
+                double maxPlaneDistance = PlaneToCanvas.inverseAtDistance(10, planeToCanvas.get());
 
-                // double maxPlaneDistance = PlaneToCanvas.inverseAtDistance(10, planeToCanvas.get());
-                CelestialObject closestObject = observedSky.get().objectClosestTo(planePosition, 10).get();
-                setObjectUnderMouse(closestObject);
+                Optional<CelestialObject> objectUnderMouse = observedSky.get().objectClosestTo(mousePlanePosition, maxPlaneDistance);
+                objectUnderMouse.ifPresent(this::setObjectUnderMouse);
+
             } catch (NonInvertibleTransformException e) {
                 e.printStackTrace();
             }
@@ -130,12 +137,13 @@ public final class SkyCanvasManager {
 
         mouseHorizontalPosition = Bindings.createObjectBinding(
                 () -> {
-                    CartesianCoordinates planePosition = PlaneToCanvas.inverseAtPoint(getMousePosition(),
+                    CartesianCoordinates mousePlanePosition = PlaneToCanvas.inverseAtPoint(getMousePosition(),
                             planeToCanvas.get());
+                    HorizontalCoordinates hor = projection.get().inverseApply(mousePlanePosition);
 
-                    HorizontalCoordinates hor = projection.get().inverseApply(planePosition);
                     setMouseAzDeg(hor.azDeg());
                     setMouseAltDeg(hor.altDeg());
+
                     return hor;
                 }, mousePosition, planeToCanvas, projection);
 
@@ -228,7 +236,7 @@ public final class SkyCanvasManager {
      *
      * @return the property of the celestial object under the mouse cursor
      */
-    public ObjectProperty<CelestialObject> objectUnderMouseBindProperty() {
+    public ObjectProperty<CelestialObject> objectUnderMouseProperty() {
         return objectUnderMouse;
     }
 
