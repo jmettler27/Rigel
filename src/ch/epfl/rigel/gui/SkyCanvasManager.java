@@ -39,7 +39,6 @@ public final class SkyCanvasManager {
     private final ObjectBinding<Transform> planeToCanvas; // The plane to canvas affine transform binding
     private final ObjectBinding<ObservedSky> observedSky; // The observed sky binding
     private final ObjectProperty<CartesianCoordinates> mousePosition; // The cursor's canvas position property
-    private final ObjectBinding<HorizontalCoordinates> mouseHorizontalPosition; // The cursor's horizontal position binding
 
     /**
      * Constructs a sky canvas manager.
@@ -123,6 +122,10 @@ public final class SkyCanvasManager {
                 Optional<CelestialObject> objectUnderMouse = observedSky.get().objectClosestTo(mousePlanePosition, maxPlaneDistance);
                 objectUnderMouse.ifPresent(this::setObjectUnderMouse);
 
+                HorizontalCoordinates hor = projection.get().inverseApply(mousePlanePosition);
+                setMouseAzDeg(hor.azDeg());
+                setMouseAltDeg(hor.altDeg());
+
             } catch (NonInvertibleTransformException e) {
                 e.printStackTrace();
             }
@@ -135,17 +138,6 @@ public final class SkyCanvasManager {
             }
         });
 
-        mouseHorizontalPosition = Bindings.createObjectBinding(
-                () -> {
-                    CartesianCoordinates mousePlanePosition = PlaneToCanvas.inverseAtPoint(getMousePosition(),
-                            planeToCanvas.get());
-                    HorizontalCoordinates hor = projection.get().inverseApply(mousePlanePosition);
-
-                    setMouseAzDeg(hor.azDeg());
-                    setMouseAltDeg(hor.altDeg());
-
-                    return hor;
-                }, mousePosition, planeToCanvas, projection);
 
         draw(painter, observedSky.get());
     }
