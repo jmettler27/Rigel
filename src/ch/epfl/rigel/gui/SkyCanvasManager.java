@@ -44,9 +44,9 @@ public final class SkyCanvasManager {
      * Constructs a sky canvas manager.
      *
      * @param catalogue         The catalogue of the observed stars
-     * @param dateTime          The stereographic projection of the celestial objects
-     * @param viewingParameters The place of observation
-     * @param observerLocation  The catalogue of the observed stars
+     * @param dateTime          The instant of observation
+     * @param viewingParameters The parameters of observation
+     * @param observerLocation  The place of observation
      */
     public SkyCanvasManager(StarCatalogue catalogue, DateTimeBean dateTime, ObserverLocationBean observerLocation,
                             ViewingParametersBean viewingParameters) {
@@ -92,7 +92,6 @@ public final class SkyCanvasManager {
             if (30 <= scrolledFovDeg && scrolledFovDeg <= 150) {
                 viewingParameters.setFieldOfViewDeg(scrolledFovDeg);
             }
-            // System.out.println("FOV = " + scrolledFovDeg + "°");
         });
 
         // Reacts to pressing the cursor keys and changes the direction of observation (i.e. the projection center) accordingly

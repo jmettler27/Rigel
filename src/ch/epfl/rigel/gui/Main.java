@@ -8,9 +8,8 @@ import ch.epfl.rigel.coordinates.HorizontalCoordinates;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.ObjectBinding;
-import javafx.beans.binding.StringExpression;
+import javafx.geometry.Orientation;
 import javafx.scene.Scene;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
 import javafx.scene.control.TextField;
@@ -29,6 +28,10 @@ import java.util.function.UnaryOperator;
 
 public class Main extends Application {
 
+    private ObserverLocationBean observerLocationBean;
+    private ViewingParametersBean viewingParametersBean;
+    private SkyCanvasManager canvasManager;
+
     public static void main(String[] args) {
         launch(args);
     }
@@ -36,10 +39,6 @@ public class Main extends Application {
     private InputStream resourceStream(String resourceName) {
         return getClass().getResourceAsStream(resourceName);
     }
-
-    private ObserverLocationBean observerLocationBean;
-    private ViewingParametersBean viewingParametersBean;
-    private SkyCanvasManager canvasManager;
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -70,7 +69,6 @@ public class Main extends Application {
 
             Pane skyPane = new Pane(canvasManager.canvas());
 
-
             BorderPane mainPane = new BorderPane(skyPane, controlBar(), null, infoBar(), null);
 
             stage.setMinWidth(800);
@@ -78,27 +76,25 @@ public class Main extends Application {
             stage.setScene(new Scene(mainPane));
             stage.setTitle("Rigel");
             stage.show();
+
             skyPane.requestFocus();
         }
     }
 
     private HBox controlBar() {
+        HBox observationInstant = new HBox();
+        HBox timeElapsing = new HBox();
 
+        Separator vertical1 = new Separator(Orientation.VERTICAL);
+        Separator vertical2 = new Separator(Orientation.VERTICAL);
 
-        HBox child2 = new HBox();
-        HBox child3 = new HBox();
-
-        Separator vertical1 = new Separator();
-        Separator vertical2 = new Separator();
-
-        HBox controlBar = new HBox(observationPos(), vertical1, child2, vertical2, child3);
-
+        HBox controlBar = new HBox(observationPosition(), vertical1, observationInstant, vertical2, timeElapsing);
         controlBar.setStyle("-fx-spacing: 4; -fx-padding: 4;");
 
         return controlBar;
     }
 
-    private HBox observationPos() {
+    private HBox observationPosition() {
         TextField lonField = new TextField();
         lonField.setStyle("-fx-pref-width: 60; -fx-alignment: baseline-right;");
 
@@ -114,17 +110,19 @@ public class Main extends Application {
         lonField.setText("6.57");
         latField.setText("46.52");
 
+        // Bind directional à une double property
+
         t1.valueProperty().addListener(o -> {
-            double lonDeg = (double) t1.getValue();
-            double latDeg = (double) t2.getValue();
+            double lonDeg = t1.getValue().doubleValue();
+            double latDeg = t2.getValue().doubleValue();
 
             GeographicCoordinates pos = GeographicCoordinates.ofDeg(lonDeg, latDeg);
             observerLocationBean.setCoordinates(pos);
         });
 
         t2.valueProperty().addListener(o -> {
-            double lonDeg = (double) t1.getValue();
-            double latDeg = (double) t2.getValue();
+            double lonDeg = t1.getValue().doubleValue();
+            double latDeg = t2.getValue().doubleValue();
 
             GeographicCoordinates pos = GeographicCoordinates.ofDeg(lonDeg, latDeg);
             observerLocationBean.setCoordinates(pos);
@@ -133,22 +131,18 @@ public class Main extends Application {
         Label longitude = new Label("Longitude (°) :");
         Label latitude = new Label("Latitude (°) :");
 
-
         HBox observationPos = new HBox(longitude, lonField, latitude, latField);
         observationPos.setStyle("-fx-spacing: inherit; -fx-alignment: baseline-left;");
         return observationPos;
     }
 
     private TextFormatter<Number> textFormatter(boolean b) {
-        NumberStringConverter stringConverter =
-                new NumberStringConverter("#0.00");
+        NumberStringConverter stringConverter = new NumberStringConverter("#0.00");
 
         UnaryOperator<TextFormatter.Change> filter = (change -> {
             try {
-                String newText =
-                        change.getControlNewText();
-                double newDeg =
-                        stringConverter.fromString(newText).doubleValue();
+                String newText = change.getControlNewText();
+                double newDeg = stringConverter.fromString(newText).doubleValue();
 
                 if (b) {
                     return GeographicCoordinates.isValidLonDeg(newDeg)
