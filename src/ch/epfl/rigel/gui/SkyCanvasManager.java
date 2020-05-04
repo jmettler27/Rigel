@@ -5,6 +5,7 @@ import ch.epfl.rigel.astronomy.ObservedSky;
 import ch.epfl.rigel.astronomy.StarCatalogue;
 import ch.epfl.rigel.coordinates.*;
 import ch.epfl.rigel.math.Angle;
+import ch.epfl.rigel.math.ClosedInterval;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.ObjectBinding;
 import javafx.beans.property.DoubleProperty;
@@ -39,6 +40,9 @@ public final class SkyCanvasManager {
     private final ObjectBinding<Transform> planeToCanvas; // The plane to canvas affine transform binding
     private final ObjectBinding<ObservedSky> observedSky; // The observed sky binding
     private final ObjectProperty<CartesianCoordinates> mousePosition; // The cursor's canvas position property
+
+    // The valid interval for the field of view (in degrees)
+    private static final ClosedInterval FOV_INTERVAL = ClosedInterval.of(30, 150);
 
     // The maximum distance (in the canvas coordinate system) for searching for the object closest to the mouse cursor
     private static final int MAXIMUM_SEARCH_DISTANCE = 10;
@@ -85,16 +89,14 @@ public final class SkyCanvasManager {
         // the painter to redraw it
         projection.addListener(o -> draw(painter, observedSky.get()));
         planeToCanvas.addListener(o -> draw(painter, observedSky.get()));
-        observedSky.addListener(o -> draw(painter, observedSky.get()));
+        //observedSky.addListener(o -> draw(painter, observedSky.get()));
 
         // Reacts to the mouse wheel and/or trackpad movements above the canvas and changes the field of view accordingly
         canvas.setOnScroll(scrollEvent -> {
             double fovDeg = viewingParameters.getFieldOfViewDeg();
             double scrolledFovDeg = fovDeg + scrollMax(scrollEvent.getDeltaX(), scrollEvent.getDeltaY());
 
-            if (30 <= scrolledFovDeg && scrolledFovDeg <= 150) {
-                viewingParameters.setFieldOfViewDeg(scrolledFovDeg);
-            }
+            viewingParameters.setFieldOfViewDeg(FOV_INTERVAL.clip(scrolledFovDeg));
         });
 
         // Reacts to pressing the cursor keys and changes the direction of observation (i.e. the projection center) accordingly
@@ -107,7 +109,7 @@ public final class SkyCanvasManager {
                 double maxPlaneDistance = PlaneToCanvas.inverseAtDistance(10, planeToCanvas.get());
 
                 Optional<CelestialObject> objectUnderMouse = observedSky.get().objectClosestTo(mousePlanePosition, maxPlaneDistance);
-                objectUnderMouse.ifPresent(this::setObjectUnderMouse);
+                setObjectUnderMouse(objectUnderMouse.orElse(null));
 
             } catch (NonInvertibleTransformException e) {
                 e.printStackTrace();

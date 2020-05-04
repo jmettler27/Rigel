@@ -334,10 +334,8 @@ public class Main extends Application {
                 String.format(Locale.ROOT, "Champ de vue : %.1f°", viewingParametersBean.getFieldOfViewDeg())
         );
 
-
-        viewingParametersBean.fieldOfViewDegProperty().addListener(o -> {
-            fovText.setText(String.format(Locale.ROOT, "Champ de vue : %.1f°", viewingParametersBean.getFieldOfViewDeg()));
-        });
+        viewingParametersBean.fieldOfViewDegProperty().addListener(o -> fovText.setText(
+                String.format(Locale.ROOT, "Champ de vue : %.1f°", viewingParametersBean.getFieldOfViewDeg())));
 
         /*StringExpression fovExp = Bindings.format(
                 String.format(Locale.ROOT, "Champ de vue : %.1f°", viewingParametersBean.getFieldOfViewDeg()),
