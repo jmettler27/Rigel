@@ -40,6 +40,9 @@ public final class SkyCanvasManager {
     private final ObjectBinding<ObservedSky> observedSky; // The observed sky binding
     private final ObjectProperty<CartesianCoordinates> mousePosition; // The cursor's canvas position property
 
+    // The maximum distance (in the canvas coordinate system) for searching for the object closest to the mouse cursor
+    private static final int MAXIMUM_SEARCH_DISTANCE = 10;
+
     /**
      * Constructs a sky canvas manager.
      *
@@ -116,7 +119,7 @@ public final class SkyCanvasManager {
             setMousePosition(CartesianCoordinates.of(mouseEvent.getX(), mouseEvent.getY()));
             try {
                 CartesianCoordinates mousePlanePosition = PlaneToCanvas.inverseAtPoint(getMousePosition(), planeToCanvas.get());
-                double maxPlaneDistance = PlaneToCanvas.inverseAtDistance(10, planeToCanvas.get());
+                double maxPlaneDistance = PlaneToCanvas.inverseAtDistance(MAXIMUM_SEARCH_DISTANCE, planeToCanvas.get());
 
                 Optional<CelestialObject> objectUnderMouse = observedSky.get().objectClosestTo(mousePlanePosition, maxPlaneDistance);
                 objectUnderMouse.ifPresent(this::setObjectUnderMouse);
