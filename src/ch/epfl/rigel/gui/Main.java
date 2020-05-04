@@ -8,21 +8,26 @@ import ch.epfl.rigel.coordinates.HorizontalCoordinates;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.ObjectBinding;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.SortedList;
 import javafx.geometry.Orientation;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.control.Separator;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TextFormatter;
+import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.util.converter.LocalTimeStringConverter;
 import javafx.util.converter.NumberStringConverter;
 
 import java.io.InputStream;
-import java.time.ZonedDateTime;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Locale;
 import java.util.function.UnaryOperator;
 
@@ -31,6 +36,7 @@ public class Main extends Application {
     private ObserverLocationBean observerLocationBean;
     private ViewingParametersBean viewingParametersBean;
     private SkyCanvasManager canvasManager;
+    private DateTimeBean dateTimeBean;
 
     public static void main(String[] args) {
         launch(args);
@@ -50,12 +56,11 @@ public class Main extends Application {
                     .build();
 
             ZonedDateTime when = ZonedDateTime.parse("2020-02-17T20:15:00+01:00");
-            DateTimeBean dateTimeBean = new DateTimeBean();
+            dateTimeBean = new DateTimeBean();
             dateTimeBean.setZonedDateTime(when);
 
             observerLocationBean = new ObserverLocationBean();
             observerLocationBean.setCoordinates(GeographicCoordinates.ofDeg(6.57, 46.52));
-            observerLocationBean.coordinatesProperty().addListener(o -> System.out.println(observerLocationBean.getCoordinates()));
 
             viewingParametersBean = new ViewingParametersBean();
             viewingParametersBean.setCenter(HorizontalCoordinates.ofDeg(180.000000000001, 15));
@@ -88,7 +93,7 @@ public class Main extends Application {
         Separator vertical1 = new Separator(Orientation.VERTICAL);
         Separator vertical2 = new Separator(Orientation.VERTICAL);
 
-        HBox controlBar = new HBox(observationPosition(), vertical1, observationInstant, vertical2, timeElapsing);
+        HBox controlBar = new HBox(observationPosition(), vertical1, observationInstant(), vertical2, timeElapsing);
         controlBar.setStyle("-fx-spacing: 4; -fx-padding: 4;");
 
         return controlBar;
@@ -107,10 +112,13 @@ public class Main extends Application {
         lonField.setTextFormatter(t1);
         latField.setTextFormatter(t2);
 
-        lonField.setText("6.57");
-        latField.setText("46.52");
+        t1.setValue(observerLocationBean.getLonDeg());
+        t2.setValue(observerLocationBean.getLatDeg());
 
         // Bind directional à une double property
+
+        /*DoubleProperty lonDegProperty = new SimpleDoubleProperty(t1.getValue().doubleValue());
+        DoubleProperty latDegProperty = new SimpleDoubleProperty();*/
 
         t1.valueProperty().addListener(o -> {
             double lonDeg = t1.getValue().doubleValue();
@@ -136,30 +144,43 @@ public class Main extends Application {
         return observationPos;
     }
 
-    private TextFormatter<Number> textFormatter(boolean b) {
-        NumberStringConverter stringConverter = new NumberStringConverter("#0.00");
+    private HBox observationInstant() {
 
-        UnaryOperator<TextFormatter.Change> filter = (change -> {
-            try {
-                String newText = change.getControlNewText();
-                double newDeg = stringConverter.fromString(newText).doubleValue();
+        Label date = new Label("Date :");
+        DatePicker datePicker = new DatePicker(dateTimeBean.getDate());
+        datePicker.setStyle("-fx-pref-width: 120;");
 
-                if (b) {
-                    return GeographicCoordinates.isValidLonDeg(newDeg)
-                            ? change
-                            : null;
-                } else {
-                    return GeographicCoordinates.isValidLatDeg(newDeg)
-                            ? change
-                            : null;
-                }
+        /*ObjectBinding<LocalDate> dateBinding = Bindings.createObjectBinding(
+                () -> {
+                    dateTimeBean.setDate(datePicker.getValue());
+                    return datePicker.getValue();
+                }, dateTimeBean.dateProperty(), datePicker.valueProperty());*/
 
-            } catch (Exception e) {
-                return null;
-            }
+        datePicker.valueProperty().addListener(o -> {
+            dateTimeBean.setDate(datePicker.getValue());
         });
 
-        return new TextFormatter<>(stringConverter, 0, filter);
+        Label hour = new Label("Heure :");
+        TextField hourText = new TextField();
+        hourText.setStyle("-fx-pref-width: 75; -fx-alignment: baseline-right;");
+        TextFormatter<LocalTime> timeFormatter = timeFormatter();
+
+        hourText.setTextFormatter(timeFormatter);
+        timeFormatter.setValue(dateTimeBean.getTime());
+        timeFormatter.valueProperty().addListener(o -> {
+            dateTimeBean.setTime(timeFormatter.getValue());
+        });
+        ObservableList<String> zoneIds = FXCollections.observableList(List.of(ZoneId.getAvailableZoneIds()))
+        SortedList<String> sortedList = new SortedList<>(zoneIds);
+        ComboBox<ZoneId> comboBox = new ComboBox(ZoneId.getAvailableZoneIds());
+        comboBox.setStyle("-fx-pref-width: 180;");
+        comboBox.valueProperty().addListener(o -> {
+            dateTimeBean.setZone();
+        });
+
+        HBox observationInstant = new HBox(date, datePicker, hour, hourText);
+        observationInstant.setStyle("-fx-spacing: inherit; -fx-alignment: baseline-left;");
+        return observationInstant;
     }
 
     private BorderPane infoBar() {
@@ -199,6 +220,39 @@ public class Main extends Application {
         BorderPane infoBar = new BorderPane(closestObject, null, mouseHorizontalPos, null, fov);
         infoBar.setStyle("-fx-padding: 4;-fx-background-color: white;");
         return infoBar;
+    }
+
+
+    private TextFormatter<Number> textFormatter(boolean b) {
+        NumberStringConverter stringConverter = new NumberStringConverter("#0.00");
+
+        UnaryOperator<TextFormatter.Change> filter = (change -> {
+            try {
+                String newText = change.getControlNewText();
+                double newDeg = stringConverter.fromString(newText).doubleValue();
+
+                if (b) {
+                    return GeographicCoordinates.isValidLonDeg(newDeg)
+                            ? change
+                            : null;
+                } else {
+                    return GeographicCoordinates.isValidLatDeg(newDeg)
+                            ? change
+                            : null;
+                }
+
+            } catch (Exception e) {
+                return null;
+            }
+        });
+
+        return new TextFormatter<>(stringConverter, 0, filter);
+    }
+
+    private TextFormatter<LocalTime> timeFormatter() {
+        DateTimeFormatter hmsFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+        LocalTimeStringConverter stringConverter = new LocalTimeStringConverter(hmsFormatter, hmsFormatter);
+        return new TextFormatter<>(stringConverter);
     }
 
 }

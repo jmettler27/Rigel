@@ -110,5 +110,7 @@ public final class ObserverLocationBean {
      */
     public void setCoordinates(GeographicCoordinates coords) {
         coordinates.set(coords);
+        setLonDeg(coords.lonDeg());
+        setLatDeg(coords.latDeg());
     }
 }
