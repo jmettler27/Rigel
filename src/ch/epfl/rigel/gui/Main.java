@@ -60,7 +60,6 @@ public class Main extends Application {
             PLAY_TEXT = "\uf04b",   // The character of the play/pause button's image when the animation is not running
             PAUSE_TEXT = "\uf04c";  // The character of the play/pause button's image when the animation is running
 
-
     /**
      * Launches the graphical interface.
      *
@@ -118,7 +117,10 @@ public class Main extends Application {
             Pane skyPane = new Pane(canvas);
 
             // The main pane, at the root of the scene graph
-            BorderPane root = new BorderPane(skyPane, controlBar(), null, informationBar(), null);
+            BorderPane root = new BorderPane();
+            root.setTop(controlBar());
+            root.setCenter(skyPane);
+            root.setBottom(informationBar());
 
             primaryStage.setTitle("Rigel");
 

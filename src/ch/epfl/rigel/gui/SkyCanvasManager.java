@@ -50,7 +50,12 @@ public final class SkyCanvasManager {
     // The steps (in degrees) of the direction change by each pressing of a cursor key
     private static final double
             AZ_DEG_KEYBOARD_STEP = 10,
-            ALT_DEG_KEYBOARD_STEP = 5;
+            ALT_DEG_KEYBOARD_STEP = 5,
+            HORIZON_ALT_DEG = 0.0,
+            LOWER_BOUND_AZ_DEG_STEP = HorizontalCoordinates.MINIMUM_AZ_DEG + AZ_DEG_KEYBOARD_STEP,
+            UPPER_BOUND_AZ_DEG_STEP = HorizontalCoordinates.MAXIMUM_AZ_DEG - AZ_DEG_KEYBOARD_STEP,
+            LOWER_BOUND_ALT_DEG_STEP = HORIZON_ALT_DEG + ALT_DEG_KEYBOARD_STEP,
+            UPPER_BOUND_ALT_DEG_STEP = HorizontalCoordinates.MAXIMUM_ALT_DEG - ALT_DEG_KEYBOARD_STEP;
 
     /**
      * Constructs a sky canvas manager.
@@ -287,46 +292,41 @@ public final class SkyCanvasManager {
      */
     private void changeDirection(KeyCode keyCode) {
         HorizontalCoordinates projCenter = viewingParameters.getCenter(); // The direction of observation
-        HorizontalCoordinates movedCenter = HorizontalCoordinates.of(projCenter.az(), projCenter.alt());
+        double centerAzDeg = projCenter.azDeg();
+        double centerAltDeg = projCenter.altDeg();
+
+        HorizontalCoordinates movedCenter = HorizontalCoordinates.ofDeg(centerAzDeg, centerAltDeg);
 
         switch (keyCode) {
             case LEFT:
-                double lowerBoundAzDeg = HorizontalCoordinates.MINIMUM_AZ_DEG + AZ_DEG_KEYBOARD_STEP;
-
-                if (projCenter.azDeg() < lowerBoundAzDeg) {
-                    double normalizedAzDeg = (projCenter.azDeg() - AZ_DEG_KEYBOARD_STEP) + HorizontalCoordinates.MAXIMUM_AZ_DEG;
+                if (centerAzDeg < LOWER_BOUND_AZ_DEG_STEP) {
+                    double normalizedAzDeg = (centerAzDeg - AZ_DEG_KEYBOARD_STEP) + HorizontalCoordinates.MAXIMUM_AZ_DEG;
                     movedCenter = (normalizedAzDeg != HorizontalCoordinates.MAXIMUM_AZ_DEG) ?
-                            HorizontalCoordinates.ofDeg(normalizedAzDeg, projCenter.altDeg()) :
-                            HorizontalCoordinates.ofDeg(HorizontalCoordinates.MINIMUM_AZ_DEG, projCenter.altDeg());
+                            HorizontalCoordinates.ofDeg(normalizedAzDeg, centerAltDeg) :
+                            HorizontalCoordinates.ofDeg(HorizontalCoordinates.MINIMUM_AZ_DEG, centerAltDeg);
                 } else {
-                    movedCenter = HorizontalCoordinates.ofDeg((projCenter.azDeg() - AZ_DEG_KEYBOARD_STEP), projCenter.altDeg());
+                    movedCenter = HorizontalCoordinates.ofDeg((centerAzDeg - AZ_DEG_KEYBOARD_STEP), centerAltDeg);
                 }
                 break;
 
             case RIGHT:
-                double upperBoundAzDeg = HorizontalCoordinates.MAXIMUM_AZ_DEG - AZ_DEG_KEYBOARD_STEP;
-                double normalizedAzDeg = (projCenter.azDeg() + AZ_DEG_KEYBOARD_STEP) - HorizontalCoordinates.MAXIMUM_AZ_DEG;
+                double normalizedAzDeg = (centerAzDeg + AZ_DEG_KEYBOARD_STEP) - HorizontalCoordinates.MAXIMUM_AZ_DEG;
 
-                movedCenter = (projCenter.azDeg() >= upperBoundAzDeg) ?
-                        HorizontalCoordinates.ofDeg(normalizedAzDeg, projCenter.altDeg()) :
-                        HorizontalCoordinates.ofDeg(projCenter.azDeg() + AZ_DEG_KEYBOARD_STEP, projCenter.altDeg());
+                movedCenter = (centerAzDeg >= UPPER_BOUND_AZ_DEG_STEP) ?
+                        HorizontalCoordinates.ofDeg(normalizedAzDeg, centerAltDeg) :
+                        HorizontalCoordinates.ofDeg(centerAzDeg + AZ_DEG_KEYBOARD_STEP, centerAltDeg);
                 break;
 
             case UP:
-                double upperBoundAltDeg = HorizontalCoordinates.MAXIMUM_ALT_DEG - ALT_DEG_KEYBOARD_STEP;
-
-                if (projCenter.altDeg() <= upperBoundAltDeg) {
-                    movedCenter = HorizontalCoordinates.ofDeg(projCenter.azDeg(), projCenter.altDeg() + ALT_DEG_KEYBOARD_STEP);
+                if (projCenter.altDeg() <= UPPER_BOUND_ALT_DEG_STEP) {
+                    movedCenter = HorizontalCoordinates.ofDeg(centerAzDeg, centerAltDeg + ALT_DEG_KEYBOARD_STEP);
                 }
                 break;
 
 
             case DOWN:
-                double horizonAltDeg = 0.0;
-                double lowerBoundAltDeg = horizonAltDeg + ALT_DEG_KEYBOARD_STEP;
-
-                if (projCenter.altDeg() >= lowerBoundAltDeg) {
-                    movedCenter = HorizontalCoordinates.ofDeg(projCenter.azDeg(), projCenter.altDeg() - ALT_DEG_KEYBOARD_STEP);
+                if (projCenter.altDeg() >= LOWER_BOUND_ALT_DEG_STEP) {
+                    movedCenter = HorizontalCoordinates.ofDeg(centerAzDeg, centerAltDeg - ALT_DEG_KEYBOARD_STEP);
                 }
                 break;
         }
