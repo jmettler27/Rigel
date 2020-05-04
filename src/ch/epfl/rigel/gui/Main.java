@@ -7,9 +7,10 @@ import ch.epfl.rigel.coordinates.GeographicCoordinates;
 import ch.epfl.rigel.coordinates.HorizontalCoordinates;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
-import javafx.beans.binding.ObjectBinding;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.SortedList;
@@ -19,6 +20,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.converter.LocalTimeStringConverter;
@@ -27,6 +29,7 @@ import javafx.util.converter.NumberStringConverter;
 import java.io.InputStream;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.function.UnaryOperator;
@@ -73,7 +76,6 @@ public class Main extends Application {
                     viewingParametersBean);
 
             Pane skyPane = new Pane(canvasManager.canvas());
-
             BorderPane mainPane = new BorderPane(skyPane, controlBar(), null, infoBar(), null);
 
             stage.setMinWidth(800);
@@ -87,13 +89,10 @@ public class Main extends Application {
     }
 
     private HBox controlBar() {
-        HBox observationInstant = new HBox();
-        HBox timeElapsing = new HBox();
-
         Separator vertical1 = new Separator(Orientation.VERTICAL);
         Separator vertical2 = new Separator(Orientation.VERTICAL);
 
-        HBox controlBar = new HBox(observationPosition(), vertical1, observationInstant(), vertical2, timeElapsing);
+        HBox controlBar = new HBox(observationPosition(), vertical1, observationInstant(), vertical2, timeElapsing());
         controlBar.setStyle("-fx-spacing: 4; -fx-padding: 4;");
 
         return controlBar;
@@ -170,15 +169,21 @@ public class Main extends Application {
         timeFormatter.valueProperty().addListener(o -> {
             dateTimeBean.setTime(timeFormatter.getValue());
         });
-        ObservableList<String> zoneIds = FXCollections.observableList(List.of(ZoneId.getAvailableZoneIds()))
-        SortedList<String> sortedList = new SortedList<>(zoneIds);
-        ComboBox<ZoneId> comboBox = new ComboBox(ZoneId.getAvailableZoneIds());
+
+        List<String> list = new ArrayList<>(ZoneId.getAvailableZoneIds());
+        ObservableList<String> zoneIds = FXCollections.observableList(list);
+        SortedList<String> sortedList = new SortedList<>(zoneIds.sorted());
+
+        ComboBox<String> comboBox = new ComboBox(sortedList);
         comboBox.setStyle("-fx-pref-width: 180;");
+        comboBox.setValue(dateTimeBean.getZone().getId());
+
+        System.out.println(dateTimeBean.getZone().toString());
         comboBox.valueProperty().addListener(o -> {
-            dateTimeBean.setZone();
+            dateTimeBean.setZone(ZoneId.of(comboBox.getValue()));
         });
 
-        HBox observationInstant = new HBox(date, datePicker, hour, hourText);
+        HBox observationInstant = new HBox(date, datePicker, hour, hourText, comboBox);
         observationInstant.setStyle("-fx-spacing: inherit; -fx-alignment: baseline-left;");
         return observationInstant;
     }
@@ -218,8 +223,28 @@ public class Main extends Application {
         });
 
         BorderPane infoBar = new BorderPane(closestObject, null, mouseHorizontalPos, null, fov);
-        infoBar.setStyle("-fx-padding: 4;-fx-background-color: white;");
+        infoBar.setStyle("-fx-padding: 4;-fx-background-color: #ffffff;");
         return infoBar;
+    }
+
+    private HBox timeElapsing() {
+        ObservableList<NamedTimeAccelerator> list = FXCollections.observableArrayList(NamedTimeAccelerator.values());
+        ChoiceBox<NamedTimeAccelerator> choiceBox = new ChoiceBox<>(list);
+        choiceBox.setValue(NamedTimeAccelerator.TIMES_300);
+
+        InputStream fontStream = getClass()
+                .getResourceAsStream("/Font Awesome 5 Free-Solid-900.otf");
+        Font fontAwesome = Font.loadFont(fontStream, 15);
+
+        Button resetButton = new Button("\uf0e2");
+        resetButton.setFont(fontAwesome);
+
+        Button playButton = new Button("\uf04b");
+        playButton.setFont(fontAwesome);
+
+        HBox timeElapsing = new HBox(choiceBox, resetButton, playButton);
+        timeElapsing.setStyle("-fx-spacing: inherit;");
+        return timeElapsing;
     }
 
 
