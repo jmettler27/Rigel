@@ -68,6 +68,7 @@ public final class TimeAnimator extends AnimationTimer {
     public void stop() {
         super.stop();
         running.setValue(false);
+        firstHandle = true;
     }
 
     /**

@@ -89,7 +89,7 @@ public final class SkyCanvasManager {
         // the painter to redraw it
         projection.addListener(o -> draw(painter, observedSky.get()));
         planeToCanvas.addListener(o -> draw(painter, observedSky.get()));
-        //observedSky.addListener(o -> draw(painter, observedSky.get()));
+        observedSky.addListener(o -> draw(painter, observedSky.get()));
 
         // Reacts to the mouse wheel and/or trackpad movements above the canvas and changes the field of view accordingly
         canvas.setOnScroll(scrollEvent -> {

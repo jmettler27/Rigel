@@ -6,6 +6,7 @@ import ch.epfl.rigel.astronomy.StarCatalogue;
 import ch.epfl.rigel.coordinates.GeographicCoordinates;
 import ch.epfl.rigel.coordinates.HorizontalCoordinates;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringExpression;
 import javafx.collections.FXCollections;
@@ -44,12 +45,13 @@ import static javafx.beans.binding.Bindings.when;
  */
 public class Main extends Application {
 
-    private NamedTimeAccelerator namedTimeAccelerator;
+    private final NamedTimeAccelerator startingAccelerator = NamedTimeAccelerator.TIMES_300;
     private TimeAnimator timeAnimator;
     private DateTimeBean dateTimeBean;
     private ObserverLocationBean observerLocationBean;
     private ViewingParametersBean viewingParametersBean;
     private SkyCanvasManager canvasManager;
+    private ZonedDateTime saveDate;
 
     /**
      * Launches the graphical interface.
@@ -86,10 +88,9 @@ public class Main extends Application {
             ZonedDateTime when = ZonedDateTime.parse("2020-02-17T20:15:00+01:00");
             dateTimeBean = new DateTimeBean();
             dateTimeBean.setZonedDateTime(when);
+            saveDate = ZonedDateTime.parse("2020-02-17T20:15:00+01:00");
 
-            namedTimeAccelerator = NamedTimeAccelerator.TIMES_300;
             timeAnimator = new TimeAnimator(dateTimeBean);
-            timeAnimator.setAccelerator(namedTimeAccelerator.getAccelerator());
             // timeAnimator.start();
 
             observerLocationBean = new ObserverLocationBean();
@@ -261,6 +262,15 @@ public class Main extends Application {
         // Updates the time-zone of observation according to the time-zone selected by the user in the dropdown menu
         comboBox.valueProperty().addListener(o -> dateTimeBean.setZone(ZoneId.of(comboBox.getValue())));
 
+
+        dateTimeBean.dateProperty().addListener((p, o, n) -> {
+            datePicker.setValue(n);
+        });
+        dateTimeBean.timeProperty().addListener((p, o, n) -> {
+            hourFormatter.setValue(n);
+            System.out.println(n);
+        });
+
         HBox observationInstant = new HBox(date, datePicker, hour, hourField, comboBox);
         observationInstant.setStyle("-fx-spacing: inherit; -fx-alignment: baseline-left;");
 
@@ -271,6 +281,7 @@ public class Main extends Application {
                             .then(true)
                             .otherwise(false));
         }
+
         return observationInstant;
     }
 
@@ -285,8 +296,9 @@ public class Main extends Application {
         ObservableList<NamedTimeAccelerator> observableAccelerators = FXCollections.observableArrayList(accelerators);
 
         ChoiceBox<NamedTimeAccelerator> choiceBox = new ChoiceBox<>(observableAccelerators);
-        choiceBox.setValue(namedTimeAccelerator);
+        choiceBox.setValue(startingAccelerator);
         // choiceBox.setItems(observableAccelerators);
+        timeAnimator.setAccelerator(startingAccelerator.getAccelerator());
 
         try (InputStream fontStream = resourceStream("/Font Awesome 5 Free-Solid-900.otf")) {
             Font fontAwesome = Font.loadFont(fontStream, 15);
@@ -305,6 +317,27 @@ public class Main extends Application {
             // The control unit of the passage of time
             HBox timePassage = new HBox(choiceBox, resetButton, playPauseButton);
             timePassage.setStyle("-fx-spacing: inherit;");
+
+            choiceBox.valueProperty().addListener((o, p, n) -> {
+                timeAnimator.setAccelerator(choiceBox.getValue().getAccelerator());
+                System.out.println(choiceBox.getValue());
+            });
+
+            playPauseButton.setOnMouseClicked(mouseEvent -> {
+                if (timeAnimator.isRunning()) {
+                    timeAnimator.stop();
+                } else {
+                    timeAnimator.start();
+                    saveDate = dateTimeBean.getZonedDateTime();
+                }
+            });
+
+            resetButton.setOnMouseClicked(mouseEvent -> {
+                if (timeAnimator.isRunning()) {
+                    timeAnimator.stop();
+                }
+                dateTimeBean.setZonedDateTime(saveDate);
+            });
 
             // Disables the graphical nodes related to the time passage parameters when an animation is running
             choiceBox.disableProperty().bind(
