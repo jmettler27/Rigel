@@ -78,6 +78,14 @@ public class Main extends Application {
             Pane skyPane = new Pane(canvasManager.canvas());
             BorderPane mainPane = new BorderPane(skyPane, controlBar(), null, infoBar(), null);
 
+            stage.widthProperty().addListener((o, p, n) -> {
+                canvasManager.canvas().setWidth((double) n);
+            });
+
+            stage.heightProperty().addListener((o, p, n) -> {
+                canvasManager.canvas().setHeight((double) n);
+            });
+
             stage.setMinWidth(800);
             stage.setMinHeight(600);
             stage.setScene(new Scene(mainPane));
@@ -232,8 +240,7 @@ public class Main extends Application {
         ChoiceBox<NamedTimeAccelerator> choiceBox = new ChoiceBox<>(list);
         choiceBox.setValue(NamedTimeAccelerator.TIMES_300);
 
-        InputStream fontStream = getClass()
-                .getResourceAsStream("/Font Awesome 5 Free-Solid-900.otf");
+        InputStream fontStream = getClass().getResourceAsStream("/Font Awesome 5 Free-Solid-900.otf");
         Font fontAwesome = Font.loadFont(fontStream, 15);
 
         Button resetButton = new Button("\uf0e2");
