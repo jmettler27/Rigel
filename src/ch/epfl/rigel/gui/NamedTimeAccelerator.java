@@ -3,6 +3,7 @@ package ch.epfl.rigel.gui;
 import ch.epfl.rigel.astronomy.SiderealTime;
 
 import java.time.Duration;
+import java.util.List;
 
 /**
  * A named time accelerator, i.e. a (name, accelerator) pair.
@@ -21,6 +22,8 @@ public enum NamedTimeAccelerator {
 
     private final String name;
     private final TimeAccelerator accelerator;
+
+    public static final List<NamedTimeAccelerator> ALL = List.copyOf(List.of(values()));
 
     /**
      * Constructs a named time accelerator through its name and time accelerator.

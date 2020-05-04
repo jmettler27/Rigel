@@ -20,7 +20,7 @@ public final class TimeAnimator extends AnimationTimer {
     private final ObjectProperty<TimeAccelerator> accelerator; // The time accelerator property
     private final SimpleBooleanProperty running; // The state of the time animator
 
-    private boolean firstHandle = true;
+    private boolean firstHandle = true; // The animation is handled for the first time after the timer starts (the animation begins)
     private long elapsedNanos; // The number of nanoseconds elapsed since the beginning of an animation
 
     /**
@@ -40,7 +40,7 @@ public final class TimeAnimator extends AnimationTimer {
      */
     @Override
     public void handle(long nanos) {
-        if (firstHandle) { // The method is called for the first time after the timer starts (beginning of an animation)
+        if (firstHandle) {
             elapsedNanos = nanos;
             firstHandle = false;
         }
@@ -68,7 +68,7 @@ public final class TimeAnimator extends AnimationTimer {
     public void stop() {
         super.stop();
         running.setValue(false);
-        firstHandle = true;
+        firstHandle = true; // The current animation has ended and the next animation will begin
     }
 
     /**

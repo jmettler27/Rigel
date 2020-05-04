@@ -6,7 +6,6 @@ import ch.epfl.rigel.astronomy.StarCatalogue;
 import ch.epfl.rigel.coordinates.GeographicCoordinates;
 import ch.epfl.rigel.coordinates.HorizontalCoordinates;
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringExpression;
 import javafx.collections.FXCollections;
@@ -53,6 +52,15 @@ public class Main extends Application {
     private SkyCanvasManager canvasManager;
     private ZonedDateTime saveDate;
 
+    private static final String
+            HYG_CATALOGUE_NAME = "/hygdata_v3.csv",
+            AST_CATALOGUE_NAME = "/asterisms.txt",
+            FONT_AWESOME_NAME = "/Font Awesome 5 Free-Solid-900.otf",
+            RESET_TEXT = "\uf0e2",  // The character of the reset button's image
+            PLAY_TEXT = "\uf04b",   // The character of the play/pause button's image when the animation is not running
+            PAUSE_TEXT = "\uf04c";  // The character of the play/pause button's image when the animation is running
+
+
     /**
      * Launches the graphical interface.
      *
@@ -77,8 +85,8 @@ public class Main extends Application {
      */
     @Override
     public void start(Stage primaryStage) throws Exception {
-        try (InputStream hs = resourceStream("/hygdata_v3.csv");
-             InputStream as = resourceStream("/asterisms.txt")) {
+        try (InputStream hs = resourceStream(HYG_CATALOGUE_NAME);
+             InputStream as = resourceStream(AST_CATALOGUE_NAME)) {
 
             StarCatalogue catalogue = new StarCatalogue.Builder()
                     .loadFrom(hs, HygDatabaseLoader.INSTANCE)
@@ -91,7 +99,6 @@ public class Main extends Application {
             saveDate = ZonedDateTime.parse("2020-02-17T20:15:00+01:00");
 
             timeAnimator = new TimeAnimator(dateTimeBean);
-            // timeAnimator.start();
 
             observerLocationBean = new ObserverLocationBean();
             observerLocationBean.setCoordinates(GeographicCoordinates.ofDeg(6.57, 46.52));
@@ -262,14 +269,8 @@ public class Main extends Application {
         // Updates the time-zone of observation according to the time-zone selected by the user in the dropdown menu
         comboBox.valueProperty().addListener(o -> dateTimeBean.setZone(ZoneId.of(comboBox.getValue())));
 
-
-        dateTimeBean.dateProperty().addListener((p, o, n) -> {
-            datePicker.setValue(n);
-        });
-        dateTimeBean.timeProperty().addListener((p, o, n) -> {
-            hourFormatter.setValue(n);
-            System.out.println(n);
-        });
+        dateTimeBean.dateProperty().addListener((p, o, n) -> datePicker.setValue(n));
+        dateTimeBean.timeProperty().addListener((p, o, n) -> hourFormatter.setValue(n));
 
         HBox observationInstant = new HBox(date, datePicker, hour, hourField, comboBox);
         observationInstant.setStyle("-fx-spacing: inherit; -fx-alignment: baseline-left;");
@@ -291,26 +292,21 @@ public class Main extends Application {
      * @return the control unit of the passage of time
      */
     private HBox timePassage() throws IOException {
-
-        List<NamedTimeAccelerator> accelerators = List.of(NamedTimeAccelerator.values());
-        ObservableList<NamedTimeAccelerator> observableAccelerators = FXCollections.observableArrayList(accelerators);
+        ObservableList<NamedTimeAccelerator> observableAccelerators = FXCollections.observableArrayList(NamedTimeAccelerator.ALL);
 
         ChoiceBox<NamedTimeAccelerator> choiceBox = new ChoiceBox<>(observableAccelerators);
         choiceBox.setValue(startingAccelerator);
         // choiceBox.setItems(observableAccelerators);
         timeAnimator.setAccelerator(startingAccelerator.getAccelerator());
 
-        try (InputStream fontStream = resourceStream("/Font Awesome 5 Free-Solid-900.otf")) {
+        try (InputStream fontStream = resourceStream(FONT_AWESOME_NAME)) {
             Font fontAwesome = Font.loadFont(fontStream, 15);
 
             // Reset
-            String resetText = "\uf0e2";
-            Button resetButton = new Button(resetText);
+            Button resetButton = new Button(RESET_TEXT);
             resetButton.setFont(fontAwesome);
 
             // Play
-            String playText = "\uf04b";
-            String pauseText = "\uf04c";
             Button playPauseButton = new Button();
             playPauseButton.setFont(fontAwesome);
 
@@ -318,11 +314,10 @@ public class Main extends Application {
             HBox timePassage = new HBox(choiceBox, resetButton, playPauseButton);
             timePassage.setStyle("-fx-spacing: inherit;");
 
-            choiceBox.valueProperty().addListener((o, p, n) -> {
-                timeAnimator.setAccelerator(choiceBox.getValue().getAccelerator());
-                System.out.println(choiceBox.getValue());
-            });
+            choiceBox.valueProperty().addListener((o, p, n) -> timeAnimator.setAccelerator(
+                    choiceBox.getValue().getAccelerator()));
 
+            // Controls the pressing of the play pause button
             playPauseButton.setOnMouseClicked(mouseEvent -> {
                 if (timeAnimator.isRunning()) {
                     timeAnimator.stop();
@@ -332,6 +327,7 @@ public class Main extends Application {
                 }
             });
 
+            // Controls the pressing of the reset button
             resetButton.setOnMouseClicked(mouseEvent -> {
                 if (timeAnimator.isRunning()) {
                     timeAnimator.stop();
@@ -348,8 +344,8 @@ public class Main extends Application {
             // When an animation is running, the button's image is pause, and play otherwise
             playPauseButton.textProperty().bind(
                     when(timeAnimator.runningProperty())
-                            .then(pauseText)
-                            .otherwise(playText));
+                            .then(PAUSE_TEXT)
+                            .otherwise(PLAY_TEXT));
 
             return timePassage;
         }
@@ -422,10 +418,10 @@ public class Main extends Application {
      * Formats the geographic coordinate entered in its corresponding text field such that the latter only accepts
      * values with two decimal places and within the valid intervals.
      *
-     * @param b Selects the coordinate (longitude or longitude) using true or false, respectively
+     * @param isTrue Selects the coordinate (longitude or longitude) using true or false, respectively
      * @return the text formatter of a geographic coordinate
      */
-    private TextFormatter<Number> geographicFormatter(boolean b) {
+    private TextFormatter<Number> geographicFormatter(boolean isTrue) {
         NumberStringConverter stringConverter = new NumberStringConverter("#0.00");
 
         UnaryOperator<TextFormatter.Change> filter = (change -> {
@@ -433,7 +429,7 @@ public class Main extends Application {
                 String newText = change.getControlNewText();
                 double newDeg = stringConverter.fromString(newText).doubleValue();
 
-                if (b) {
+                if (isTrue) {
                     return GeographicCoordinates.isValidLonDeg(newDeg)
                             ? change
                             : null;
