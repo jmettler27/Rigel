@@ -4,9 +4,7 @@ import ch.epfl.rigel.coordinates.GeographicCoordinates;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.ObjectBinding;
 import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleObjectProperty;
 
 /**
  * An observer location bean.
@@ -18,7 +16,7 @@ public final class ObserverLocationBean {
 
     private final DoubleProperty lonDeg; // The longitude property
     private final DoubleProperty latDeg; // The latitude property
-    private final ObjectProperty<GeographicCoordinates> coordinates; // The geographic coordinates property
+    private final ObjectBinding<GeographicCoordinates> coordinates; // The geographic coordinates binding
 
     /**
      * Default constructor..
@@ -26,15 +24,9 @@ public final class ObserverLocationBean {
     public ObserverLocationBean() {
         lonDeg = new SimpleDoubleProperty();
         latDeg = new SimpleDoubleProperty();
-        coordinates = new SimpleObjectProperty<>(null);
-
-        // Binds the coordinates to the longitude and latitude
-        ObjectBinding<GeographicCoordinates> coordinatesBind = Bindings.createObjectBinding(
-                () -> {
-                    setCoordinates(GeographicCoordinates.ofDeg(getLonDeg(), getLatDeg()));
-                    return getCoordinates();
-                },
-                coordinates, lonDeg, latDeg);
+        coordinates = Bindings.createObjectBinding(
+                () -> GeographicCoordinates.ofDeg(getLonDeg(), getLatDeg()),
+                lonDeg, latDeg );
     }
 
     /**
@@ -90,26 +82,25 @@ public final class ObserverLocationBean {
     }
 
     /**
-     * Returns the geographic coordinates property.
-     * @return the geographic coordinates property
+     * Returns the geographic coordinates binding.
+     * @return the geographic coordinates binding
      */
-    public ObjectProperty<GeographicCoordinates> coordinatesProperty() {
+    public ObjectBinding<GeographicCoordinates> coordinatesBinding() {
         return coordinates;
     }
 
     /**
-     * Returns the geographic coordinates property's content, i.e. the location of the observer.
-     * @return the geographic coordinates property's content
+     * Returns the location of the observer.
+     * @return the location of the observer
      */
     public GeographicCoordinates getCoordinates() {
         return coordinates.get();
     }
 
     /**
-     * Sets the geographic coordinates property's content to the given geographic coordinates
+     * Sets the observer location.
      */
     public void setCoordinates(GeographicCoordinates coords) {
-        coordinates.set(coords);
         setLonDeg(coords.lonDeg());
         setLatDeg(coords.latDeg());
     }

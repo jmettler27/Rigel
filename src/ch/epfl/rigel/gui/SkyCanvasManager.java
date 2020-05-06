@@ -6,6 +6,7 @@ import ch.epfl.rigel.astronomy.StarCatalogue;
 import ch.epfl.rigel.coordinates.*;
 import ch.epfl.rigel.math.Angle;
 import ch.epfl.rigel.math.ClosedInterval;
+import ch.epfl.rigel.math.RightOpenInterval;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.ObjectBinding;
 import javafx.beans.property.DoubleProperty;
@@ -41,21 +42,21 @@ public final class SkyCanvasManager {
     private final ObjectBinding<ObservedSky> observedSky; // The observed sky binding
     private final ObjectProperty<CartesianCoordinates> mousePosition; // The cursor's canvas position property
 
-    // The valid interval for the field of view (in degrees)
-    private static final ClosedInterval FOV_INTERVAL = ClosedInterval.of(30, 150);
-
     // The maximum distance (in the canvas coordinate system) for searching for the object closest to the mouse cursor
     private static final int MAXIMUM_SEARCH_DISTANCE = 10;
 
     // The steps (in degrees) of the direction change by each pressing of a cursor key
     private static final double
             AZ_DEG_KEYBOARD_STEP = 10,
-            ALT_DEG_KEYBOARD_STEP = 5,
-            HORIZON_ALT_DEG = 0.0,
-            LOWER_BOUND_AZ_DEG_STEP = HorizontalCoordinates.MINIMUM_AZ_DEG + AZ_DEG_KEYBOARD_STEP,
-            UPPER_BOUND_AZ_DEG_STEP = HorizontalCoordinates.MAXIMUM_AZ_DEG - AZ_DEG_KEYBOARD_STEP,
-            LOWER_BOUND_ALT_DEG_STEP = HORIZON_ALT_DEG + ALT_DEG_KEYBOARD_STEP,
-            UPPER_BOUND_ALT_DEG_STEP = HorizontalCoordinates.MAXIMUM_ALT_DEG - ALT_DEG_KEYBOARD_STEP;
+            ALT_DEG_KEYBOARD_STEP = 5;
+
+    // The valid interval for the field of view (in degrees)
+    private static final ClosedInterval FOV_INTERVAL = ClosedInterval.of(30, 150);
+
+    private static final ClosedInterval ALT_STEPS_INTERVAL = ClosedInterval.of(5, 90);
+
+    private static final RightOpenInterval AZ_STEPS_INTERVAL =
+            RightOpenInterval.of(HorizontalCoordinates.MINIMUM_AZ_DEG, HorizontalCoordinates.MAXIMUM_AZ_DEG);
 
     /**
      * Constructs a sky canvas manager.
@@ -93,7 +94,7 @@ public final class SkyCanvasManager {
         observedSky = Bindings.createObjectBinding(
                 () -> new ObservedSky(dateTime.getZonedDateTime(), observerLocation.getCoordinates(), projection.get(), catalogue),
                 dateTime.dateProperty(), dateTime.timeProperty(), dateTime.zoneProperty(),
-                observerLocation.coordinatesProperty(), projection);
+                observerLocation.coordinatesBinding(), projection);
 
         // Inform about changes in the bindings and properties that have an impact on the drawing of the sky, and ask
         // the painter to redraw it
@@ -299,35 +300,23 @@ public final class SkyCanvasManager {
 
         switch (keyCode) {
             case LEFT:
-                if (centerAzDeg < LOWER_BOUND_AZ_DEG_STEP) {
-                    double normalizedAzDeg = (centerAzDeg - AZ_DEG_KEYBOARD_STEP) + HorizontalCoordinates.MAXIMUM_AZ_DEG;
-                    movedCenter = (normalizedAzDeg != HorizontalCoordinates.MAXIMUM_AZ_DEG) ?
-                            HorizontalCoordinates.ofDeg(normalizedAzDeg, centerAltDeg) :
-                            HorizontalCoordinates.ofDeg(HorizontalCoordinates.MINIMUM_AZ_DEG, centerAltDeg);
-                } else {
-                    movedCenter = HorizontalCoordinates.ofDeg((centerAzDeg - AZ_DEG_KEYBOARD_STEP), centerAltDeg);
-                }
+                double azDeg_left = AZ_STEPS_INTERVAL.reduce(centerAzDeg - AZ_DEG_KEYBOARD_STEP);
+                movedCenter = HorizontalCoordinates.ofDeg(azDeg_left, centerAltDeg);
                 break;
 
             case RIGHT:
-                double normalizedAzDeg = (centerAzDeg + AZ_DEG_KEYBOARD_STEP) - HorizontalCoordinates.MAXIMUM_AZ_DEG;
-
-                movedCenter = (centerAzDeg >= UPPER_BOUND_AZ_DEG_STEP) ?
-                        HorizontalCoordinates.ofDeg(normalizedAzDeg, centerAltDeg) :
-                        HorizontalCoordinates.ofDeg(centerAzDeg + AZ_DEG_KEYBOARD_STEP, centerAltDeg);
+                double azDeg_right = AZ_STEPS_INTERVAL.reduce(centerAzDeg + AZ_DEG_KEYBOARD_STEP);
+                movedCenter = HorizontalCoordinates.ofDeg(azDeg_right, centerAltDeg);
                 break;
 
             case UP:
-                if (projCenter.altDeg() <= UPPER_BOUND_ALT_DEG_STEP) {
-                    movedCenter = HorizontalCoordinates.ofDeg(centerAzDeg, centerAltDeg + ALT_DEG_KEYBOARD_STEP);
-                }
+                double altDeg_up = ALT_STEPS_INTERVAL.clip(centerAltDeg + ALT_DEG_KEYBOARD_STEP);
+                movedCenter = HorizontalCoordinates.ofDeg(centerAzDeg, altDeg_up);
                 break;
 
-
             case DOWN:
-                if (projCenter.altDeg() >= LOWER_BOUND_ALT_DEG_STEP) {
-                    movedCenter = HorizontalCoordinates.ofDeg(centerAzDeg, centerAltDeg - ALT_DEG_KEYBOARD_STEP);
-                }
+                double altDeg_down = ALT_STEPS_INTERVAL.clip(centerAltDeg - ALT_DEG_KEYBOARD_STEP);
+                movedCenter = HorizontalCoordinates.ofDeg(centerAzDeg, altDeg_down);
                 break;
         }
         viewingParameters.setCenter(movedCenter);

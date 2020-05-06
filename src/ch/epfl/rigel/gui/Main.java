@@ -6,8 +6,6 @@ import ch.epfl.rigel.astronomy.StarCatalogue;
 import ch.epfl.rigel.coordinates.GeographicCoordinates;
 import ch.epfl.rigel.coordinates.HorizontalCoordinates;
 import javafx.application.Application;
-import javafx.beans.binding.Bindings;
-import javafx.beans.binding.StringExpression;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.SortedList;
@@ -44,13 +42,27 @@ import static javafx.beans.binding.Bindings.when;
  */
 public class Main extends Application {
 
-    private final NamedTimeAccelerator startingAccelerator = NamedTimeAccelerator.TIMES_300;
     private TimeAnimator timeAnimator;
     private DateTimeBean dateTimeBean;
     private ObserverLocationBean observerLocationBean;
     private ViewingParametersBean viewingParametersBean;
     private SkyCanvasManager canvasManager;
     private ZonedDateTime saveDate;
+
+    // The starting moment of observation, i.e. the current time, at the default time-zone of the computer
+    private static final ZonedDateTime STARTING_OBSERVER_TIME = ZonedDateTime.now(ZoneOffset.systemDefault());
+
+    // The starting geographical position of observation, i.e. the position of the EPFL campus
+    private static final GeographicCoordinates STARTING_OBSERVER_POSITION = GeographicCoordinates.ofDeg(6.57, 46.52);
+
+    // The starting accelerator, i.e. 300x
+    private static final NamedTimeAccelerator STARTING_ACCELERATOR = NamedTimeAccelerator.TIMES_300;
+
+    // The starting direction of the eyes of the observer
+    private static final HorizontalCoordinates STARTING_OBSERVER_DIRECTION = HorizontalCoordinates.ofDeg(180.000000000001, 15);
+
+    // The starting field of view of the observation (in degrees)
+    private static final double STARTING_FIELD_OF_VIEW_DEG = 100;
 
     private static final String
             HYG_CATALOGUE_NAME = "/hygdata_v3.csv",
@@ -92,19 +104,20 @@ public class Main extends Application {
                     .loadFrom(as, AsterismLoader.INSTANCE)
                     .build();
 
-            ZonedDateTime when = ZonedDateTime.parse("2020-02-17T20:15:00+01:00");
+            // When the program starts, sets the observation instant to the current instant and the time-zone to the
+            // one of the computer
             dateTimeBean = new DateTimeBean();
-            dateTimeBean.setZonedDateTime(when);
-            saveDate = ZonedDateTime.parse("2020-02-17T20:15:00+01:00");
+            dateTimeBean.setZonedDateTime(STARTING_OBSERVER_TIME);
+            saveDate = ZonedDateTime.of(STARTING_OBSERVER_TIME.toLocalDate(), STARTING_OBSERVER_TIME.toLocalTime(), STARTING_OBSERVER_TIME.getOffset());
 
             timeAnimator = new TimeAnimator(dateTimeBean);
 
             observerLocationBean = new ObserverLocationBean();
-            observerLocationBean.setCoordinates(GeographicCoordinates.ofDeg(6.57, 46.52));
+            observerLocationBean.setCoordinates(STARTING_OBSERVER_POSITION);
 
             viewingParametersBean = new ViewingParametersBean();
-            viewingParametersBean.setCenter(HorizontalCoordinates.ofDeg(180.000000000001, 15));
-            viewingParametersBean.setFieldOfViewDeg(65.8);
+            viewingParametersBean.setCenter(STARTING_OBSERVER_DIRECTION);
+            viewingParametersBean.setFieldOfViewDeg(STARTING_FIELD_OF_VIEW_DEG);
 
             canvasManager = new SkyCanvasManager(
                     catalogue,
@@ -156,7 +169,7 @@ public class Main extends Application {
         Separator vertical2 = new Separator(Orientation.VERTICAL);
 
         // The horizontal control bar
-        HBox controlBar = new HBox(observationPosition(), vertical1, observationInstant(), vertical2, timePassage());
+        HBox controlBar = new HBox(observerLocation(), vertical1, observationInstant(), vertical2, timePassage());
         controlBar.setStyle("-fx-spacing: 4; -fx-padding: 4;");
 
         return controlBar;
@@ -167,62 +180,32 @@ public class Main extends Application {
      *
      * @return the control unit of the geographical position of observation
      */
-    private HBox observationPosition() {
+    private HBox observerLocation() {
+        String coordinatesFieldStyle = "-fx-pref-width: 60; -fx-alignment: baseline-right;";
+
         // Controls the longitude of the observation (in degrees)
         Label lonLabel = new Label("Longitude (°) :");
         TextField lonField = new TextField();
-        lonField.setStyle("-fx-pref-width: 60; -fx-alignment: baseline-right;");
+        lonField.setStyle(coordinatesFieldStyle);
 
-        TextFormatter<Number> lonFormatter = geographicFormatter(true);
+        TextFormatter<Number> lonFormatter = coordinatesTextFormatter(true);
         lonField.setTextFormatter(lonFormatter);
-        lonFormatter.setValue(observerLocationBean.getLonDeg());
+        lonFormatter.valueProperty().bindBidirectional(observerLocationBean.lonDegProperty());
 
 
         // Controls the latitude of the observation (in degrees)
         Label latLabel = new Label("Latitude (°) :");
         TextField latField = new TextField();
-        latField.setStyle("-fx-pref-width: 60; -fx-alignment: baseline-right;");
+        latField.setStyle(coordinatesFieldStyle);
 
-        TextFormatter<Number> latFormatter = geographicFormatter(false);
+        TextFormatter<Number> latFormatter = coordinatesTextFormatter(false);
         latField.setTextFormatter(latFormatter);
-        latFormatter.setValue(observerLocationBean.getLatDeg());
+        latFormatter.valueProperty().bindBidirectional(observerLocationBean.latDegProperty());
 
-        // Bind directional à une double property
+        HBox observerLocation = new HBox(lonLabel, lonField, latLabel, latField);
+        observerLocation.setStyle("-fx-spacing: inherit; -fx-alignment: baseline-left;");
 
-        /*double lonDeg = lonFormatter.getValue().doubleValue();
-        double latDeg = latFormatter.getValue().doubleValue();
-
-        DoubleProperty lonDegProperty = new SimpleDoubleProperty(lonDeg);
-        DoubleProperty latDegProperty = new SimpleDoubleProperty(latDeg);
-
-        observerLocationBean.lonDegProperty().addListener((o, oV, nV) -> observerLocationBean.setLonDeg((double) nV));
-        observerLocationBean.latDegProperty().addListener((o, oV, nV) -> observerLocationBean.setLatDeg((double) nV));
-
-        observerLocationBean.lonDegProperty().bindBidirectional(lonDegProperty);
-        observerLocationBean.latDegProperty().bindBidirectional(latDegProperty);*/
-
-
-        // Updates the position of observation according to the longitude and latitude entered by the user.
-        lonFormatter.valueProperty().addListener(o -> {
-            double lonDeg = lonFormatter.getValue().doubleValue();
-            double latDeg = latFormatter.getValue().doubleValue();
-
-            GeographicCoordinates pos = GeographicCoordinates.ofDeg(lonDeg, latDeg);
-            observerLocationBean.setCoordinates(pos);
-        });
-
-        latFormatter.valueProperty().addListener(o -> {
-            double lonDeg = lonFormatter.getValue().doubleValue();
-            double latDeg = latFormatter.getValue().doubleValue();
-
-            GeographicCoordinates pos = GeographicCoordinates.ofDeg(lonDeg, latDeg);
-            observerLocationBean.setCoordinates(pos);
-        });
-
-        HBox observationPosition = new HBox(lonLabel, lonField, latLabel, latField);
-        observationPosition.setStyle("-fx-spacing: inherit; -fx-alignment: baseline-left;");
-
-        return observationPosition;
+        return observerLocation;
     }
 
     /**
@@ -234,15 +217,8 @@ public class Main extends Application {
         // Chooses the date of observation
         Label date = new Label("Date :");
         DatePicker datePicker = new DatePicker(dateTimeBean.getDate());
-        datePicker.valueProperty().addListener(o -> dateTimeBean.setDate(datePicker.getValue()));
         datePicker.setStyle("-fx-pref-width: 120;");
-
-        /*ObjectBinding<LocalDate> dateBinding = Bindings.createObjectBinding(
-                () -> {
-                    dateTimeBean.setDate(datePicker.getValue());
-                    return datePicker.getValue();
-                }, dateTimeBean.dateProperty(), datePicker.valueProperty());*/
-
+        //datePicker.valueProperty().addListener(o -> dateTimeBean.setDate(datePicker.getValue()));
 
         // Chooses the hour of observation
         Label hour = new Label("Heure :");
@@ -250,12 +226,12 @@ public class Main extends Application {
         hourField.setStyle("-fx-pref-width: 75; -fx-alignment: baseline-right;");
 
         // Formats the hour of observation in the hour text field.
-        TextFormatter<LocalTime> hourFormatter = hourFormatter();
-        hourField.setTextFormatter(hourFormatter);
-        hourFormatter.setValue(dateTimeBean.getTime());
+        TextFormatter<LocalTime> hourTextFormatter = hourTextFormatter();
+        hourField.setTextFormatter(hourTextFormatter);
+        hourTextFormatter.setValue(dateTimeBean.getTime());
 
         // Updates the hour of observation according to the hour entered by the user
-        hourFormatter.valueProperty().addListener(o -> dateTimeBean.setTime(hourFormatter.getValue()));
+        //hourFormatter.valueProperty().addListener(o -> dateTimeBean.setTime(hourFormatter.getValue()));
 
 
         // Chooses the time-zone of observation
@@ -263,18 +239,32 @@ public class Main extends Application {
         ObservableList<String> zoneIds = FXCollections.observableList(list);
         SortedList<String> sortedList = new SortedList<>(zoneIds.sorted());
 
+        List<ZoneId> zones = new ArrayList<>();
+        for (String id : sortedList) {
+            zones.add(ZoneId.of(id));
+        }
+        ObservableList<ZoneId> sortedZoneIds = FXCollections.observableList(zones);
+
+        ComboBox<ZoneId> comboBox1 = new ComboBox<>(sortedZoneIds);
+
+
         // Dropdown menu of the time-zones
-        ComboBox<String> comboBox = new ComboBox<>(sortedList);
-        comboBox.setStyle("-fx-pref-width: 180;");
-        comboBox.setValue(dateTimeBean.getZone().getId());
+        //ComboBox<String> comboBox = new ComboBox<>(sortedList);
+        comboBox1.setStyle("-fx-pref-width: 180;");
+        comboBox1.valueProperty().bindBidirectional(dateTimeBean.zoneProperty());
+
+        //comboBox.setValue(dateTimeBean.getZone().getId());
 
         // Updates the time-zone of observation according to the time-zone selected by the user in the dropdown menu
-        comboBox.valueProperty().addListener(o -> dateTimeBean.setZone(ZoneId.of(comboBox.getValue())));
+        //comboBox.valueProperty().addListener(o -> dateTimeBean.setZone(ZoneId.of(comboBox.getValue())));
 
-        dateTimeBean.dateProperty().addListener((p, o, n) -> datePicker.setValue(n));
-        dateTimeBean.timeProperty().addListener((p, o, n) -> hourFormatter.setValue(n));
+        //dateTimeBean.dateProperty().addListener((p, o, n) -> datePicker.setValue(n));
+        //dateTimeBean.timeProperty().addListener((p, o, n) -> hourFormatter.setValue(n));
 
-        HBox observationInstant = new HBox(date, datePicker, hour, hourField, comboBox);
+        dateTimeBean.dateProperty().bindBidirectional(datePicker.valueProperty());
+        dateTimeBean.timeProperty().bindBidirectional(hourTextFormatter.valueProperty());
+
+        HBox observationInstant = new HBox(date, datePicker, hour, hourField, comboBox1);
         observationInstant.setStyle("-fx-spacing: inherit; -fx-alignment: baseline-left;");
 
         // Disables the graphical nodes related to the choice of the instant of observation when an animation is running
@@ -297,18 +287,18 @@ public class Main extends Application {
         ObservableList<NamedTimeAccelerator> observableAccelerators = FXCollections.observableArrayList(NamedTimeAccelerator.ALL);
 
         ChoiceBox<NamedTimeAccelerator> choiceBox = new ChoiceBox<>(observableAccelerators);
-        choiceBox.setValue(startingAccelerator);
+        choiceBox.setValue(STARTING_ACCELERATOR);
         // choiceBox.setItems(observableAccelerators);
-        timeAnimator.setAccelerator(startingAccelerator.getAccelerator());
+        timeAnimator.setAccelerator(STARTING_ACCELERATOR.getAccelerator());
 
         try (InputStream fontStream = resourceStream(FONT_AWESOME_NAME)) {
             Font fontAwesome = Font.loadFont(fontStream, 15);
 
-            // Reset
+            // Reset button
             Button resetButton = new Button(RESET_TEXT);
             resetButton.setFont(fontAwesome);
 
-            // Play
+            // Play/Pause button
             Button playPauseButton = new Button();
             playPauseButton.setFont(fontAwesome);
 
@@ -316,8 +306,8 @@ public class Main extends Application {
             HBox timePassage = new HBox(choiceBox, resetButton, playPauseButton);
             timePassage.setStyle("-fx-spacing: inherit;");
 
-            choiceBox.valueProperty().addListener((o, p, n) -> timeAnimator.setAccelerator(
-                    choiceBox.getValue().getAccelerator()));
+            choiceBox.valueProperty().addListener(
+                    (o, p, n) -> timeAnimator.setAccelerator(choiceBox.getValue().getAccelerator()));
 
             // Controls the pressing of the play pause button
             playPauseButton.setOnMouseClicked(mouseEvent -> {
@@ -423,7 +413,7 @@ public class Main extends Application {
      * @param isTrue Selects the coordinate (longitude or longitude) using true or false, respectively
      * @return the text formatter of a geographic coordinate
      */
-    private TextFormatter<Number> geographicFormatter(boolean isTrue) {
+    private TextFormatter<Number> coordinatesTextFormatter(boolean isTrue) {
         NumberStringConverter stringConverter = new NumberStringConverter("#0.00");
 
         UnaryOperator<TextFormatter.Change> filter = (change -> {
@@ -455,7 +445,7 @@ public class Main extends Application {
      *
      * @return the text formatter of an hour
      */
-    private TextFormatter<LocalTime> hourFormatter() {
+    private TextFormatter<LocalTime> hourTextFormatter() {
         DateTimeFormatter hmsFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
         LocalTimeStringConverter stringConverter = new LocalTimeStringConverter(hmsFormatter, hmsFormatter);
 
