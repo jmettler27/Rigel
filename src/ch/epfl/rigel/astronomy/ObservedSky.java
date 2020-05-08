@@ -4,6 +4,7 @@ import ch.epfl.rigel.coordinates.*;
 
 import java.time.ZonedDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * A set of celestial objects projected on the plane by a stereographic projection, at a given epoch and place of
@@ -51,18 +52,12 @@ public final class ObservedSky {
         sun = SunModel.SUN.at(daysSinceJ2010, eclToEqu);
         moon = MoonModel.MOON.at(daysSinceJ2010, eclToEqu);
 
-        // The models of the extraterrestrial planets of the solar system
-        List<PlanetModel> planetModels = new ArrayList<>();
-
-        // A modifier
-        planetModels.addAll(PlanetModel.INNER_PLANETS);
-        planetModels.addAll(PlanetModel.OUTER_PLANETS);
-
         // The extraterrestrial planets of the solar system as observed at the given epoch and place of observation
-        List<Planet> planetsList = new ArrayList<>();
-        for (PlanetModel model : planetModels) {
-            planetsList.add(model.at(daysSinceJ2010, eclToEqu));
-        }
+        List<Planet> planetsList = PlanetModel.ALL
+                .stream()
+                .filter(m -> m.getAxis() != PlanetModel.EARTH.getAxis()) // Excludes the Earth
+                .map(m -> m.at(daysSinceJ2010, eclToEqu)) // Calculates the models of the planets
+                .collect(Collectors.toList());
         planets = List.copyOf(planetsList);
 
         // Conversion from equatorial to Cartesian coordinates
@@ -80,14 +75,14 @@ public final class ObservedSky {
         allObjectsPositions.put(moon, moonPosition);
 
         // Derives the projected positions of the planets of the solar system on the plane and puts them in the map
-        double[] tempPlanetPositions = multiplePositions(planets, equToCart, allObjectsPositions);
+        double[] tempPlanetPositions = allPositionsOf(planets, equToCart, allObjectsPositions);
         planetPositions = Arrays.copyOf(tempPlanetPositions, 2 * planets.size());
 
         // Derives the projected positions of the stars of the catalogue on the plane and puts them in the map
-        double[] tempStarPositions = multiplePositions(stars(), equToCart, allObjectsPositions);
+        double[] tempStarPositions = allPositionsOf(stars(), equToCart, allObjectsPositions);
         starPositions = Arrays.copyOf(tempStarPositions, 2 * stars().size());
 
-        positions = Map.copyOf(allObjectsPositions);  // Unmodifiable map
+        positions = Map.copyOf(allObjectsPositions);
     }
 
     /**
@@ -230,8 +225,8 @@ public final class ObservedSky {
      * @param positions
      *            The map which associates to each Celestial object its position on the plane
      */
-    private <T extends CelestialObject> double[] multiplePositions(List<T> list, EquatorialToCartesianConversion equToCart,
-                                         Map<CelestialObject, CartesianCoordinates> positions) {
+    private <T extends CelestialObject> double[] allPositionsOf(List<T> list, EquatorialToCartesianConversion equToCart,
+                                                                Map<CelestialObject, CartesianCoordinates> positions) {
         int size = list.size();
         double[] multiplePositions = new double[2 * size];
 

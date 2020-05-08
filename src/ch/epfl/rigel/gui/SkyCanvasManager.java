@@ -9,10 +9,7 @@ import ch.epfl.rigel.math.ClosedInterval;
 import ch.epfl.rigel.math.RightOpenInterval;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.ObjectBinding;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.*;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.input.KeyCode;
 import javafx.scene.transform.NonInvertibleTransformException;
@@ -46,13 +43,10 @@ public final class SkyCanvasManager {
     private static final int MAXIMUM_SEARCH_DISTANCE = 10;
 
     // The steps (in degrees) of the direction change by each pressing of a cursor key
-    private static final double
-            AZ_DEG_KEYBOARD_STEP = 10,
-            ALT_DEG_KEYBOARD_STEP = 5;
+    private static final double AZ_DEG_KEYBOARD_STEP = 10, ALT_DEG_KEYBOARD_STEP = 5;
 
     // The valid interval for the field of view (in degrees)
     private static final ClosedInterval FOV_INTERVAL = ClosedInterval.of(30, 150);
-
     private static final ClosedInterval ALT_STEPS_INTERVAL = ClosedInterval.of(5, 90);
 
     private static final RightOpenInterval AZ_STEPS_INTERVAL =
@@ -61,7 +55,7 @@ public final class SkyCanvasManager {
     /**
      * Constructs a sky canvas manager.
      *
-     * @param catalogue         The catalogue of the observed stars
+     * @param catalogue         The catalogue of the observed stars and asterisms
      * @param dateTime          The instant of observation
      * @param viewingParameters The parameters of observation
      * @param observerLocation  The place of observation
@@ -161,7 +155,7 @@ public final class SkyCanvasManager {
      *
      * @return the mouse cursor's azimuth property
      */
-    public DoubleProperty mouseAzDegProperty() {
+    public ReadOnlyDoubleProperty mouseAzDegProperty() {
         return mouseAzDeg;
     }
 
@@ -175,20 +169,11 @@ public final class SkyCanvasManager {
     }
 
     /**
-     * Sets the azimuth of the mouse cursor (in degrees)
-     *
-     * @param azDeg The new azimuth of the mouse cursor (in degrees)
-     */
-    public void setMouseAzDeg(double azDeg) {
-        mouseAzDeg.set(azDeg);
-    }
-
-    /**
      * Returns the mouse cursor's altitude property.
      *
      * @return the mouse cursor's altitude property
      */
-    public DoubleProperty mouseAltDegProperty() {
+    public ReadOnlyDoubleProperty mouseAltDegProperty() {
         return mouseAltDeg;
     }
 
@@ -201,21 +186,13 @@ public final class SkyCanvasManager {
         return mouseAltDeg.get();
     }
 
-    /**
-     * Sets the altitude of the mouse cursor (in degrees).
-     *
-     * @param altDeg The new altitude of the mouse cursor (in degrees)
-     */
-    public void setMouseAltDeg(double altDeg) {
-        mouseAltDeg.set(altDeg);
-    }
 
     /**
      * Returns the mouse position property.
      *
      * @return The mouse position property
      */
-    public ObjectProperty<CartesianCoordinates> mousePositionProperty() {
+    public ReadOnlyProperty<CartesianCoordinates> mousePositionProperty() {
         return mousePosition;
     }
 
@@ -228,21 +205,13 @@ public final class SkyCanvasManager {
         return mousePosition.get();
     }
 
-    /**
-     * Sets the position of the mouse on the canvas.
-     *
-     * @param cart The new position of the mouse on the canvas
-     */
-    public void setMousePosition(CartesianCoordinates cart) {
-        mousePosition.set(cart);
-    }
 
     /**
      * Returns the property of the celestial object under the mouse cursor.
      *
      * @return the property of the celestial object under the mouse cursor
      */
-    public ObjectProperty<CelestialObject> objectUnderMouseProperty() {
+    public ReadOnlyObjectProperty<CelestialObject> objectUnderMouseProperty() {
         return objectUnderMouse;
     }
 
@@ -256,21 +225,48 @@ public final class SkyCanvasManager {
     }
 
     /**
-     * Sets the celestial object under the mouse cursor to the given celestial object.
-     *
-     * @param object The new object under the cursor of the mouse
-     */
-    public void setObjectUnderMouse(CelestialObject object) {
-        objectUnderMouse.set(object);
-    }
-
-    /**
      * Returns the canvas on which the observed sky is drawn.
      *
      * @return The canvas on which the observed sky is drawn
      */
     public Canvas canvas() {
         return canvas;
+    }
+
+    /**
+     * Sets the azimuth of the mouse cursor (in degrees)
+     *
+     * @param azDeg The new azimuth of the mouse cursor (in degrees)
+     */
+    private void setMouseAzDeg(double azDeg) {
+        mouseAzDeg.set(azDeg);
+    }
+
+    /**
+     * Sets the altitude of the mouse cursor (in degrees).
+     *
+     * @param altDeg The new altitude of the mouse cursor (in degrees)
+     */
+    private void setMouseAltDeg(double altDeg) {
+        mouseAltDeg.set(altDeg);
+    }
+
+    /**
+     * Sets the position of the mouse on the canvas.
+     *
+     * @param cart The new position of the mouse on the canvas
+     */
+    private void setMousePosition(CartesianCoordinates cart) {
+        mousePosition.set(cart);
+    }
+
+    /**
+     * Sets the celestial object under the mouse cursor to the given celestial object.
+     *
+     * @param object The new object under the cursor of the mouse
+     */
+    private void setObjectUnderMouse(CelestialObject object) {
+        objectUnderMouse.set(object);
     }
 
     /**
@@ -292,9 +288,9 @@ public final class SkyCanvasManager {
      * @param keyCode The code of the directional key
      */
     private void changeDirection(KeyCode keyCode) {
-        HorizontalCoordinates projCenter = viewingParameters.getCenter(); // The direction of observation
-        double centerAzDeg = projCenter.azDeg();
-        double centerAltDeg = projCenter.altDeg();
+        // The coordinates of the direction of observation
+        double centerAzDeg = viewingParameters.getCenter().azDeg();
+        double centerAltDeg = viewingParameters.getCenter().altDeg();
 
         HorizontalCoordinates movedCenter = HorizontalCoordinates.ofDeg(centerAzDeg, centerAltDeg);
 

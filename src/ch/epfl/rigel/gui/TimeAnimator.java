@@ -45,7 +45,7 @@ public final class TimeAnimator extends AnimationTimer {
             firstHandle = false;
         }
 
-        if (isRunning()) {
+       if (isRunning()) {
             ZonedDateTime simulatedTime = getAccelerator().adjust(bean.getZonedDateTime(), nanos - elapsedNanos);
             bean.setZonedDateTime(simulatedTime);
             elapsedNanos = nanos;

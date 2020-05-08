@@ -94,12 +94,4 @@ class MyPlanetModelTest {
         //                                                                        -24.50 0872462861     degrees
         assertEquals(-Angle.ofDMS(24, 30, 9), MERCURY_2003.equatorialPos().dec(), 1e-1);
     }
-
-    @Test
-    void listsContainsTheCorrectPlanets(){
-        assertEquals("[MERCURY, VENUS, EARTH, MARS, JUPITER, SATURN, URANUS, NEPTUNE]", PlanetModel.ALL.toString());
-        assertEquals("[MERCURY, VENUS]", PlanetModel.INNER_PLANETS.toString());
-        assertEquals("[MARS, JUPITER, SATURN, URANUS, NEPTUNE]", PlanetModel.OUTER_PLANETS.toString());
-    }
-
 }

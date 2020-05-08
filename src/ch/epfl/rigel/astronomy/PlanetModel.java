@@ -47,13 +47,6 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
     // The eight planets of the solar system, following elliptical orbits around the Sun
     public static final List<PlanetModel> ALL = List.copyOf(List.of(values()));
 
-    // A ENLEVER
-    // The planets that orbit closer to the Sun than the Earth (i.e. Mercury and Venus)
-    public static final List<PlanetModel> INNER_PLANETS = List.copyOf(ALL.subList(MERCURY.ordinal(), EARTH.ordinal()));
-
-    // The planets that orbit closer to the Sun than the Earth (i.e. Mars, Jupiter, Saturn, Uranus, Neptune)
-    public static final List<PlanetModel> OUTER_PLANETS = List.copyOf(ALL.subList(MARS.ordinal(), NEPTUNE.ordinal() + 1));
-
     /**
      * Constructs the model of a planet through planetary constants.
      *
@@ -170,6 +163,14 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
         double magnitude = magnitude1AU + 5.0 * log10((orbitalRadius * earthPlanetDistance) / sqrt(phase));
 
         return new Planet(frenchName, equatorialPos, (float) angularSize, (float) magnitude);
+    }
+
+    /**
+     * Returns the axis of the planet.
+     * @return the axis of the planet
+     */
+    public double getAxis() {
+        return axis;
     }
 
     /**
