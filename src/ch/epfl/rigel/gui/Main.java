@@ -175,9 +175,11 @@ public class Main extends Application {
         // The vertical separators (children) that separate the three main children of this pane.
         Separator vertical1 = new Separator(Orientation.VERTICAL);
         Separator vertical2 = new Separator(Orientation.VERTICAL);
+        Separator vertical3 = new Separator(Orientation.VERTICAL);
 
         // The horizontal control bar
-        HBox controlBar = new HBox(observerLocationControl(), vertical1, observationTimeControl(), vertical2, timelapseControl());
+        HBox controlBar = new HBox(observerLocationControl(), vertical1, observationTimeControl(), vertical2, timelapseControl()
+        , vertical3, bonusButton());
         controlBar.setStyle("-fx-spacing: 4; -fx-padding: 4;");
 
         return controlBar;
@@ -326,6 +328,20 @@ public class Main extends Application {
 
             return timelapse;
         }
+    }
+
+    private HBox bonusButton() {
+        Button asterismButton = new Button("\uf126");
+        asterismButton.setOnMousePressed(mouseEvent -> {
+            if (canvasManager.getAsterismEnable()) {
+                canvasManager.setAsterismEnable(false);
+            } else {
+                canvasManager.setAsterismEnable(true);
+            }
+        });
+        HBox asterismControl = new HBox(asterismButton);
+        asterismControl.setStyle("-fx-spacing: inherit");
+        return asterismControl;
     }
 
     /**

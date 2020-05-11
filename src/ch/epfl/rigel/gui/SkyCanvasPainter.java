@@ -8,6 +8,7 @@ import javafx.geometry.VPos;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.ArcType;
 import javafx.scene.text.TextAlignment;
 import javafx.scene.transform.Transform;
 
@@ -54,11 +55,11 @@ public final class SkyCanvasPainter {
      * @param transform
      *            The affine transform
      */
-    void drawStars(ObservedSky sky, Transform transform) {
+    void drawStars(ObservedSky sky, Transform transform, boolean b) {
         // The positions of the observed stars on the canvas
         double[] starCanvasPositions = PlaneToCanvas.applyToAllPoints(sky.starPositions(), transform);
 
-        drawAsterisms(sky, starCanvasPositions);
+        if(b) drawAsterisms(sky, starCanvasPositions);
 
         int index = 0;
         for (Star s : sky.stars()) {
@@ -136,7 +137,7 @@ public final class SkyCanvasPainter {
      * @param transform
      *            The affine transform
      */
-    void drawMoon(ObservedSky sky, StereographicProjection projection, Transform transform) {
+    void drawMoon(ObservedSky sky, StereographicProjection projection, Transform transform, GeographicCoordinates observerLocation) {
         // The position and projected diameter of the observed Moon on the plane
         CartesianCoordinates moonPlanePosition = sky.moonPosition();
         double moonPlaneDiameter = projection.applyToAngle(sky.moon().angularSize());
@@ -145,7 +146,8 @@ public final class SkyCanvasPainter {
         CartesianCoordinates moonCanvasPosition = PlaneToCanvas.applyToPoint(moonPlanePosition, transform);
         double moonCanvasDiameter = PlaneToCanvas.applyToDistance(moonPlaneDiameter, transform);
 
-        drawFilledCircle(moonCanvasPosition, moonCanvasDiameter, Color.WHITE);
+        drawMoonPhase(sky.moon().phase(), moonCanvasPosition, moonCanvasDiameter, observerLocation);
+
     }
 
     /**
@@ -191,6 +193,31 @@ public final class SkyCanvasPainter {
         // Translates the coordinates of the center of the circle to the coordinates of its upper left bound
         ctx.fillOval(center.x() - radius, center.y() - radius,
                 diameter, diameter);
+    }
+
+    private void drawMoonPhase(float phase, CartesianCoordinates moonCanvasPosition, double moonCanvasDiameter, GeographicCoordinates observerLocation) {
+        double moonCanvasRadius = moonCanvasDiameter / 2.0;
+        boolean isNorthHemisphere = observerLocation.latDeg() >= 0;
+
+        if(phase > 0.03){
+            if(phase < 0.34) {
+
+            }
+            else if (phase < 0.65) {
+                double startAngle = (isNorthHemisphere) ? -90 : 90;
+                ctx.fillArc(moonCanvasPosition.x() - moonCanvasRadius,
+                        moonCanvasPosition.y() - moonCanvasRadius,
+                        moonCanvasDiameter, moonCanvasDiameter,
+                        startAngle, 180.0, ArcType.ROUND);
+
+            } else if (phase < 0.96) {
+                drawFilledCircle(moonCanvasPosition, moonCanvasDiameter, Color.WHITE);
+
+
+            } else if (phase < 1) {
+                drawFilledCircle(moonCanvasPosition, moonCanvasDiameter, Color.WHITE);
+            }
+        }
     }
 
     /**
@@ -253,4 +280,6 @@ public final class SkyCanvasPainter {
             ctx.fillText(cardinalPoint.getName(), canvasPos.x(), canvasPos.y());
         }
     }
+
+
 }

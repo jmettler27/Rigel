@@ -33,11 +33,14 @@ public final class SkyCanvasManager {
 
     private final ViewingParametersBean viewingParameters;
     private final Canvas canvas;
+    private final ObserverLocationBean observerLocation;
 
     private final ObjectBinding<StereographicProjection> projection; // The stereographic projection binding
     private final ObjectBinding<Transform> planeToCanvas; // The plane to canvas affine transform binding
     private final ObjectBinding<ObservedSky> observedSky; // The observed sky binding
     private final ObjectProperty<CartesianCoordinates> mousePosition; // The cursor's canvas position property
+
+    private final SimpleBooleanProperty asterismEnable = new SimpleBooleanProperty(true);
 
     // The maximum distance (in the canvas coordinate system) for searching for the object closest to the mouse cursor
     private static final int MAXIMUM_SEARCH_DISTANCE = 10;
@@ -63,6 +66,7 @@ public final class SkyCanvasManager {
     public SkyCanvasManager(StarCatalogue catalogue, DateTimeBean dateTime, ObserverLocationBean observerLocation,
                             ViewingParametersBean viewingParameters) {
         this.viewingParameters = viewingParameters;
+        this.observerLocation = observerLocation;
 
         canvas = new Canvas(800, 600);
         SkyCanvasPainter painter = new SkyCanvasPainter(canvas);
@@ -95,6 +99,7 @@ public final class SkyCanvasManager {
         projection.addListener(o -> draw(painter, observedSky.get()));
         planeToCanvas.addListener(o -> draw(painter, observedSky.get()));
         observedSky.addListener(o -> draw(painter, observedSky.get()));
+        asterismEnableProperty().addListener(o -> draw(painter, observedSky.get()));
 
         // Reacts to the mouse wheel and/or trackpad movements above the canvas and changes the field of view accordingly
         canvas.setOnScroll(scrollEvent -> {
@@ -326,11 +331,23 @@ public final class SkyCanvasManager {
      */
     private void draw(SkyCanvasPainter painter, ObservedSky sky) {
         painter.clear();
-        painter.drawStars(sky, planeToCanvas.get());
+        painter.drawStars(sky, planeToCanvas.get(), getAsterismEnable());
         painter.drawPlanets(sky, planeToCanvas.get());
         painter.drawSun(sky, projection.get(), planeToCanvas.get());
-        painter.drawMoon(sky, projection.get(), planeToCanvas.get());
+        painter.drawMoon(sky, projection.get(), planeToCanvas.get(), observerLocation.getCoordinates());
         painter.drawHorizon(projection.get(), planeToCanvas.get());
+    }
+
+    public SimpleBooleanProperty asterismEnableProperty() {
+        return asterismEnable;
+    }
+
+    public boolean getAsterismEnable() {
+        return asterismEnable.get();
+    }
+
+    public void setAsterismEnable(boolean b) {
+        asterismEnable.set(b);
     }
 }
 
