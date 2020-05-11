@@ -24,7 +24,8 @@ public class DrawArcs extends Application {
         stage.setTitle("creating arc");
 
         // create a arc
-        Arc arc = new Arc(100.0, 100.0, 100.0, 100.0, -90.0, 100);
+        Arc arc = new Arc(100.0, 100.0, 100.0, 100.0, 142.5, 75);
+
 
         // Start angle : 90 face gauche, -90 face droite
 

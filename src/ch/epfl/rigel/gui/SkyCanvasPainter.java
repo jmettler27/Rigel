@@ -8,6 +8,7 @@ import javafx.geometry.VPos;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Arc;
 import javafx.scene.shape.ArcType;
 import javafx.scene.text.TextAlignment;
 import javafx.scene.transform.Transform;
@@ -201,7 +202,12 @@ public final class SkyCanvasPainter {
 
         if(phase > 0.03){
             if(phase < 0.34) {
-
+                double startAngle = (isNorthHemisphere) ? -35 : 142;
+                ctx.setFill(Color.WHITE);
+                ctx.fillArc(moonCanvasPosition.x() - moonCanvasRadius,
+                        moonCanvasPosition.y() - moonCanvasRadius,
+                        moonCanvasDiameter, moonCanvasDiameter,
+                        startAngle, 75.0, ArcType.CHORD);
             }
             else if (phase < 0.65) {
                 double startAngle = (isNorthHemisphere) ? -90 : 90;
@@ -212,7 +218,12 @@ public final class SkyCanvasPainter {
 
             } else if (phase < 0.96) {
                 drawFilledCircle(moonCanvasPosition, moonCanvasDiameter, Color.WHITE);
-
+                double startAngle = (isNorthHemisphere) ? 142 : -35;
+                ctx.setFill(Color.BLACK);
+                ctx.fillArc(moonCanvasPosition.x() - moonCanvasRadius,
+                        moonCanvasPosition.y() - moonCanvasRadius,
+                        moonCanvasDiameter, moonCanvasDiameter,
+                        startAngle, 75.0, ArcType.CHORD);
 
             } else if (phase < 1) {
                 drawFilledCircle(moonCanvasPosition, moonCanvasDiameter, Color.WHITE);
