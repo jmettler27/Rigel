@@ -286,6 +286,10 @@ public final class SkyCanvasManager {
         return max(absX, abs(y)) == absX ? x : y;
     }
 
+    public ObservedSky observedSky(){
+        return observedSky.get();
+    }
+
     /**
      * Changes the direction of the observation (i.e. the position of the projection's center) using the four directional
      * keys (left, right, up, down).
