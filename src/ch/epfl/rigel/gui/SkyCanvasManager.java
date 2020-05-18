@@ -10,6 +10,7 @@ import ch.epfl.rigel.math.RightOpenInterval;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.ObjectBinding;
 import javafx.beans.property.*;
+import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.input.KeyCode;
 import javafx.scene.transform.NonInvertibleTransformException;
@@ -152,6 +153,27 @@ public final class SkyCanvasManager {
             }
         });
 
+        double[] point = new double[2];
+
+        canvas.setOnMousePressed(mouseEvent -> {
+            point[0] = mouseEvent.getX();
+            point[1] = mouseEvent.getY();
+        });
+
+        double[] delta = new double[2];
+        canvas.setOnMouseDragged(mouseEvent -> {
+            delta[0] = point[0] + mouseEvent.getX();
+            delta[1] = point[1] + mouseEvent.getY();
+            CartesianCoordinates deltaCanvas = CartesianCoordinates.of(delta[0], delta[1]);
+            try {
+                CartesianCoordinates deltaPlane = PlaneToCanvas.inverseAtPoint(deltaCanvas, planeToCanvas.get());
+                HorizontalCoordinates deltaHor = projection.get().inverseApply(deltaPlane);
+                viewingParameters.setCenter(deltaHor);
+            } catch (NonInvertibleTransformException e) {
+                e.printStackTrace();
+            }
+        });
+        
         draw(painter, observedSky.get());
     }
 
@@ -286,7 +308,7 @@ public final class SkyCanvasManager {
         return max(absX, abs(y)) == absX ? x : y;
     }
 
-    public ObservedSky observedSky(){
+    public ObservedSky observedSky() {
         return observedSky.get();
     }
 

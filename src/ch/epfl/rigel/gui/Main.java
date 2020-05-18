@@ -5,6 +5,7 @@ import ch.epfl.rigel.coordinates.EquatorialToHorizontalConversion;
 import ch.epfl.rigel.coordinates.GeographicCoordinates;
 import ch.epfl.rigel.coordinates.HorizontalCoordinates;
 import javafx.application.Application;
+import javafx.beans.InvalidationListener;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringExpression;
 import javafx.collections.FXCollections;
@@ -346,10 +347,11 @@ public class Main extends Application {
         });
 
         List<CelestialObject> celestialObjects = new ArrayList<>(canvasManager.observedSky().planets());
-        celestialObjects.add(canvasManager.observedSky().sun());
-        celestialObjects.add(canvasManager.observedSky().moon());
+        //celestialObjects.add(canvasManager.observedSky().sun());
+        //celestialObjects.add(canvasManager.observedSky().moon());
 
         ObservableList<CelestialObject> observableList = FXCollections.observableList(celestialObjects);
+
 
         ChoiceBox<CelestialObject> objectsMenu = new ChoiceBox<>(observableList);
         objectsMenu.valueProperty().addListener(
