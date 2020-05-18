@@ -148,9 +148,6 @@ public class Main extends Application {
             primaryStage.widthProperty().addListener((o, p, n) -> canvas.setWidth((double) n));
             primaryStage.heightProperty().addListener((o, p, n) -> canvas.setHeight((double) n));
 
-            // canvas.widthProperty().bind(skyPane.widthProperty());
-            // canvas.heightProperty().bind(skyPane.heightProperty());
-
             primaryStage.setMinWidth(800);
             primaryStage.setMinHeight(600);
 
@@ -280,13 +277,7 @@ public class Main extends Application {
 
         ChoiceBox<NamedTimeAccelerator> acceleratorsMenu = new ChoiceBox<>(observableAccelerators);
         acceleratorsMenu.setValue(STARTING_ACCELERATOR);
-        acceleratorsMenu.valueProperty().addListener(
-                (o, oV, nV) -> timeAnimator.setAccelerator(nV.getAccelerator()));
-
-        //choiceBox.setItems(observableAccelerators);
-        //choiceBox.valueProperty().addListener((o, oV, nV) -> timeAnimator.setAccelerator(nV.getAccelerator()));
-        //choiceBox.valueProperty().bind(Bindings.select(timeAnimator, "accelerator"));
-        //timeAnimator.setAccelerator(STARTING_ACCELERATOR.getAccelerator());
+        timeAnimator.acceleratorProperty().bind(Bindings.select(acceleratorsMenu.valueProperty(), "accelerator"));
 
         try (InputStream fontStream = resourceStream(FONT_AWESOME_NAME)) {
             Font fontAwesome = Font.loadFont(fontStream, 15);
