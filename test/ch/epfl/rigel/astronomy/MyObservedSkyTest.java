@@ -44,11 +44,12 @@ class MyObservedSkyTest {
     void planets() {
     }
 
-    @Test
+    /*@Test
     void planetPositions() throws IOException {
         StarCatalogue catalogue = buildCatalogue();
+
         ObservedSky sky = new ObservedSky(ZDT_20200404, WHERE, PROJECTION, catalogue);
-    }
+    }*/
 
     @Test
     void stars() {
@@ -66,7 +67,7 @@ class MyObservedSkyTest {
     void asterismsIndices() {
     }
 
-    @Test
+    /*@Test
     void objectClosestTo() throws IOException {
         StarCatalogue catalogue = buildCatalogue();
         ObservedSky sky = new ObservedSky(ZDT_20200404, WHERE, PROJECTION, catalogue);
@@ -96,5 +97,5 @@ class MyObservedSkyTest {
                     .build();
         }
         return catalogue;
-    }
+    }*/
 }

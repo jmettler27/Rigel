@@ -153,7 +153,7 @@ public final class SkyCanvasManager {
             }
         });
 
-        double[] point = new double[2];
+        /*double[] point = new double[2];
 
         canvas.setOnMousePressed(mouseEvent -> {
             point[0] = mouseEvent.getX();
@@ -172,8 +172,8 @@ public final class SkyCanvasManager {
             } catch (NonInvertibleTransformException e) {
                 e.printStackTrace();
             }
-        });
-        
+        });*/
+
         draw(painter, observedSky.get());
     }
 
@@ -308,10 +308,6 @@ public final class SkyCanvasManager {
         return max(absX, abs(y)) == absX ? x : y;
     }
 
-    public ObservedSky observedSky() {
-        return observedSky.get();
-    }
-
     /**
      * Changes the direction of the observation (i.e. the position of the projection's center) using the four directional
      * keys (left, right, up, down).
@@ -362,6 +358,10 @@ public final class SkyCanvasManager {
         painter.drawSun(sky, projection.get(), planeToCanvas.get());
         painter.drawMoon(sky, projection.get(), planeToCanvas.get(), observerLocation.getCoordinates());
         painter.drawHorizon(projection.get(), planeToCanvas.get());
+    }
+
+    public ObservedSky observedSky() {
+        return observedSky.get();
     }
 
     public SimpleBooleanProperty asterismEnableProperty() {
