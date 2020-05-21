@@ -262,6 +262,38 @@ public final class SkyCanvasManager {
     }
 
     /**
+     * Returns the observed sky.
+     * @return the observed sky
+     */
+    public ObservedSky observedSky() {
+        return observedSky.get();
+    }
+
+    /**
+     * Returns the property of the asterisms' enable.
+     * @return the property of the asterisms' enable
+     */
+    public SimpleBooleanProperty asterismEnableProperty() {
+        return asterismEnable;
+    }
+
+    /**
+     * Tells if the asterisms are enabled or not.
+     * @return true if the asterisms are enabled, false otherwise
+     */
+    public boolean getAsterismEnable() {
+        return asterismEnable.get();
+    }
+
+    /**
+     * Enables or disables the asterisms.
+     * @param b The condition of enabling (true) or disabling (false) the asterisms.
+     */
+    public void setAsterismEnable(boolean b) {
+        asterismEnable.set(b);
+    }
+
+    /**
      * Sets the azimuth of the mouse cursor (in degrees)
      *
      * @param azDeg The new azimuth of the mouse cursor (in degrees)
@@ -358,24 +390,8 @@ public final class SkyCanvasManager {
         painter.drawPlanets(sky, planeToCanvas.get());
         painter.drawSun(sky, projection.get(), planeToCanvas.get());
         painter.drawMoon(sky, projection.get(), planeToCanvas.get(), observerLocation.getCoordinates());
-        painter.drawHorizon(projection.get(), planeToCanvas.get());
         painter.drawSatellites(sky, planeToCanvas.get());
-    }
-
-    public ObservedSky observedSky() {
-        return observedSky.get();
-    }
-
-    public SimpleBooleanProperty asterismEnableProperty() {
-        return asterismEnable;
-    }
-
-    public boolean getAsterismEnable() {
-        return asterismEnable.get();
-    }
-
-    public void setAsterismEnable(boolean b) {
-        asterismEnable.set(b);
+        painter.drawHorizon(projection.get(), planeToCanvas.get());
     }
 }
 

@@ -105,7 +105,7 @@ public final class SkyCanvasPainter {
     }
 
     /**
-     * Draws the observed satellites of the solar system on the canvas, using an affine transform.
+     * Draws the observed satellites in orbit around Earth on the canvas, using an affine transform.
      *
      * @param sky
      *            The observed sky
@@ -113,22 +113,17 @@ public final class SkyCanvasPainter {
      *            The affine transform
      */
     void drawSatellites(ObservedSky sky, Transform transform) {
-        // The positions of the observed stars on the canvas
-        double[] satellitesCanvasPositions = PlaneToCanvas.applyToAllPoints(sky.satellitesPositions(), transform);
+        // The positions of the observed satellites on the canvas
+        double[] satelliteCanvasPositions = PlaneToCanvas.applyToAllPoints(sky.satellitePositions(), transform);
 
-        int index = 0;
-        for (Satellite s : sky.satellites()) {
+        for(int i = 0; i < sky.satellites().size(); ++i){
             CartesianCoordinates satelliteCanvasPos = CartesianCoordinates.of(
-                    satellitesCanvasPositions[index * 2], satellitesCanvasPositions[index * 2 + 1]);
+                    satelliteCanvasPositions[i * 2], satelliteCanvasPositions[i * 2 + 1]);
 
-
-            // Draws and colors the star according to its color temperature
-            drawFilledCircle(satelliteCanvasPos, 2, Color.GREEN);
-
-            ++index;
+            // Draws and colors the satellite
+            drawFilledCircle(satelliteCanvasPos, 3, Color.GREEN);
         }
     }
-
 
     /**
      * Draws the observed Sun on the canvas, using a stereographic projection and an affine transform.

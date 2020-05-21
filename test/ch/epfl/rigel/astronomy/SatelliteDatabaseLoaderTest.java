@@ -16,7 +16,6 @@ class SatelliteDatabaseLoaderTest {
                     .loadFrom(sa, SatelliteDatabaseLoader.INSTANCE)
                     .build();
 
-
         } catch (IOException e) {
             e.printStackTrace();
         }

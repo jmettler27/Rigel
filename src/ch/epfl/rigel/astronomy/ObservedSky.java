@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 public final class ObservedSky {
 
     private final StarCatalogue catalogue;
-    private final SatelliteCatalogue sat_catalogue;
+    private final SatelliteCatalogue satCatalogue;
 
     private final Sun sun;
     private final Moon moon;
@@ -24,7 +24,7 @@ public final class ObservedSky {
 
     // The projected positions on the plane of all of the celestial objects in the observed sky
     private final CartesianCoordinates sunPosition, moonPosition;
-    private final double[] planetPositions, starPositions, satellitesPositions;
+    private final double[] planetPositions, starPositions, satellitePositions;
     private final Map<CelestialObject, CartesianCoordinates> positions;
 
     /**
@@ -38,11 +38,13 @@ public final class ObservedSky {
      *            The stereographic projection of the celestial objects
      * @param catalogue
      *            The catalogue of the observed stars
+     * @param satCatalogue
+     *            The catalogue of the observed satellites
      */
     public ObservedSky(ZonedDateTime when, GeographicCoordinates where, StereographicProjection projection,
-                       StarCatalogue catalogue, SatelliteCatalogue sat_catalogue) {
+                       StarCatalogue catalogue, SatelliteCatalogue satCatalogue) {
         this.catalogue = catalogue;
-        this.sat_catalogue = sat_catalogue;
+        this.satCatalogue = satCatalogue;
 
         // The number of days elapsed from the epoch J2010 to the epoch of the observation
         double daysSinceJ2010 = Epoch.J2010.daysUntil(when);
@@ -84,26 +86,11 @@ public final class ObservedSky {
         double[] tempStarPositions = allPositionsOf(stars(), equToCart, allObjectsPositions);
         starPositions = Arrays.copyOf(tempStarPositions, 2 * stars().size());
 
-        double[] tempSatellitesPositions = allPositionsOf(satellites(), equToCart, allObjectsPositions);
-        satellitesPositions = Arrays.copyOf(tempSatellitesPositions, 2 * satellites().size());
+        // Derives the projected positions of the satellites of the catalogue on the plane and puts them in the map
+        double[] tempSatellitePositions = allPositionsOf(satellites(), equToCart, allObjectsPositions);
+        satellitePositions = Arrays.copyOf(tempSatellitePositions, 2 * satellites().size());
 
         positions = Map.copyOf(allObjectsPositions);
-    }
-
-    /**
-     * Returns the list of the satellites of the catalogue.
-     * @return the list of the satellites of the catalogue
-     */
-    public List<Satellite> satellites(){
-        return sat_catalogue.satellites();
-    }
-
-    /**
-     * Returns the positions of the satellites of the catalogue on the plane.
-     * @return the positions of the satellites of the catalogue on the plane.
-     */
-    public double[] satellitesPositions() {
-        return satellitesPositions;
     }
 
     /**
@@ -192,6 +179,24 @@ public final class ObservedSky {
     }
 
     /**
+     * Additional method.
+     * Returns the list of the satellites of the catalogue.
+     * @return the list of the satellites of the catalogue
+     */
+    public List<Satellite> satellites(){
+        return satCatalogue.satellites();
+    }
+
+    /**
+     * Additional method.
+     * Returns the positions of the satellites of the catalogue on the plane.
+     * @return the positions of the satellites of the catalogue on the plane.
+     */
+    public double[] satellitePositions() {
+        return satellitePositions;
+    }
+
+    /**
      * Returns the closest celestial object to the given point on the plan, as long as it is within the maximum distance.
      *
      * @param searchPoint
@@ -214,7 +219,6 @@ public final class ObservedSky {
                 closePositions.put(object, planePosition);
             }
         }
-
         double minDistance = Double.MAX_VALUE; // The distance between the closest object and the search point
         CelestialObject closestObject = null; // The closest object to the search point
 

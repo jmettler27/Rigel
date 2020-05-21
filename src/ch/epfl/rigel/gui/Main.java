@@ -9,13 +9,11 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringExpression;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
-import javafx.scene.image.WritableImage;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -25,9 +23,6 @@ import javafx.stage.Stage;
 import javafx.util.converter.LocalTimeStringConverter;
 import javafx.util.converter.NumberStringConverter;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.*;
@@ -77,8 +72,9 @@ public class Main extends Application {
             FONT_AWESOME_NAME = "/Font Awesome 5 Free-Solid-900.otf",
             RESET_CHAR = "\uf0e2",  // The character of the reset button's image
             PLAY_CHAR = "\uf04b",   // The character of the play/pause button's image when the animation is not running
-            PAUSE_CHAR = "\uf04c";  // The character of the play/pause button's image when the animation is running
-
+            PAUSE_CHAR = "\uf04c",  // The character of the play/pause button's image when the animation is running
+            ASTERISM_CHAR = "\uf039",
+            CAMERA_CHAR = "\uf083";
     /**
      * Launches the graphical interface.
      *
@@ -97,12 +93,15 @@ public class Main extends Application {
              InputStream as = resourceStream(AST_CATALOGUE_NAME);
              InputStream sat = resourceStream(SAT_CATALOGUE_NAME)) {
 
-            SatelliteCatalogue satCatalogue = new SatelliteCatalogue.Builder().loadFrom(sat, SatelliteDatabaseLoader.INSTANCE).build();
-
             // The catalogue of the observed stars and asterisms
             StarCatalogue catalogue = new StarCatalogue.Builder()
                     .loadFrom(hs, HygDatabaseLoader.INSTANCE)
                     .loadFrom(as, AsterismLoader.INSTANCE)
+                    .build();
+
+            // The catalogue of the observed satellites
+            SatelliteCatalogue satCatalogue = new SatelliteCatalogue.Builder()
+                    .loadFrom(sat, SatelliteDatabaseLoader.INSTANCE)
                     .build();
 
             // The date/time bean
@@ -331,51 +330,58 @@ public class Main extends Application {
         }
     }
 
-    private HBox bonusButton() {
-        Button asterismButton = new Button("\uf126");
-        asterismButton.setOnMousePressed(event -> canvasManager.setAsterismEnable(!canvasManager.getAsterismEnable()));
+    private HBox bonusButton() throws IOException {
 
-        Button photoButton = new Button("\uf083");
-        photoButton.setOnMousePressed(event -> {
-            String date = dateToString(dateTimeBean.getZonedDateTime());
-            String fileName = String.format("sky observed at position %.2f lon %.2f lat and date %s ",
-                    observerLocationBean.getLonDeg(), observerLocationBean.getLatDeg(), date + ".png");
+        try (InputStream fontStream = resourceStream(FONT_AWESOME_NAME)) {
+            Font fontAwesome = Font.loadFont(fontStream, 15);
 
-            WritableImage fxImage = canvasManager.canvas().snapshot(null, null);
-            BufferedImage swingImage = SwingFXUtils.fromFXImage(fxImage, null);
-            try {
-                ImageIO.write(swingImage, "png", new File(fileName));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
+            Button asterismButton = new Button(ASTERISM_CHAR);
+            asterismButton.setFont(fontAwesome);
+            asterismButton.setOnMousePressed(event -> canvasManager.setAsterismEnable(!canvasManager.getAsterismEnable()));
 
-        List<CelestialObject> celestialObjects = new ArrayList<>(canvasManager.observedSky().planets());
-        //celestialObjects.add(canvasManager.observedSky().sun());
-        //celestialObjects.add(canvasManager.observedSky().moon());
+            Button photoButton = new Button(CAMERA_CHAR);
+            photoButton.setFont(fontAwesome);
+            /*photoButton.setOnMousePressed(event -> {
+                String date = dateToString(dateTimeBean.getZonedDateTime());
+                String fileName = String.format("sky observed at position %.2f lon %.2f lat and date %s ",
+                        observerLocationBean.getLonDeg(), observerLocationBean.getLatDeg(), date + ".png");
 
-        ObservableList<CelestialObject> observableList = FXCollections.observableList(celestialObjects);
+                WritableImage fxImage = canvasManager.canvas().snapshot(null, null);
+                BufferedImage swingImage = SwingFXUtils.fromFXImage(fxImage, null);
+                try {
+                    ImageIO.write(swingImage, "png", new File(fileName));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });*/
+
+            List<CelestialObject> celestialObjects = new ArrayList<>(canvasManager.observedSky().planets());
+            //celestialObjects.add(canvasManager.observedSky().sun());
+            //celestialObjects.add(canvasManager.observedSky().moon());
+
+            ObservableList<CelestialObject> observableList = FXCollections.observableList(celestialObjects);
 
 
-        ChoiceBox<CelestialObject> objectsMenu = new ChoiceBox<>(observableList);
-        objectsMenu.valueProperty().addListener(
-                (o, oV, nV) -> {
-                    EquatorialToHorizontalConversion equToHor = new EquatorialToHorizontalConversion(dateTimeBean.getZonedDateTime(),
-                            observerLocationBean.getCoordinates());
-                    HorizontalCoordinates hor = equToHor.apply(objectsMenu.getValue().equatorialPos());
-                    if (hor.altDeg() >= 0 && hor.altDeg() <= 90) {
-                        viewingParametersBean.setCenter(hor);
-                    } else {
-                        Alert alert = new Alert(Alert.AlertType.ERROR);
-                        alert.setTitle("Erreur");
-                        alert.setContentText("Objet impossible à observer !");
-                        alert.showAndWait();
-                    }
-                });
+            ChoiceBox<CelestialObject> objectsMenu = new ChoiceBox<>(observableList);
+            objectsMenu.valueProperty().addListener(
+                    (o, oV, nV) -> {
+                        EquatorialToHorizontalConversion equToHor = new EquatorialToHorizontalConversion(dateTimeBean.getZonedDateTime(),
+                                observerLocationBean.getCoordinates());
+                        HorizontalCoordinates hor = equToHor.apply(objectsMenu.getValue().equatorialPos());
+                        if (hor.altDeg() >= 0 && hor.altDeg() <= 90) {
+                            viewingParametersBean.setCenter(hor);
+                        } else {
+                            Alert alert = new Alert(Alert.AlertType.ERROR);
+                            alert.setTitle("Erreur");
+                            alert.setContentText("Objet impossible à observer !");
+                            alert.showAndWait();
+                        }
+                    });
 
-        HBox bonusButtons = new HBox(asterismButton, photoButton, objectsMenu);
-        bonusButtons.setStyle("-fx-spacing: inherit");
-        return bonusButtons;
+            HBox bonusButtons = new HBox(asterismButton, photoButton, objectsMenu);
+            bonusButtons.setStyle("-fx-spacing: inherit");
+            return bonusButtons;
+        }
     }
 
     /**
@@ -464,9 +470,7 @@ public class Main extends Application {
     }
 
     private String dateToString(ZonedDateTime zdt) {
-        StringBuilder builder = new StringBuilder();
-        builder.append(zdt.getYear()).append(" ").append(zdt.getMonth()).append(" ").append(zdt.getDayOfMonth())
-                .append(" at ").append(zdt.getHour()).append("h").append(zdt.getMinute());
-        return builder.toString();
+        return zdt.getYear() + " " + zdt.getMonth() + " " + zdt.getDayOfMonth() +
+                " at " + zdt.getHour() + "h" + zdt.getMinute();
     }
 }

@@ -7,7 +7,7 @@ import ch.epfl.rigel.math.Angle;
 import java.util.Objects;
 
 /**
- * A celestial object.
+ * A satellite in geostationary orbit around Earth.
  *
  * @author Mathias Bouilloud (309979)
  * @author Julien Mettler (309999)
@@ -18,59 +18,49 @@ public final class Satellite extends CelestialObject {
     private final int noradID;
 
     /**
-     * Constructs a celestial object with the given name, equatorial position, angular size and magnitude.
-     *
-     * @param name
-     *            The object's name
-     * @param equatorialPos
-     *            The object's equatorial positions
-     * @param angularSize
-     *            The object's angular size (in radians)
-     * @param magnitude
-     *            The object's magnitude (unitless)
-     * @throws IllegalArgumentException
-     *             if the angular size is < 0
-     * @throws NullPointerException
-     *             if the name and/or the equatorial position are null
-     */
-
-
-    /**
-     * Constructs a celestial object with the given name, country, purpose, NORAD identfication number and longitude of
+     * Constructs a satellite with the given name, country, purpose, NORAD identification number and longitude of
      * geosynchronous orbit.
      *
      * @param name
      *            The object's name
      * @param country
-     *            The object's name
+     *            The satellite's country of origin
      * @param purpose
-     *            The object's name
+     *            The satellite's purpose
      * @param noradID
-     *            The object's name
-     * @param lon
-     *            The object's name
+     *            The satellite's NORAD identification number
+     * @param lonRad
+     *            The satellite's longitude (in radians)
      */
-    public Satellite(String name, String country, String purpose, int noradID, double lon) {
-        super(name, EquatorialCoordinates.of(lon, Angle.ofDeg(60)), 0, 0);
+    public Satellite(String name, String country, String purpose, int noradID, double lonRad) {
+        super(name, EquatorialCoordinates.of(lonRad, Angle.ofDeg(60)), 0, 0);
         this.country = Objects.requireNonNull(country);
         this.purpose = Objects.requireNonNull(purpose);
         Preconditions.checkArgument(noradID >= 0);
         this.noradID = noradID;
     }
 
-
-
+    /**
+     * Returns the country of origin of the satellite.
+     * @return the country of origin of the satellite
+     */
     public String country() {
         return country;
     }
 
+    /**
+     * Returns the purpose of the satellite.
+     * @return the purpose of the satellite
+     */
     public String purpose() {
         return purpose;
     }
 
+    /**
+     * Returns the NORAD identification number of the satellite.
+     * @return the NORAD identification number of the satellite
+     */
     public int noradID() {
         return noradID;
     }
-
-
 }
