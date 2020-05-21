@@ -148,15 +148,19 @@ public final class SkyCanvasManager {
         });
 
         // Detects the mouse clicks on the canvas
+        /*
         canvas.setOnMousePressed(mouseEvent -> {
             if (mouseEvent.isPrimaryButtonDown()) {
                 canvas.requestFocus(); // Makes the mouse the focus of the keyboard events
             }
         });
 
-        /*double[] point = new double[2];
+         */
+
+        double[] point = new double[2];
 
         canvas.setOnMousePressed(mouseEvent -> {
+            canvas.requestFocus();
             point[0] = mouseEvent.getX();
             point[1] = mouseEvent.getY();
         });
@@ -173,7 +177,7 @@ public final class SkyCanvasManager {
             } catch (NonInvertibleTransformException e) {
                 e.printStackTrace();
             }
-        });*/
+        });
 
         draw(painter, observedSky.get());
     }
