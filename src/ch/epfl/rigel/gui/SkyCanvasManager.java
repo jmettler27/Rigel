@@ -2,6 +2,7 @@ package ch.epfl.rigel.gui;
 
 import ch.epfl.rigel.astronomy.CelestialObject;
 import ch.epfl.rigel.astronomy.ObservedSky;
+import ch.epfl.rigel.astronomy.SatelliteCatalogue;
 import ch.epfl.rigel.astronomy.StarCatalogue;
 import ch.epfl.rigel.coordinates.*;
 import ch.epfl.rigel.math.Angle;
@@ -64,7 +65,7 @@ public final class SkyCanvasManager {
      * @param viewingParameters The parameters of observation
      * @param observerLocation  The place of observation
      */
-    public SkyCanvasManager(StarCatalogue catalogue, DateTimeBean dateTime, ObserverLocationBean observerLocation,
+    public SkyCanvasManager(StarCatalogue catalogue, SatelliteCatalogue satCatalogue, DateTimeBean dateTime, ObserverLocationBean observerLocation,
                             ViewingParametersBean viewingParameters) {
         this.viewingParameters = viewingParameters;
         this.observerLocation = observerLocation;
@@ -91,7 +92,7 @@ public final class SkyCanvasManager {
                 }, viewingParameters.fieldOfViewDegProperty(), projection, canvas.widthProperty(), canvas.heightProperty());
 
         observedSky = Bindings.createObjectBinding(
-                () -> new ObservedSky(dateTime.getZonedDateTime(), observerLocation.getCoordinates(), projection.get(), catalogue),
+                () -> new ObservedSky(dateTime.getZonedDateTime(), observerLocation.getCoordinates(), projection.get(), catalogue, satCatalogue),
                 dateTime.dateProperty(), dateTime.timeProperty(), dateTime.zoneProperty(),
                 observerLocation.coordinatesBinding(), projection);
 
@@ -358,6 +359,7 @@ public final class SkyCanvasManager {
         painter.drawSun(sky, projection.get(), planeToCanvas.get());
         painter.drawMoon(sky, projection.get(), planeToCanvas.get(), observerLocation.getCoordinates());
         painter.drawHorizon(projection.get(), planeToCanvas.get());
+        painter.drawSatellites(sky, planeToCanvas.get());
     }
 
     public ObservedSky observedSky() {

@@ -30,7 +30,13 @@ public final class DrawSky extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         try (InputStream hs = resourceStream("/hygdata_v3.csv");
-             InputStream as = resourceStream("/asterisms.txt")) {
+             InputStream as = resourceStream("/asterisms.txt");
+             InputStream sat = resourceStream("/active_satellites.csv")) {
+
+            SatelliteCatalogue satCatalogue = new SatelliteCatalogue.Builder()
+                    .loadFrom(sat, SatelliteDatabaseLoader.INSTANCE)
+                    .build();
+
             StarCatalogue catalogue = new StarCatalogue.Builder()
                     .loadFrom(hs, HygDatabaseLoader.INSTANCE)
                     .loadFrom(as, AsterismLoader.INSTANCE)
@@ -40,7 +46,7 @@ public final class DrawSky extends Application {
             GeographicCoordinates where = GeographicCoordinates.ofDeg(6.57, 46.52);
             HorizontalCoordinates projCenter = HorizontalCoordinates.ofDeg(180, 45  );
             StereographicProjection projection = new StereographicProjection(projCenter);
-            ObservedSky sky = new ObservedSky(when, where, projection, catalogue);
+            ObservedSky sky = new ObservedSky(when, where, projection, catalogue, satCatalogue);
 
             Canvas canvas = new Canvas(800, 600);
             Transform planeToCanvas =   Transform.affine(1300, 0, 0, -1300, 400, 300);

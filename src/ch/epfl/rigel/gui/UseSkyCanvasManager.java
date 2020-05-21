@@ -1,8 +1,6 @@
 package ch.epfl.rigel.gui;
 
-import ch.epfl.rigel.astronomy.AsterismLoader;
-import ch.epfl.rigel.astronomy.HygDatabaseLoader;
-import ch.epfl.rigel.astronomy.StarCatalogue;
+import ch.epfl.rigel.astronomy.*;
 import ch.epfl.rigel.coordinates.GeographicCoordinates;
 import ch.epfl.rigel.coordinates.HorizontalCoordinates;
 import javafx.application.Application;
@@ -25,7 +23,10 @@ public final class UseSkyCanvasManager extends Application {
     @Override
     public void start(Stage primaryStage) throws IOException {
         try (InputStream hs = resourceStream("/hygdata_v3.csv");
-             InputStream as = resourceStream("/asterisms.txt")) {
+             InputStream as = resourceStream("/asterisms.txt");
+             InputStream sat = resourceStream("/active_satellites.csv")) {
+
+            SatelliteCatalogue satCatalogue = new SatelliteCatalogue.Builder().loadFrom(sat, SatelliteDatabaseLoader.INSTANCE).build();
             StarCatalogue catalogue = new StarCatalogue.Builder()
                     .loadFrom(hs, HygDatabaseLoader.INSTANCE)
                     .loadFrom(as, AsterismLoader.INSTANCE)
@@ -44,6 +45,7 @@ public final class UseSkyCanvasManager extends Application {
 
             SkyCanvasManager canvasManager = new SkyCanvasManager(
                     catalogue,
+                    satCatalogue,
                     dateTimeBean,
                     observerLocationBean,
                     viewingParametersBean);

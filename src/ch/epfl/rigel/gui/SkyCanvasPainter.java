@@ -48,12 +48,14 @@ public final class SkyCanvasPainter {
     }
 
     /**
-     * Constructs a representation of the sky at a given epoch and place of observation.
+     * Draws the observed stars of the solar system on the canvas, using an affine transform.
      *
      * @param sky
      *            The observed sky
      * @param transform
      *            The affine transform
+     * @param b
+     *           Boolean that enables asterism drawing
      */
     void drawStars(ObservedSky sky, Transform transform, boolean b) {
         // The positions of the observed stars on the canvas
@@ -101,6 +103,32 @@ public final class SkyCanvasPainter {
             ++index;
         }
     }
+
+    /**
+     * Draws the observed satellites of the solar system on the canvas, using an affine transform.
+     *
+     * @param sky
+     *            The observed sky
+     * @param transform
+     *            The affine transform
+     */
+    void drawSatellites(ObservedSky sky, Transform transform) {
+        // The positions of the observed stars on the canvas
+        double[] satellitesCanvasPositions = PlaneToCanvas.applyToAllPoints(sky.satellitesPositions(), transform);
+
+        int index = 0;
+        for (Satellite s : sky.satellites()) {
+            CartesianCoordinates satelliteCanvasPos = CartesianCoordinates.of(
+                    satellitesCanvasPositions[index * 2], satellitesCanvasPositions[index * 2 + 1]);
+
+
+            // Draws and colors the star according to its color temperature
+            drawFilledCircle(satelliteCanvasPos, 2, Color.GREEN);
+
+            ++index;
+        }
+    }
+
 
     /**
      * Draws the observed Sun on the canvas, using a stereographic projection and an affine transform.

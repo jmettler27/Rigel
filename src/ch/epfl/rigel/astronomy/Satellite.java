@@ -12,11 +12,10 @@ import java.util.Objects;
  * @author Mathias Bouilloud (309979)
  * @author Julien Mettler (309999)
  */
-public final class Satellite {
+public final class Satellite extends CelestialObject {
 
-    private final String name, country, purpose;
+    private final String country, purpose;
     private final int noradID;
-    private final EquatorialCoordinates equatorialPos;
 
     /**
      * Constructs a celestial object with the given name, equatorial position, angular size and magnitude.
@@ -52,21 +51,13 @@ public final class Satellite {
      *            The object's name
      */
     public Satellite(String name, String country, String purpose, int noradID, double lon) {
-        this.name = Objects.requireNonNull(name);
+        super(name, EquatorialCoordinates.of(lon, Angle.ofDeg(60)), 0, 0);
         this.country = Objects.requireNonNull(country);
         this.purpose = Objects.requireNonNull(purpose);
         Preconditions.checkArgument(noradID >= 0);
         this.noradID = noradID;
-        this.equatorialPos = EquatorialCoordinates.of(lon, Angle.ofDeg(60));
     }
 
-    /**
-     * Returns the name.
-     * @return the name
-     */
-    public String name() {
-        return name;
-    }
 
 
     public String country() {
@@ -81,27 +72,5 @@ public final class Satellite {
         return noradID;
     }
 
-    /**
-     * Returns the geographic position.
-     * @return the geographic position
-     */
-    public EquatorialCoordinates equatorialPos() {
-        return equatorialPos;
-    }
 
-    /**
-     * Returns an informative text about the object.
-     * @return an informative text about the object
-     */
-    public String info() {
-        return String.format("%s (%s, %s)", name, purpose, country);
-    }
-
-    /**
-     * @see Object#toString()
-     */
-    @Override
-    public final String toString() {
-        return info();
-    }
 }

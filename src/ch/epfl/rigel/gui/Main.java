@@ -73,6 +73,7 @@ public class Main extends Application {
     private static final String
             HYG_CATALOGUE_NAME = "/hygdata_v3.csv",
             AST_CATALOGUE_NAME = "/asterisms.txt",
+            SAT_CATALOGUE_NAME = "/active_satellites.csv",
             FONT_AWESOME_NAME = "/Font Awesome 5 Free-Solid-900.otf",
             RESET_CHAR = "\uf0e2",  // The character of the reset button's image
             PLAY_CHAR = "\uf04b",   // The character of the play/pause button's image when the animation is not running
@@ -93,7 +94,10 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         try (InputStream hs = resourceStream(HYG_CATALOGUE_NAME);
-             InputStream as = resourceStream(AST_CATALOGUE_NAME)) {
+             InputStream as = resourceStream(AST_CATALOGUE_NAME);
+             InputStream sat = resourceStream(SAT_CATALOGUE_NAME)) {
+
+            SatelliteCatalogue satCatalogue = new SatelliteCatalogue.Builder().loadFrom(sat, SatelliteDatabaseLoader.INSTANCE).build();
 
             // The catalogue of the observed stars and asterisms
             StarCatalogue catalogue = new StarCatalogue.Builder()
@@ -127,6 +131,7 @@ public class Main extends Application {
             // The sky canvas manager
             canvasManager = new SkyCanvasManager(
                     catalogue,
+                    satCatalogue,
                     dateTimeBean,
                     observerLocationBean,
                     viewingParametersBean);

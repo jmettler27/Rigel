@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 public final class ObservedSky {
 
     private final StarCatalogue catalogue;
+    private final SatelliteCatalogue sat_catalogue;
 
     private final Sun sun;
     private final Moon moon;
@@ -23,7 +24,7 @@ public final class ObservedSky {
 
     // The projected positions on the plane of all of the celestial objects in the observed sky
     private final CartesianCoordinates sunPosition, moonPosition;
-    private final double[] planetPositions, starPositions;
+    private final double[] planetPositions, starPositions, satellitesPositions;
     private final Map<CelestialObject, CartesianCoordinates> positions;
 
     /**
@@ -39,8 +40,9 @@ public final class ObservedSky {
      *            The catalogue of the observed stars
      */
     public ObservedSky(ZonedDateTime when, GeographicCoordinates where, StereographicProjection projection,
-                       StarCatalogue catalogue) {
+                       StarCatalogue catalogue, SatelliteCatalogue sat_catalogue) {
         this.catalogue = catalogue;
+        this.sat_catalogue = sat_catalogue;
 
         // The number of days elapsed from the epoch J2010 to the epoch of the observation
         double daysSinceJ2010 = Epoch.J2010.daysUntil(when);
@@ -82,7 +84,26 @@ public final class ObservedSky {
         double[] tempStarPositions = allPositionsOf(stars(), equToCart, allObjectsPositions);
         starPositions = Arrays.copyOf(tempStarPositions, 2 * stars().size());
 
+        double[] tempSatellitesPositions = allPositionsOf(satellites(), equToCart, allObjectsPositions);
+        satellitesPositions = Arrays.copyOf(tempSatellitesPositions, 2 * satellites().size());
+
         positions = Map.copyOf(allObjectsPositions);
+    }
+
+    /**
+     * Returns the list of the satellites of the catalogue.
+     * @return the list of the satellites of the catalogue
+     */
+    public List<Satellite> satellites(){
+        return sat_catalogue.satellites();
+    }
+
+    /**
+     * Returns the positions of the satellites of the catalogue on the plane.
+     * @return the positions of the satellites of the catalogue on the plane.
+     */
+    public double[] satellitesPositions() {
+        return satellitesPositions;
     }
 
     /**
