@@ -62,4 +62,9 @@ public final class Satellite extends CelestialObject {
     public int noradID() {
         return noradID;
     }
+
+    @Override
+    public String info() {
+        return String.format("%s (%s, %s)", name(),purpose, country);
+    }
 }

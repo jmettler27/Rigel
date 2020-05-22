@@ -28,6 +28,8 @@ public abstract class CelestialObject {
     // The diameter of the disc representing this celestial object, according to its magnitude
     private final double discSize;
 
+    private final boolean isBright;
+
     // Used to clip this celestial object's magnitude to [-2,5]
     private static final ClosedInterval MAGNITUDE_INTERVAL = ClosedInterval.of(-2, 5);
 
@@ -58,6 +60,7 @@ public abstract class CelestialObject {
         this.angularSize = angularSize;
 
         this.magnitude = magnitude;
+        this.isBright = magnitude < 2.0;
 
         // The magnitude is clipped to [-2, 5]
         double clippedMagnitude = MAGNITUDE_INTERVAL.clip(magnitude);
@@ -114,6 +117,15 @@ public abstract class CelestialObject {
      */
     public double discSize() {
         return discSize;
+    }
+
+    /**
+     * Additional method.
+     * Tells if the celestial object is bright, i.e. if its magnitude is < 2.0.
+     * @return true if the celestial object is bright, false otherwise
+     */
+    public boolean isBright() {
+        return isBright;
     }
 
     /**

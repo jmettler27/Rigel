@@ -73,8 +73,12 @@ public class Main extends Application {
             RESET_CHAR = "\uf0e2",  // The character of the reset button's image
             PLAY_CHAR = "\uf04b",   // The character of the play/pause button's image when the animation is not running
             PAUSE_CHAR = "\uf04c",  // The character of the play/pause button's image when the animation is running
-            ASTERISM_CHAR = "\uf039",
-            CAMERA_CHAR = "\uf083";
+            CAMERA_CHAR = "\uf083",
+            ASTERISM_CHAR = "\uf005",
+            NAME_CHAR = "\uf044",
+            SAT_CHAR = "\uf09e",
+            OPTIONS_CHAR = "\uf013";
+
     /**
      * Launches the graphical interface.
      *
@@ -185,7 +189,7 @@ public class Main extends Application {
 
         // The horizontal control bar
         HBox controlBar = new HBox(observerLocationControl(), vertical1, observationTimeControl(), vertical2, timelapseControl()
-                , vertical3, bonusButton());
+                , vertical3, bonusButtons());
         controlBar.setStyle("-fx-spacing: 4; -fx-padding: 4;");
 
         return controlBar;
@@ -277,9 +281,8 @@ public class Main extends Application {
      * @return the control unit of the timelapse
      */
     private HBox timelapseControl() throws IOException {
-        ObservableList<NamedTimeAccelerator> observableAccelerators = FXCollections.observableList(NamedTimeAccelerator.ALL);
-
-        ChoiceBox<NamedTimeAccelerator> acceleratorsMenu = new ChoiceBox<>(observableAccelerators);
+        ChoiceBox<NamedTimeAccelerator> acceleratorsMenu = new ChoiceBox<>();
+        acceleratorsMenu.setItems(FXCollections.observableList(NamedTimeAccelerator.ALL));
         acceleratorsMenu.setValue(STARTING_ACCELERATOR);
         timeAnimator.acceleratorProperty().bind(Bindings.select(acceleratorsMenu.valueProperty(), "accelerator"));
 
@@ -330,14 +333,48 @@ public class Main extends Application {
         }
     }
 
-    private HBox bonusButton() throws IOException {
+    /**
+     * Additional method.
+     *
+     *
+     * @return the bonus buttons interface
+     * @throws IOException in case of input/output error
+     */
+    private HBox bonusButtons() throws IOException {
 
         try (InputStream fontStream = resourceStream(FONT_AWESOME_NAME)) {
             Font fontAwesome = Font.loadFont(fontStream, 15);
 
-            Button asterismButton = new Button(ASTERISM_CHAR);
+            CheckMenuItem asterismEnable = new CheckMenuItem("Astérismes");
+            asterismEnable.selectedProperty().bindBidirectional(canvasManager.asterismEnableProperty());
+            asterismEnable.setSelected(true);
+            Text asterismText = new Text(ASTERISM_CHAR);
+            asterismText.setFont(fontAwesome);
+            asterismEnable.setGraphic(asterismText);
+
+            CheckMenuItem nameEnable = new CheckMenuItem("Objets brillants");
+            //nameEnable.selectedProperty().bindBidirectional(canvasManager.nameEnableProperty());
+            //nameEnable.setSelected(true);
+            Text nameText = new Text(NAME_CHAR);
+            nameText.setFont(fontAwesome);
+            nameEnable.setGraphic(nameText);
+
+            CheckMenuItem satelliteEnable = new CheckMenuItem("Satellites");
+            satelliteEnable.selectedProperty().bindBidirectional(canvasManager.satelliteEnableProperty());
+            satelliteEnable.setSelected(false);
+            Text satText = new Text(SAT_CHAR);
+            satText.setFont(fontAwesome);
+            satelliteEnable.setGraphic(satText);
+
+            Text optionsText = new Text(OPTIONS_CHAR);
+            optionsText.setFont(fontAwesome);
+            MenuButton optionsButton = new MenuButton("Options", optionsText,
+                    asterismEnable, nameEnable, satelliteEnable);
+
+
+            /*Button asterismButton = new Button(ASTERISM_CHAR);
             asterismButton.setFont(fontAwesome);
-            asterismButton.setOnMousePressed(event -> canvasManager.setAsterismEnable(!canvasManager.getAsterismEnable()));
+            asterismButton.setOnMousePressed(event -> canvasManager.setAsterismEnable(!canvasManager.getAsterismEnable()));*/
 
             Button photoButton = new Button(CAMERA_CHAR);
             photoButton.setFont(fontAwesome);
@@ -362,12 +399,14 @@ public class Main extends Application {
             ObservableList<CelestialObject> observableList = FXCollections.observableList(celestialObjects);
 
 
-            ChoiceBox<CelestialObject> objectsMenu = new ChoiceBox<>(observableList);
+            ChoiceBox<CelestialObject> objectsMenu = new ChoiceBox<>();
+            objectsMenu.setItems(observableList);
             objectsMenu.valueProperty().addListener(
                     (o, oV, nV) -> {
-                        EquatorialToHorizontalConversion equToHor = new EquatorialToHorizontalConversion(dateTimeBean.getZonedDateTime(),
-                                observerLocationBean.getCoordinates());
+                        EquatorialToHorizontalConversion equToHor = new EquatorialToHorizontalConversion(
+                                dateTimeBean.getZonedDateTime(), observerLocationBean.getCoordinates());
                         HorizontalCoordinates hor = equToHor.apply(objectsMenu.getValue().equatorialPos());
+
                         if (hor.altDeg() >= 0 && hor.altDeg() <= 90) {
                             viewingParametersBean.setCenter(hor);
                         } else {
@@ -378,7 +417,7 @@ public class Main extends Application {
                         }
                     });
 
-            HBox bonusButtons = new HBox(asterismButton, photoButton, objectsMenu);
+            HBox bonusButtons = new HBox(optionsButton, photoButton, objectsMenu);
             bonusButtons.setStyle("-fx-spacing: inherit");
             return bonusButtons;
         }
@@ -467,10 +506,5 @@ public class Main extends Application {
         LocalTimeStringConverter stringConverter = new LocalTimeStringConverter(hmsFormatter, hmsFormatter);
 
         return new TextFormatter<>(stringConverter);
-    }
-
-    private String dateToString(ZonedDateTime zdt) {
-        return zdt.getYear() + " " + zdt.getMonth() + " " + zdt.getDayOfMonth() +
-                " at " + zdt.getHour() + "h" + zdt.getMinute();
     }
 }

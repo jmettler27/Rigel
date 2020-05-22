@@ -11,7 +11,6 @@ import ch.epfl.rigel.math.RightOpenInterval;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.ObjectBinding;
 import javafx.beans.property.*;
-import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.input.KeyCode;
 import javafx.scene.transform.NonInvertibleTransformException;
@@ -42,7 +41,10 @@ public final class SkyCanvasManager {
     private final ObjectBinding<ObservedSky> observedSky; // The observed sky binding
     private final ObjectProperty<CartesianCoordinates> mousePosition; // The cursor's canvas position property
 
-    private final SimpleBooleanProperty asterismEnable = new SimpleBooleanProperty(true);
+    private final SimpleBooleanProperty
+            asterismEnable = new SimpleBooleanProperty(),
+            nameEnable = new SimpleBooleanProperty(),
+            satelliteEnable = new SimpleBooleanProperty();
 
     // The maximum distance (in the canvas coordinate system) for searching for the object closest to the mouse cursor
     private static final int MAXIMUM_SEARCH_DISTANCE = 10;
@@ -103,7 +105,7 @@ public final class SkyCanvasManager {
         observedSky.addListener(o -> draw(painter, observedSky.get()));
         asterismEnableProperty().addListener(o -> draw(painter, observedSky.get()));
 
-        // Reacts to the mouse wheel and/or trackpad movements above the canvas and changes the field of view accordingly
+        // Changes the field of view according to the mouse wheel and/or trackpad movements above the canvas
         canvas.setOnScroll(scrollEvent -> {
             double fovDeg = viewingParameters.getFieldOfViewDeg();
             double scrolledFovDeg = fovDeg + scrollMax(scrollEvent.getDeltaX(), scrollEvent.getDeltaY());
@@ -111,16 +113,18 @@ public final class SkyCanvasManager {
             viewingParameters.setFieldOfViewDeg(FOV_INTERVAL.clip(scrolledFovDeg));
         });
 
-        // Reacts to pressing the cursor keys and changes the direction of observation (i.e. the projection center) accordingly
+        // Changes the direction of observation according to the cursor keys
         canvas.setOnKeyPressed(keyEvent -> {
             keyEvent.consume();
             changeDirection(keyEvent.getCode());
 
             try {
-                CartesianCoordinates mousePlanePosition = PlaneToCanvas.inverseAtPoint(getMousePosition(), planeToCanvas.get());
+                CartesianCoordinates mousePlanePosition = PlaneToCanvas.inverseAtPoint(getMousePosition(),
+                        planeToCanvas.get());
                 double maxPlaneDistance = PlaneToCanvas.inverseAtDistance(MAXIMUM_SEARCH_DISTANCE, planeToCanvas.get());
 
-                Optional<CelestialObject> objectUnderMouse = observedSky.get().objectClosestTo(mousePlanePosition, maxPlaneDistance);
+                Optional<CelestialObject> objectUnderMouse = observedSky.get().objectClosestTo(mousePlanePosition,
+                        maxPlaneDistance);
                 setObjectUnderMouse(objectUnderMouse.orElse(null));
 
             } catch (NonInvertibleTransformException e) {
@@ -132,10 +136,12 @@ public final class SkyCanvasManager {
         canvas.setOnMouseMoved(mouseEvent -> {
             setMousePosition(CartesianCoordinates.of(mouseEvent.getX(), mouseEvent.getY()));
             try {
-                CartesianCoordinates mousePlanePosition = PlaneToCanvas.inverseAtPoint(getMousePosition(), planeToCanvas.get());
+                CartesianCoordinates mousePlanePosition = PlaneToCanvas.inverseAtPoint(getMousePosition(),
+                        planeToCanvas.get());
                 double maxPlaneDistance = PlaneToCanvas.inverseAtDistance(MAXIMUM_SEARCH_DISTANCE, planeToCanvas.get());
 
-                Optional<CelestialObject> objectUnderMouse = observedSky.get().objectClosestTo(mousePlanePosition, maxPlaneDistance);
+                Optional<CelestialObject> objectUnderMouse = observedSky.get().objectClosestTo(mousePlanePosition,
+                        maxPlaneDistance);
                 setObjectUnderMouse(objectUnderMouse.orElse(null));
 
                 HorizontalCoordinates hor = projection.get().inverseApply(mousePlanePosition);
@@ -153,9 +159,7 @@ public final class SkyCanvasManager {
             if (mouseEvent.isPrimaryButtonDown()) {
                 canvas.requestFocus(); // Makes the mouse the focus of the keyboard events
             }
-        });
-
-         */
+        });*/
 
         double[] point = new double[2];
 
@@ -285,7 +289,7 @@ public final class SkyCanvasManager {
      * Tells if the asterisms are enabled or not.
      * @return true if the asterisms are enabled, false otherwise
      */
-    public boolean getAsterismEnable() {
+    public boolean asterismEnabled() {
         return asterismEnable.get();
     }
 
@@ -295,6 +299,54 @@ public final class SkyCanvasManager {
      */
     public void setAsterismEnable(boolean b) {
         asterismEnable.set(b);
+    }
+
+    /**
+     * Tells if the names of the brightest objects are enabled or not.
+     * @return true if the names of the brightest objects are enabled, false otherwise
+     */
+    public boolean nameEnabled() {
+        return nameEnable.get();
+    }
+
+    /**
+     * Enables or disables the names of the brightest objects.
+     * @param b The condition of enabling (true) or disabling (false) the names of the brightest objects .
+     */
+    public void setNameEnable(boolean b) {
+        nameEnable.set(b);
+    }
+
+    /**
+     * Returns the property of the names' enable.
+     * @return the property of the names' enable
+     */
+    public SimpleBooleanProperty nameEnableProperty() {
+        return nameEnable;
+    }
+
+    /**
+     * Tells if the satellites are enabled or not.
+     * @return true if the satellites are enabled, false otherwise
+     */
+    public boolean satelliteEnabled() {
+        return satelliteEnable.get();
+    }
+
+    /**
+     * Enables or disables the satellites.
+     * @param b The condition of enabling (true) or disabling (false) the names of the brightest objects .
+     */
+    public void setSatelliteEnable(boolean b) {
+        satelliteEnable.set(b);
+    }
+
+    /**
+     * Returns the property of the satellites' enable.
+     * @return the property of the satellites' enable
+     */
+    public SimpleBooleanProperty satelliteEnableProperty() {
+        return satelliteEnable;
     }
 
     /**
@@ -390,11 +442,11 @@ public final class SkyCanvasManager {
      */
     private void draw(SkyCanvasPainter painter, ObservedSky sky) {
         painter.clear();
-        painter.drawStars(sky, planeToCanvas.get(), getAsterismEnable());
-        painter.drawPlanets(sky, planeToCanvas.get());
-        painter.drawSun(sky, projection.get(), planeToCanvas.get());
-        painter.drawMoon(sky, projection.get(), planeToCanvas.get(), observerLocation.getCoordinates());
-        painter.drawSatellites(sky, planeToCanvas.get());
+        painter.drawStars(sky, planeToCanvas.get(), asterismEnabled(), nameEnabled());
+        painter.drawPlanets(sky, planeToCanvas.get(), nameEnabled());
+        painter.drawSun(sky, projection.get(), planeToCanvas.get(), nameEnabled());
+        painter.drawMoon(sky, projection.get(), planeToCanvas.get(), observerLocation.getCoordinates(), nameEnabled());
+        painter.drawSatellites(sky, planeToCanvas.get(), satelliteEnabled());
         painter.drawHorizon(projection.get(), planeToCanvas.get());
     }
 }
