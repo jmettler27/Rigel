@@ -2,7 +2,6 @@ package ch.epfl.rigel.astronomy;
 
 import ch.epfl.rigel.Preconditions;
 import ch.epfl.rigel.coordinates.EquatorialCoordinates;
-import ch.epfl.rigel.math.Angle;
 
 import java.util.Objects;
 
@@ -33,7 +32,7 @@ public final class Satellite extends CelestialObject {
      *            The satellite's longitude (in radians)
      */
     public Satellite(String name, String country, String purpose, int noradID, double lonRad) {
-        super(name, EquatorialCoordinates.of(lonRad, Angle.ofDeg(60)), 0, 0);
+        super(name, EquatorialCoordinates.of(lonRad, 0), 0, 0);
         this.country = Objects.requireNonNull(country);
         this.purpose = Objects.requireNonNull(purpose);
         Preconditions.checkArgument(noradID >= 0);
