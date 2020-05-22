@@ -6,7 +6,6 @@ import ch.epfl.rigel.coordinates.GeographicCoordinates;
 import ch.epfl.rigel.coordinates.HorizontalCoordinates;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
-import javafx.beans.binding.StringExpression;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
@@ -60,10 +59,23 @@ public class Main extends Application {
     private static final NamedTimeAccelerator STARTING_ACCELERATOR = NamedTimeAccelerator.TIMES_300;
 
     // The starting direction of the eyes of the observer
-    private static final HorizontalCoordinates STARTING_OBSERVER_DIRECTION = HorizontalCoordinates.ofDeg(180.000000000001, 15);
+    private static final HorizontalCoordinates STARTING_OBSERVER_DIRECTION = HorizontalCoordinates.ofDeg(
+            180.000000000001, 15);
 
     // The starting field of view of the observation (in degrees)
     private static final double STARTING_FIELD_OF_VIEW_DEG = 100;
+
+    // The available time-zones sorted by their IDs
+    private static final List<ZoneId> SORTED_ZONE_IDS = ZoneId.getAvailableZoneIds()
+            .stream()
+            .sorted()
+            .map(ZoneId::of)
+            .collect(Collectors.toList());
+
+    // The observable lists of the available zone IDs and time accelerators
+    private static final ObservableList<ZoneId> OBSERVABLE_ZONE_IDS = FXCollections.observableList(SORTED_ZONE_IDS);
+    private static final ObservableList<NamedTimeAccelerator> OBSERVABLE_ACCELERATORS =
+            FXCollections.observableList(NamedTimeAccelerator.ALL);
 
     private static final String
             HYG_CATALOGUE_NAME = "/hygdata_v3.csv",
@@ -73,11 +85,9 @@ public class Main extends Application {
             RESET_CHAR = "\uf0e2",  // The character of the reset button's image
             PLAY_CHAR = "\uf04b",   // The character of the play/pause button's image when the animation is not running
             PAUSE_CHAR = "\uf04c",  // The character of the play/pause button's image when the animation is running
-            CAMERA_CHAR = "\uf083",
-            ASTERISM_CHAR = "\uf005",
-            NAME_CHAR = "\uf044",
-            SAT_CHAR = "\uf09e",
-            OPTIONS_CHAR = "\uf013";
+            ASTERISM_CHAR = "\uf005", // The character of the asterism enabling's image
+            SAT_CHAR = "\uf09e", // The character of the satellite enabling's image
+            OPTIONS_CHAR = "\uf013"; // The character of the options menu
 
     /**
      * Launches the graphical interface.
@@ -113,9 +123,7 @@ public class Main extends Application {
             dateTimeBean.setZonedDateTime(STARTING_OBSERVATION_TIME);
 
             // The instant of observation at the launch of the program
-            startDate = ZonedDateTime.of(
-                    STARTING_OBSERVATION_TIME.toLocalDate(),
-                    STARTING_OBSERVATION_TIME.toLocalTime(),
+            startDate = ZonedDateTime.of(STARTING_OBSERVATION_TIME.toLocalDate(), STARTING_OBSERVATION_TIME.toLocalTime(),
                     STARTING_OBSERVATION_TIME.getOffset());
 
             // The current time animator
@@ -132,17 +140,11 @@ public class Main extends Application {
             viewingParametersBean.setFieldOfViewDeg(STARTING_FIELD_OF_VIEW_DEG);
 
             // The sky canvas manager
-            canvasManager = new SkyCanvasManager(
-                    catalogue,
-                    satCatalogue,
-                    dateTimeBean,
-                    observerLocationBean,
+            canvasManager = new SkyCanvasManager(catalogue, satCatalogue, dateTimeBean, observerLocationBean,
                     viewingParametersBean);
 
             Canvas canvas = canvasManager.canvas();
-
-            // The view of the sky (the center part of the graphical interface)
-            Pane skyPane = new Pane(canvas);
+            Pane skyPane = new Pane(canvas);  // The view of the sky (the center part of the graphical interface)
 
             // The main pane, at the root of the scene graph
             BorderPane root = new BorderPane();
@@ -158,7 +160,6 @@ public class Main extends Application {
 
             primaryStage.setMinWidth(800);
             primaryStage.setMinHeight(600);
-
             primaryStage.setScene(new Scene(root));
             primaryStage.show();
 
@@ -182,16 +183,12 @@ public class Main extends Application {
      * @return the control bar
      */
     private HBox controlBar() throws IOException {
-        // The vertical separators (children) that separate the three main children of this pane.
-        Separator vertical1 = new Separator(Orientation.VERTICAL);
-        Separator vertical2 = new Separator(Orientation.VERTICAL);
-        Separator vertical3 = new Separator(Orientation.VERTICAL);
-
         // The horizontal control bar
-        HBox controlBar = new HBox(observerLocationControl(), vertical1, observationTimeControl(), vertical2, timelapseControl()
-                , vertical3, bonusButtons());
-        controlBar.setStyle("-fx-spacing: 4; -fx-padding: 4;");
+        HBox controlBar = new HBox(observerLocationControl(), new Separator(Orientation.VERTICAL),
+                observationTimeControl(), new Separator(Orientation.VERTICAL),
+                timelapseControl(), new Separator(Orientation.VERTICAL), bonusButtons());
 
+        controlBar.setStyle("-fx-spacing: 4; -fx-padding: 4;");
         return controlBar;
     }
 
@@ -201,12 +198,10 @@ public class Main extends Application {
      * @return the control unit of the geographical position of observation
      */
     private HBox observerLocationControl() {
-        String coordinatesFieldStyle = "-fx-pref-width: 60; -fx-alignment: baseline-right;";
-
         // Updates the longitude of the observation (in degrees) according to the one entered by the user
         Label lonLabel = new Label("Longitude (°) :");
         TextField lonField = new TextField();
-        lonField.setStyle(coordinatesFieldStyle);
+        lonField.setStyle("-fx-pref-width: 60; -fx-alignment: baseline-right;");
 
         TextFormatter<Number> lonTextFormatter = coordinatesTextFormatter(true);
         lonField.setTextFormatter(lonTextFormatter);
@@ -215,7 +210,7 @@ public class Main extends Application {
         // Updates the latitude of the observation (in degrees) according to the one entered by the user
         Label latLabel = new Label("Latitude (°) :");
         TextField latField = new TextField();
-        latField.setStyle(coordinatesFieldStyle);
+        latField.setStyle("-fx-pref-width: 60; -fx-alignment: baseline-right;");
 
         TextFormatter<Number> latTextFormatter = coordinatesTextFormatter(false);
         latField.setTextFormatter(latTextFormatter);
@@ -249,16 +244,8 @@ public class Main extends Application {
         hourTextFormatter.setValue(dateTimeBean.getTime());
         dateTimeBean.timeProperty().bindBidirectional(hourTextFormatter.valueProperty());
 
-        // Sorts the available time-zones using their IDs
-        List<ZoneId> sortedZoneIds = ZoneId.getAvailableZoneIds()
-                .stream()
-                .sorted()
-                .map(ZoneId::of)
-                .collect(Collectors.toList());
-        ObservableList<ZoneId> observableZoneIds = FXCollections.observableList(sortedZoneIds);
-
         // Updates the time-zone of observation according to the one selected by the user in the menu
-        ComboBox<ZoneId> zoneIdMenu = new ComboBox<>(observableZoneIds); // Dropdown menu of the time-zones
+        ComboBox<ZoneId> zoneIdMenu = new ComboBox<>(OBSERVABLE_ZONE_IDS); // Dropdown menu of the time-zones
         zoneIdMenu.setStyle("-fx-pref-width: 180;");
         zoneIdMenu.valueProperty().bindBidirectional(dateTimeBean.zoneProperty());
 
@@ -268,9 +255,7 @@ public class Main extends Application {
         // Disables the graphical nodes related to the choice of the instant of observation when an animation is running
         for (Node child : observationInstant.getChildren()) {
             child.disableProperty().bind(
-                    when(timeAnimator.runningProperty())
-                            .then(true)
-                            .otherwise(false));
+                    when(timeAnimator.runningProperty()).then(true).otherwise(false));
         }
         return observationInstant;
     }
@@ -282,9 +267,13 @@ public class Main extends Application {
      */
     private HBox timelapseControl() throws IOException {
         ChoiceBox<NamedTimeAccelerator> acceleratorsMenu = new ChoiceBox<>();
-        acceleratorsMenu.setItems(FXCollections.observableList(NamedTimeAccelerator.ALL));
+        acceleratorsMenu.setItems(OBSERVABLE_ACCELERATORS);
         acceleratorsMenu.setValue(STARTING_ACCELERATOR);
         timeAnimator.acceleratorProperty().bind(Bindings.select(acceleratorsMenu.valueProperty(), "accelerator"));
+
+        // Disables the graphical nodes related to the timelapse parameters when an animation is running
+        acceleratorsMenu.disableProperty().bind(
+                when(timeAnimator.runningProperty()).then(true).otherwise(false));
 
         try (InputStream fontStream = resourceStream(FONT_AWESOME_NAME)) {
             Font fontAwesome = Font.loadFont(fontStream, 15);
@@ -294,10 +283,6 @@ public class Main extends Application {
 
             Button playPauseButton = new Button(); // Play/Pause button
             playPauseButton.setFont(fontAwesome);
-
-            // The control unit of the timelapse
-            HBox timelapse = new HBox(acceleratorsMenu, resetButton, playPauseButton);
-            timelapse.setStyle("-fx-spacing: inherit;");
 
             // Controls the pressing of the play pause button
             playPauseButton.setOnMouseClicked(mouseEvent -> {
@@ -309,6 +294,10 @@ public class Main extends Application {
                 }
             });
 
+            // When an animation is running, the button's image is pause, and play otherwise
+            playPauseButton.textProperty().bind(
+                    when(timeAnimator.runningProperty()).then(PAUSE_CHAR).otherwise(PLAY_CHAR));
+
             // Controls the pressing of the reset button
             resetButton.setOnMouseClicked(mouseEvent -> {
                 if (timeAnimator.isRunning()) {
@@ -317,18 +306,9 @@ public class Main extends Application {
                 dateTimeBean.setZonedDateTime(startDate);
             });
 
-            // Disables the graphical nodes related to the timelapse parameters when an animation is running
-            acceleratorsMenu.disableProperty().bind(
-                    when(timeAnimator.runningProperty())
-                            .then(true)
-                            .otherwise(false));
-
-            // When an animation is running, the button's image is pause, and play otherwise
-            playPauseButton.textProperty().bind(
-                    when(timeAnimator.runningProperty())
-                            .then(PAUSE_CHAR)
-                            .otherwise(PLAY_CHAR));
-
+            // The control unit of the timelapse
+            HBox timelapse = new HBox(acceleratorsMenu, resetButton, playPauseButton);
+            timelapse.setStyle("-fx-spacing: inherit;");
             return timelapse;
         }
     }
@@ -336,68 +316,36 @@ public class Main extends Application {
     /**
      * Additional method.
      *
-     *
      * @return the bonus buttons interface
      * @throws IOException in case of input/output error
      */
     private HBox bonusButtons() throws IOException {
-
         try (InputStream fontStream = resourceStream(FONT_AWESOME_NAME)) {
             Font fontAwesome = Font.loadFont(fontStream, 15);
 
+            // Enables/disables the drawing of the asterisms
             CheckMenuItem asterismEnable = new CheckMenuItem("Astérismes");
             asterismEnable.selectedProperty().bindBidirectional(canvasManager.asterismEnableProperty());
             asterismEnable.setSelected(true);
-            Text asterismText = new Text(ASTERISM_CHAR);
-            asterismText.setFont(fontAwesome);
-            asterismEnable.setGraphic(asterismText);
+            setMenuIcon(asterismEnable, ASTERISM_CHAR); // Sets the icon of the menu item
 
-            CheckMenuItem nameEnable = new CheckMenuItem("Objets brillants");
-            //nameEnable.selectedProperty().bindBidirectional(canvasManager.nameEnableProperty());
-            //nameEnable.setSelected(true);
-            Text nameText = new Text(NAME_CHAR);
-            nameText.setFont(fontAwesome);
-            nameEnable.setGraphic(nameText);
-
+            // Enables/disables the drawing of the satellites
             CheckMenuItem satelliteEnable = new CheckMenuItem("Satellites");
             satelliteEnable.selectedProperty().bindBidirectional(canvasManager.satelliteEnableProperty());
             satelliteEnable.setSelected(false);
-            Text satText = new Text(SAT_CHAR);
-            satText.setFont(fontAwesome);
-            satelliteEnable.setGraphic(satText);
+            setMenuIcon(satelliteEnable, SAT_CHAR); // Sets the icon of the menu item
 
+            // The menu button of the drawing options
             Text optionsText = new Text(OPTIONS_CHAR);
             optionsText.setFont(fontAwesome);
-            MenuButton optionsButton = new MenuButton("Options", optionsText,
-                    asterismEnable, nameEnable, satelliteEnable);
-
-
-            /*Button asterismButton = new Button(ASTERISM_CHAR);
-            asterismButton.setFont(fontAwesome);
-            asterismButton.setOnMousePressed(event -> canvasManager.setAsterismEnable(!canvasManager.getAsterismEnable()));*/
-
-            Button photoButton = new Button(CAMERA_CHAR);
-            photoButton.setFont(fontAwesome);
-            /*photoButton.setOnMousePressed(event -> {
-                String date = dateToString(dateTimeBean.getZonedDateTime());
-                String fileName = String.format("sky observed at position %.2f lon %.2f lat and date %s ",
-                        observerLocationBean.getLonDeg(), observerLocationBean.getLatDeg(), date + ".png");
-
-                WritableImage fxImage = canvasManager.canvas().snapshot(null, null);
-                BufferedImage swingImage = SwingFXUtils.fromFXImage(fxImage, null);
-                try {
-                    ImageIO.write(swingImage, "png", new File(fileName));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            });*/
+            MenuButton optionsMenu = new MenuButton("Options", optionsText,
+                    asterismEnable, satelliteEnable);
 
             List<CelestialObject> celestialObjects = new ArrayList<>(canvasManager.observedSky().planets());
             //celestialObjects.add(canvasManager.observedSky().sun());
             //celestialObjects.add(canvasManager.observedSky().moon());
 
             ObservableList<CelestialObject> observableList = FXCollections.observableList(celestialObjects);
-
 
             ChoiceBox<CelestialObject> objectsMenu = new ChoiceBox<>();
             objectsMenu.setItems(observableList);
@@ -417,7 +365,7 @@ public class Main extends Application {
                         }
                     });
 
-            HBox bonusButtons = new HBox(optionsButton, photoButton, objectsMenu);
+            HBox bonusButtons = new HBox(optionsMenu, objectsMenu);
             bonusButtons.setStyle("-fx-spacing: inherit");
             return bonusButtons;
         }
@@ -431,9 +379,8 @@ public class Main extends Application {
     private BorderPane informationBar() {
         // Formats and displays the updated field of view (in degrees) (left zone of the information bar)
         Text fovText = new Text();
-        StringExpression formattedFOV = Bindings.format(Locale.ROOT, "Champ de vue : %.1f°",
-                viewingParametersBean.fieldOfViewDegProperty());
-        fovText.textProperty().bind(formattedFOV);
+        fovText.textProperty().bind(
+                Bindings.format(Locale.ROOT, "Champ de vue : %.1f°", viewingParametersBean.fieldOfViewDegProperty()));
 
         // Displays the updated object closest to the mouse cursor (central part of the information bar)
         Text closestObjectText = new Text();
@@ -442,18 +389,15 @@ public class Main extends Application {
         }
         canvasManager.objectUnderMouseProperty().addListener(
                 (p, o, n) -> {
-                    if (n != null) {
-                        closestObjectText.setText(n.info());
-                    } else {
-                        closestObjectText.setText("");
-                    }
+                    if (n != null) closestObjectText.setText(n.info());
+                    else closestObjectText.setText("");
                 });
 
         // Formats and displays the updated horizontal position of the mouse cursor (right zone of the information bar)
         Text mousePositionText = new Text();
-        StringExpression formattedMousePosition = Bindings.format(Locale.ROOT, "Azimuth : %.2f°, hauteur : %.2f°",
-                canvasManager.mouseAzDegProperty(), canvasManager.mouseAltDegProperty());
-        mousePositionText.textProperty().bind(formattedMousePosition);
+        mousePositionText.textProperty().bind(
+                Bindings.format(Locale.ROOT, "Azimuth : %.2f°, hauteur : %.2f°",
+                        canvasManager.mouseAzDegProperty(), canvasManager.mouseAltDegProperty()));
 
         BorderPane informationBar = new BorderPane(closestObjectText, null, mousePositionText, null, fovText);
         informationBar.setStyle("-fx-padding: 4;-fx-background-color: white;");
@@ -478,13 +422,9 @@ public class Main extends Application {
                 double newDeg = stringConverter.fromString(newText).doubleValue();
 
                 if (isTrue) {
-                    return GeographicCoordinates.isValidLonDeg(newDeg)
-                            ? change
-                            : null;
+                    return GeographicCoordinates.isValidLonDeg(newDeg) ? change : null;
                 } else {
-                    return GeographicCoordinates.isValidLatDeg(newDeg)
-                            ? change
-                            : null;
+                    return GeographicCoordinates.isValidLatDeg(newDeg) ? change : null;
                 }
 
             } catch (Exception e) {
@@ -506,5 +446,23 @@ public class Main extends Application {
         LocalTimeStringConverter stringConverter = new LocalTimeStringConverter(hmsFormatter, hmsFormatter);
 
         return new TextFormatter<>(stringConverter);
+    }
+
+    /**
+     * Additional method.
+     * Sets the icon of the given item to the given encoding character.
+     *
+     * @param menuItem  The menu item
+     * @param character The character encoding the icon of the item
+     * @throws IOException in case of input/output item
+     */
+    private void setMenuIcon(CheckMenuItem menuItem, String character) throws IOException {
+        try (InputStream fontStream = resourceStream(FONT_AWESOME_NAME)) {
+            Font fontAwesome = Font.loadFont(fontStream, 15);
+
+            Text menuItemText = new Text(character);
+            menuItemText.setFont(fontAwesome);
+            menuItem.setGraphic(menuItemText);
+        }
     }
 }

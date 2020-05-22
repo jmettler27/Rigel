@@ -442,10 +442,10 @@ public final class SkyCanvasManager {
      */
     private void draw(SkyCanvasPainter painter, ObservedSky sky) {
         painter.clear();
-        painter.drawStars(sky, planeToCanvas.get(), asterismEnabled(), nameEnabled());
-        painter.drawPlanets(sky, planeToCanvas.get(), nameEnabled());
-        painter.drawSun(sky, projection.get(), planeToCanvas.get(), nameEnabled());
-        painter.drawMoon(sky, projection.get(), planeToCanvas.get(), observerLocation.getCoordinates(), nameEnabled());
+        painter.drawStars(sky, planeToCanvas.get(), asterismEnabled());
+        painter.drawPlanets(sky, planeToCanvas.get());
+        painter.drawSun(sky, projection.get(), planeToCanvas.get());
+        painter.drawMoon(sky, projection.get(), planeToCanvas.get(), observerLocation.getCoordinates());
         painter.drawSatellites(sky, planeToCanvas.get(), satelliteEnabled());
         painter.drawHorizon(projection.get(), planeToCanvas.get());
     }

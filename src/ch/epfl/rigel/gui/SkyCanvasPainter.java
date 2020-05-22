@@ -56,10 +56,8 @@ public final class SkyCanvasPainter {
      *            The affine transform
      * @param asterismEnabled
      *           Enables the drawing of the asterisms
-     * @param nameEnabled
-     *           Enables the drawing of the names of the brightest stars
      */
-    void drawStars(ObservedSky sky, Transform transform, boolean asterismEnabled, boolean nameEnabled) {
+    void drawStars(ObservedSky sky, Transform transform, boolean asterismEnabled) {
         // The positions of the observed stars on the canvas
         double[] starCanvasPositions = PlaneToCanvas.applyToAllPoints(sky.starPositions(), transform);
 
@@ -76,7 +74,7 @@ public final class SkyCanvasPainter {
             // Draws and colors the star according to its color temperature
             drawFilledCircle(starCanvasPos, starCanvasDiameter, BlackBodyColor.colorForTemperature(s.colorTemperature()));
 
-            if(nameEnabled && s.isBright()) drawAnnotation(s.name(), starCanvasPos, Color.DEEPSKYBLUE);
+            if(s.isBright()) drawAnnotation(s.name(), starCanvasPos, Color.DEEPSKYBLUE);
 
             ++index;
         }
@@ -89,10 +87,8 @@ public final class SkyCanvasPainter {
      *            The observed sky
      * @param transform
      *            The affine transform
-     * @param nameEnabled
-     *            Enables the drawing of the names of the planets
      */
-    void drawPlanets(ObservedSky sky, Transform transform, boolean nameEnabled) {
+    void drawPlanets(ObservedSky sky, Transform transform) {
         // The positions of the observed planets of the solar system on the canvas
         double[] planetCanvasPositions = PlaneToCanvas.applyToAllPoints(sky.planetPositions(), transform);
 
@@ -106,34 +102,9 @@ public final class SkyCanvasPainter {
 
             drawFilledCircle(planetCanvasPos, planetCanvasDiameter, Color.LIGHTGRAY);
 
-            if(nameEnabled) drawAnnotation(p.toString(), planetCanvasPos, Color.FORESTGREEN);
+            drawAnnotation(p.toString(), planetCanvasPos, Color.FORESTGREEN);
 
             ++index;
-        }
-    }
-
-    /**
-     * Draws the observed satellites in orbit around Earth on the canvas, using an affine transform.
-     *
-     * @param sky
-     *            The observed sky
-     * @param transform
-     *            The affine transform
-     * @param satelliteEnabled
-     *            Enables the drawing of the satellites
-     */
-    void drawSatellites(ObservedSky sky, Transform transform, boolean satelliteEnabled) {
-        // The positions of the observed satellites on the canvas
-        double[] satelliteCanvasPositions = PlaneToCanvas.applyToAllPoints(sky.satellitePositions(), transform);
-
-        if(satelliteEnabled){
-            for(int i = 0; i < sky.satellites().size(); ++i){
-                CartesianCoordinates satelliteCanvasPos = CartesianCoordinates.of(
-                        satelliteCanvasPositions[i * 2], satelliteCanvasPositions[i * 2 + 1]);
-
-                // Draws and colors the satellite
-                drawFilledCircle(satelliteCanvasPos, 3, Color.GREEN);
-            }
         }
     }
 
@@ -146,10 +117,8 @@ public final class SkyCanvasPainter {
      *            The stereographic projection
      * @param transform
      *            The affine transform
-     * @param nameEnabled
-     *            Enables the drawing of the name of the Sun
      */
-    void drawSun(ObservedSky sky, StereographicProjection projection, Transform transform, boolean nameEnabled) {
+    void drawSun(ObservedSky sky, StereographicProjection projection, Transform transform) {
         // The position and projected diameter of the observed Sun on the plane
         CartesianCoordinates sunPlanePosition = sky.sunPosition();
         double sunPlaneDiameter = projection.applyToAngle(sky.sun().angularSize());
@@ -163,7 +132,7 @@ public final class SkyCanvasPainter {
         drawFilledCircle(sunCanvasPosition, sunCanvasDiameter + 2.0, Color.YELLOW);
         drawFilledCircle(sunCanvasPosition, sunCanvasDiameter, Color.WHITE);
 
-        if(nameEnabled) drawAnnotation(sky.sun().toString(), sunCanvasPosition, Color.YELLOW);
+        drawAnnotation(sky.sun().toString(), sunCanvasPosition, Color.YELLOW);
     }
 
     /**
@@ -175,11 +144,9 @@ public final class SkyCanvasPainter {
      *            The stereographic projection
      * @param transform
      *            The affine transform
-     * @param nameEnabled
-     *            Enables the drawing of the name of the Moon
      */
     void drawMoon(ObservedSky sky, StereographicProjection projection, Transform transform,
-                  GeographicCoordinates observerLocation, boolean nameEnabled) {
+                  GeographicCoordinates observerLocation) {
         // The position and projected diameter of the observed Moon on the plane
         CartesianCoordinates moonPlanePosition = sky.moonPosition();
         double moonPlaneDiameter = projection.applyToAngle(sky.moon().angularSize());
@@ -190,7 +157,7 @@ public final class SkyCanvasPainter {
 
         drawMoonPhase(sky.moon().phase(), moonCanvasPosition, moonCanvasDiameter, observerLocation);
 
-        if(nameEnabled && sky.moon().isBright()) drawAnnotation(sky.moon().toString(), moonCanvasPosition, Color.WHITE);
+        if(sky.moon().isBright()) drawAnnotation(sky.moon().toString(), moonCanvasPosition, Color.WHITE);
     }
 
     /**
@@ -219,6 +186,31 @@ public final class SkyCanvasPainter {
                 horizonDiameter);
 
         drawCardinalPoints(projection, transform);
+    }
+
+    /**
+     * Draws the observed satellites in orbit around Earth on the canvas, using an affine transform.
+     *
+     * @param sky
+     *            The observed sky
+     * @param transform
+     *            The affine transform
+     * @param satelliteEnabled
+     *            Enables the drawing of the satellites
+     */
+    void drawSatellites(ObservedSky sky, Transform transform, boolean satelliteEnabled) {
+        // The positions of the observed satellites on the canvas
+        double[] satelliteCanvasPositions = PlaneToCanvas.applyToAllPoints(sky.satellitePositions(), transform);
+
+        if(satelliteEnabled){
+            for(int i = 0; i < sky.satellites().size(); ++i){
+                CartesianCoordinates satelliteCanvasPos = CartesianCoordinates.of(
+                        satelliteCanvasPositions[i * 2], satelliteCanvasPositions[i * 2 + 1]);
+
+                // Draws and colors the satellite
+                drawFilledCircle(satelliteCanvasPos, 3, Color.GREEN);
+            }
+        }
     }
 
     /**
@@ -357,4 +349,5 @@ public final class SkyCanvasPainter {
         ctx.setTextBaseline(VPos.TOP);
         ctx.fillText(annotation, canvasPos.x(), canvasPos.y());
     }
+
 }
