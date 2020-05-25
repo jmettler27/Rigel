@@ -68,8 +68,8 @@ public class Main extends Application {
     // The available time-zones sorted by their IDs
     private static final List<ZoneId> SORTED_ZONE_IDS = ZoneId.getAvailableZoneIds()
             .stream()
-            .sorted()
-            .map(ZoneId::of)
+            .sorted() // Sorts the strings alphabetically
+            .map(ZoneId::of) // Creates a zone ID for each string
             .collect(Collectors.toList());
 
     // The observable lists of the available zone IDs and time accelerators
@@ -146,20 +146,18 @@ public class Main extends Application {
             Canvas canvas = canvasManager.canvas();
             Pane skyPane = new Pane(canvas);  // The view of the sky (the center part of the graphical interface)
 
-            // The main pane, at the root of the scene graph
-            BorderPane root = new BorderPane();
-            root.setTop(controlBar());
-            root.setCenter(skyPane);
-            root.setBottom(informationBar());
+            // The dimensions of the canvas are bounded to those of the sky pane
+            canvas.widthProperty().bind(skyPane.widthProperty());
+            canvas.heightProperty().bind(skyPane.heightProperty());
+            //primaryStage.widthProperty().addListener((o, p, n) -> canvas.setWidth((double) n));
+            //primaryStage.heightProperty().addListener((o, p, n) -> canvas.setHeight((double) n));
 
             primaryStage.setTitle("Rigel");
-
-            // The dimensions of the canvas are bounded to those of the sky pane
-            primaryStage.widthProperty().addListener((o, p, n) -> canvas.setWidth((double) n));
-            primaryStage.heightProperty().addListener((o, p, n) -> canvas.setHeight((double) n));
-
             primaryStage.setMinWidth(800);
             primaryStage.setMinHeight(600);
+
+            // The main pane
+            BorderPane root = new BorderPane(skyPane, controlBar(), null, informationBar(), null);
             primaryStage.setScene(new Scene(root));
             primaryStage.show();
 
@@ -269,106 +267,46 @@ public class Main extends Application {
         ChoiceBox<NamedTimeAccelerator> acceleratorsMenu = new ChoiceBox<>();
         acceleratorsMenu.setItems(OBSERVABLE_ACCELERATORS);
         acceleratorsMenu.setValue(STARTING_ACCELERATOR);
-        timeAnimator.acceleratorProperty().bind(Bindings.select(acceleratorsMenu.valueProperty(), "accelerator"));
+        timeAnimator.acceleratorProperty().bind(
+                Bindings.select(acceleratorsMenu.valueProperty(), "accelerator"));
 
         // Disables the graphical nodes related to the timelapse parameters when an animation is running
         acceleratorsMenu.disableProperty().bind(
                 when(timeAnimator.runningProperty()).then(true).otherwise(false));
 
-        try (InputStream fontStream = resourceStream(FONT_AWESOME_NAME)) {
-            Font fontAwesome = Font.loadFont(fontStream, 15);
+        Button resetButton = new Button(RESET_CHAR);  // Reset button
+        resetButton.setFont(fontAwesome());
 
-            Button resetButton = new Button(RESET_CHAR);  // Reset button
-            resetButton.setFont(fontAwesome);
+        Button playPauseButton = new Button(); // Play/Pause button
+        playPauseButton.setFont(fontAwesome());
 
-            Button playPauseButton = new Button(); // Play/Pause button
-            playPauseButton.setFont(fontAwesome);
+        // Controls the pressing of the play pause button
+        playPauseButton.setOnMouseClicked(mouseEvent -> {
+            if (timeAnimator.isRunning()) {
+                timeAnimator.stop();
+            } else {
+                timeAnimator.start();
+                startDate = dateTimeBean.getZonedDateTime();
+            }
+        });
 
-            // Controls the pressing of the play pause button
-            playPauseButton.setOnMouseClicked(mouseEvent -> {
-                if (timeAnimator.isRunning()) {
-                    timeAnimator.stop();
-                } else {
-                    timeAnimator.start();
-                    startDate = dateTimeBean.getZonedDateTime();
-                }
-            });
+        // When an animation is running, the button's image is pause, and play otherwise
+        playPauseButton.textProperty().bind(
+                when(timeAnimator.runningProperty()).then(PAUSE_CHAR).otherwise(PLAY_CHAR));
 
-            // When an animation is running, the button's image is pause, and play otherwise
-            playPauseButton.textProperty().bind(
-                    when(timeAnimator.runningProperty()).then(PAUSE_CHAR).otherwise(PLAY_CHAR));
+        // Controls the pressing of the reset button
+        resetButton.setOnMouseClicked(mouseEvent -> {
+            if (timeAnimator.isRunning()) {
+                timeAnimator.stop();
+            }
+            dateTimeBean.setZonedDateTime(startDate);
+        });
 
-            // Controls the pressing of the reset button
-            resetButton.setOnMouseClicked(mouseEvent -> {
-                if (timeAnimator.isRunning()) {
-                    timeAnimator.stop();
-                }
-                dateTimeBean.setZonedDateTime(startDate);
-            });
+        // The control unit of the timelapse
+        HBox timelapse = new HBox(acceleratorsMenu, resetButton, playPauseButton);
+        timelapse.setStyle("-fx-spacing: inherit;");
+        return timelapse;
 
-            // The control unit of the timelapse
-            HBox timelapse = new HBox(acceleratorsMenu, resetButton, playPauseButton);
-            timelapse.setStyle("-fx-spacing: inherit;");
-            return timelapse;
-        }
-    }
-
-    /**
-     * Additional method.
-     *
-     * @return the bonus buttons interface
-     * @throws IOException in case of input/output error
-     */
-    private HBox bonusButtons() throws IOException {
-        try (InputStream fontStream = resourceStream(FONT_AWESOME_NAME)) {
-            Font fontAwesome = Font.loadFont(fontStream, 15);
-
-            // Enables/disables the drawing of the asterisms
-            CheckMenuItem asterismEnable = new CheckMenuItem("Astérismes");
-            asterismEnable.selectedProperty().bindBidirectional(canvasManager.asterismEnableProperty());
-            asterismEnable.setSelected(true);
-            setMenuIcon(asterismEnable, ASTERISM_CHAR); // Sets the icon of the menu item
-
-            // Enables/disables the drawing of the satellites
-            CheckMenuItem satelliteEnable = new CheckMenuItem("Satellites");
-            satelliteEnable.selectedProperty().bindBidirectional(canvasManager.satelliteEnableProperty());
-            satelliteEnable.setSelected(false);
-            setMenuIcon(satelliteEnable, SAT_CHAR); // Sets the icon of the menu item
-
-            // The menu button of the drawing options
-            Text optionsText = new Text(OPTIONS_CHAR);
-            optionsText.setFont(fontAwesome);
-            MenuButton optionsMenu = new MenuButton("Options", optionsText,
-                    asterismEnable, satelliteEnable);
-
-            List<CelestialObject> celestialObjects = new ArrayList<>(canvasManager.observedSky().planets());
-            //celestialObjects.add(canvasManager.observedSky().sun());
-            //celestialObjects.add(canvasManager.observedSky().moon());
-
-            ObservableList<CelestialObject> observableList = FXCollections.observableList(celestialObjects);
-
-            ChoiceBox<CelestialObject> objectsMenu = new ChoiceBox<>();
-            objectsMenu.setItems(observableList);
-            objectsMenu.valueProperty().addListener(
-                    (o, oV, nV) -> {
-                        EquatorialToHorizontalConversion equToHor = new EquatorialToHorizontalConversion(
-                                dateTimeBean.getZonedDateTime(), observerLocationBean.getCoordinates());
-                        HorizontalCoordinates hor = equToHor.apply(objectsMenu.getValue().equatorialPos());
-
-                        if (hor.altDeg() >= 0 && hor.altDeg() <= 90) {
-                            viewingParametersBean.setCenter(hor);
-                        } else {
-                            Alert alert = new Alert(Alert.AlertType.ERROR);
-                            alert.setTitle("Erreur");
-                            alert.setContentText("Objet impossible à observer !");
-                            alert.showAndWait();
-                        }
-                    });
-
-            HBox bonusButtons = new HBox(optionsMenu, objectsMenu);
-            bonusButtons.setStyle("-fx-spacing: inherit");
-            return bonusButtons;
-        }
     }
 
     /**
@@ -450,6 +388,70 @@ public class Main extends Application {
 
     /**
      * Additional method.
+     *
+     * @return the bonus buttons interface
+     * @throws IOException in case of input/output error
+     */
+    private HBox bonusButtons() throws IOException {
+        List<CelestialObject> celestialObjects = new ArrayList<>(canvasManager.observedSky().planets());
+        //celestialObjects.add(canvasManager.observedSky().sun());
+        //celestialObjects.add(canvasManager.observedSky().moon());
+
+        ObservableList<CelestialObject> observableList = FXCollections.observableList(celestialObjects);
+
+        ChoiceBox<CelestialObject> objectsMenu = new ChoiceBox<>();
+        objectsMenu.setItems(observableList);
+        objectsMenu.valueProperty().addListener(
+                (o, oV, nV) -> {
+                    EquatorialToHorizontalConversion equToHor = new EquatorialToHorizontalConversion(
+                            dateTimeBean.getZonedDateTime(), observerLocationBean.getCoordinates());
+                    HorizontalCoordinates hor = equToHor.apply(objectsMenu.getValue().equatorialPos());
+
+                    if (hor.altDeg() >= 0 && hor.altDeg() <= 90) {
+                        viewingParametersBean.setCenter(hor);
+                    } else {
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setTitle("Erreur");
+                        alert.setContentText("Objet impossible à observer !");
+                        alert.showAndWait();
+                    }
+                });
+
+        HBox bonusButtons = new HBox(optionsMenu(), objectsMenu);
+        bonusButtons.setStyle("-fx-spacing: inherit");
+        return bonusButtons;
+
+    }
+
+    /**
+     * Additional method.
+     * Returns the viewing options menu (bonus ).
+     *
+     * @return the viewing options menu
+     * @throws IOException in case of input/output error
+     */
+    private MenuButton optionsMenu() throws IOException {
+        // Enables/disables the drawing of the asterisms
+        CheckMenuItem asterismEnable = new CheckMenuItem("Astérismes");
+        asterismEnable.selectedProperty().bindBidirectional(canvasManager.asterismEnableProperty());
+        asterismEnable.setSelected(true);
+        setMenuIcon(asterismEnable, ASTERISM_CHAR); // Sets the icon of the menu item
+
+        // Enables/disables the drawing of the satellites
+        CheckMenuItem satelliteEnable = new CheckMenuItem("Satellites");
+        satelliteEnable.selectedProperty().bindBidirectional(canvasManager.satelliteEnableProperty());
+        satelliteEnable.setSelected(false);
+        setMenuIcon(satelliteEnable, SAT_CHAR); // Sets the icon of the menu item
+
+        // The menu button of the drawing options
+        Text optionsText = new Text(OPTIONS_CHAR);
+        optionsText.setFont(fontAwesome());
+        return new MenuButton("Options", optionsText, asterismEnable, satelliteEnable);
+
+    }
+
+    /**
+     * Additional method.
      * Sets the icon of the given item to the given encoding character.
      *
      * @param menuItem  The menu item
@@ -457,12 +459,21 @@ public class Main extends Application {
      * @throws IOException in case of input/output item
      */
     private void setMenuIcon(CheckMenuItem menuItem, String character) throws IOException {
-        try (InputStream fontStream = resourceStream(FONT_AWESOME_NAME)) {
-            Font fontAwesome = Font.loadFont(fontStream, 15);
+        Text menuItemText = new Text(character);
+        menuItemText.setFont(fontAwesome());
+        menuItem.setGraphic(menuItemText);
+    }
 
-            Text menuItemText = new Text(character);
-            menuItemText.setFont(fontAwesome);
-            menuItem.setGraphic(menuItemText);
+    /**
+     * Additional method.
+     * Returns the font "Font Awesome 5" of size 15.
+     *
+     * @return the font "Font Awesome 5" of size 15.
+     * @throws IOException in case of input/output error.
+     */
+    private Font fontAwesome() throws IOException {
+        try (InputStream fontStream = resourceStream(FONT_AWESOME_NAME)) {
+            return Font.loadFont(fontStream, 15);
         }
     }
 }
