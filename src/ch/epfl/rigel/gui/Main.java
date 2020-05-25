@@ -8,11 +8,13 @@ import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
+import javafx.scene.image.WritableImage;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -22,11 +24,13 @@ import javafx.stage.Stage;
 import javafx.util.converter.LocalTimeStringConverter;
 import javafx.util.converter.NumberStringConverter;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.function.UnaryOperator;
@@ -87,7 +91,8 @@ public class Main extends Application {
             PAUSE_CHAR = "\uf04c",  // The character of the play/pause button's image when the animation is running
             ASTERISM_CHAR = "\uf005", // The character of the asterism enabling's image
             SAT_CHAR = "\uf09e", // The character of the satellite enabling's image
-            OPTIONS_CHAR = "\uf013"; // The character of the options menu
+            OPTIONS_CHAR = "\uf013",
+            CAMERA_CHAR = "\uf083"; // The character of the options menu
 
     /**
      * Launches the graphical interface.
@@ -255,6 +260,7 @@ public class Main extends Application {
             child.disableProperty().bind(
                     when(timeAnimator.runningProperty()).then(true).otherwise(false));
         }
+
         return observationInstant;
     }
 
@@ -302,7 +308,7 @@ public class Main extends Application {
             if (timeAnimator.isRunning()) {
                 timeAnimator.stop();
             }
-            dateTimeBean.setZonedDateTime(startDate);
+            dateTimeBean.setZonedDateTime(ZonedDateTime.now(ZoneOffset.systemDefault()));
         });
 
         // The control unit of the timelapse
@@ -330,8 +336,11 @@ public class Main extends Application {
         }
         canvasManager.objectUnderMouseProperty().addListener(
                 (p, o, n) -> {
-                    if (n != null) closestObjectText.setText(n.info());
-                    else closestObjectText.setText("");
+                    if (n != null) {
+                        closestObjectText.setText(n.info());
+                    } else {
+                        closestObjectText.setText("");
+                    }
                 });
 
         // Formats and displays the updated horizontal position of the mouse cursor (right zone of the information bar)
@@ -396,14 +405,29 @@ public class Main extends Application {
      * @throws IOException in case of input/output error
      */
     private HBox bonusButtons() throws IOException {
-        List<CelestialObject> celestialObjects = new ArrayList<>(canvasManager.observedSky().planets());
-        //celestialObjects.add(canvasManager.observedSky().sun());
-        //celestialObjects.add(canvasManager.observedSky().moon());
+        // Photo button
+        Button photoButton = new Button(CAMERA_CHAR);
+        photoButton.setFont(fontAwesome());
+        photoButton.setOnMousePressed(event -> {
+            String date = dateToString(dateTimeBean.getZonedDateTime());
 
-        ObservableList<CelestialObject> observableList = FXCollections.observableList(celestialObjects);
+            String fileName = String.format("sky observed at position %.2f lon %.2f lat and date %s ",
+                    observerLocationBean.getLonDeg(), observerLocationBean.getLatDeg(), date + ".png");
 
-        ChoiceBox<CelestialObject> objectsMenu = new ChoiceBox<>();
-        objectsMenu.setItems(observableList);
+            WritableImage fxImage = canvasManager.canvas().snapshot(null, null);
+
+            BufferedImage swingImage = SwingFXUtils.fromFXImage(fxImage, null);
+            try {
+                ImageIO.write(swingImage, "png", new File(fileName));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+
+        ObservableList<Planet> observablePlanets = FXCollections.observableList(canvasManager.observedSky().planets());
+        ChoiceBox<Planet> objectsMenu = new ChoiceBox<>();
+        objectsMenu.setItems(observablePlanets);
+
         objectsMenu.valueProperty().addListener(
                 (o, oV, nV) -> {
                     EquatorialToHorizontalConversion equToHor = new EquatorialToHorizontalConversion(
@@ -422,8 +446,8 @@ public class Main extends Application {
 
         HBox bonusButtons = new HBox(optionsMenu(), objectsMenu);
         bonusButtons.setStyle("-fx-spacing: inherit");
-        return bonusButtons;
 
+        return bonusButtons;
     }
 
     /**
@@ -478,5 +502,17 @@ public class Main extends Application {
         try (InputStream fontStream = resourceStream(FONT_AWESOME_NAME)) {
             return Font.loadFont(fontStream, 15);
         }
+    }
+
+    /**
+     * Additional method.
+     * Creates a String representing a date of observation.
+     *
+     * @param zdt The date of observation
+     * @return the corresponding String
+     */
+    private String dateToString(ZonedDateTime zdt) {
+        return zdt.getYear() + " " + zdt.getMonth() + " " + zdt.getDayOfMonth() +
+                " at " + zdt.getHour() + "h" + zdt.getMinute();
     }
 }

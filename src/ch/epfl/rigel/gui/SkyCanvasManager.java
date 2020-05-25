@@ -67,10 +67,10 @@ public final class SkyCanvasManager {
      * @param viewingParameters The parameters of observation
      * @param observerLocation  The place of observation
      */
-    public SkyCanvasManager(StarCatalogue catalogue, SatelliteCatalogue satCatalogue, DateTimeBean dateTime, ObserverLocationBean observerLocation,
-                            ViewingParametersBean viewingParameters) {
-        this.viewingParameters = viewingParameters;
+    public SkyCanvasManager(StarCatalogue catalogue, SatelliteCatalogue satCatalogue, DateTimeBean dateTime,
+                            ObserverLocationBean observerLocation, ViewingParametersBean viewingParameters) {
         this.observerLocation = observerLocation;
+        this.viewingParameters = viewingParameters;
 
         canvas = new Canvas(800, 600);
         SkyCanvasPainter painter = new SkyCanvasPainter(canvas);
@@ -94,7 +94,8 @@ public final class SkyCanvasManager {
                 }, viewingParameters.fieldOfViewDegProperty(), projection, canvas.widthProperty(), canvas.heightProperty());
 
         observedSky = Bindings.createObjectBinding(
-                () -> new ObservedSky(dateTime.getZonedDateTime(), observerLocation.getCoordinates(), projection.get(), catalogue, satCatalogue),
+                () -> new ObservedSky(dateTime.getZonedDateTime(), observerLocation.getCoordinates(), projection.get(),
+                        catalogue, satCatalogue),
                 dateTime.dateProperty(), dateTime.timeProperty(), dateTime.zoneProperty(),
                 observerLocation.coordinatesBinding(), projection);
 
@@ -154,32 +155,9 @@ public final class SkyCanvasManager {
         });
 
         // Detects the mouse clicks on the canvas
-        /*
         canvas.setOnMousePressed(mouseEvent -> {
             if (mouseEvent.isPrimaryButtonDown()) {
                 canvas.requestFocus(); // Makes the mouse the focus of the keyboard events
-            }
-        });*/
-
-        double[] point = new double[2];
-
-        canvas.setOnMousePressed(mouseEvent -> {
-            canvas.requestFocus();
-            point[0] = mouseEvent.getX();
-            point[1] = mouseEvent.getY();
-        });
-
-        double[] delta = new double[2];
-        canvas.setOnMouseDragged(mouseEvent -> {
-            delta[0] = point[0] + mouseEvent.getX();
-            delta[1] = point[1] + mouseEvent.getY();
-            CartesianCoordinates deltaCanvas = CartesianCoordinates.of(delta[0], delta[1]);
-            try {
-                CartesianCoordinates deltaPlane = PlaneToCanvas.inverseAtPoint(deltaCanvas, planeToCanvas.get());
-                HorizontalCoordinates deltaHor = projection.get().inverseApply(deltaPlane);
-                viewingParameters.setCenter(deltaHor);
-            } catch (NonInvertibleTransformException e) {
-                e.printStackTrace();
             }
         });
 
@@ -222,7 +200,6 @@ public final class SkyCanvasManager {
         return mouseAltDeg.get();
     }
 
-
     /**
      * Returns the mouse position property.
      *
@@ -240,7 +217,6 @@ public final class SkyCanvasManager {
     public CartesianCoordinates getMousePosition() {
         return mousePosition.get();
     }
-
 
     /**
      * Returns the property of the celestial object under the mouse cursor.
@@ -271,6 +247,7 @@ public final class SkyCanvasManager {
 
     /**
      * Returns the observed sky.
+     *
      * @return the observed sky
      */
     public ObservedSky observedSky() {
@@ -279,6 +256,7 @@ public final class SkyCanvasManager {
 
     /**
      * Returns the property of the asterisms' enable.
+     *
      * @return the property of the asterisms' enable
      */
     public SimpleBooleanProperty asterismEnableProperty() {
@@ -287,6 +265,7 @@ public final class SkyCanvasManager {
 
     /**
      * Tells if the asterisms are enabled or not.
+     *
      * @return true if the asterisms are enabled, false otherwise
      */
     public boolean asterismEnabled() {
@@ -295,6 +274,7 @@ public final class SkyCanvasManager {
 
     /**
      * Enables or disables the asterisms.
+     *
      * @param b The condition of enabling (true) or disabling (false) the asterisms.
      */
     public void setAsterismEnable(boolean b) {
@@ -303,6 +283,7 @@ public final class SkyCanvasManager {
 
     /**
      * Tells if the names of the brightest objects are enabled or not.
+     *
      * @return true if the names of the brightest objects are enabled, false otherwise
      */
     public boolean nameEnabled() {
@@ -311,6 +292,7 @@ public final class SkyCanvasManager {
 
     /**
      * Enables or disables the names of the brightest objects.
+     *
      * @param b The condition of enabling (true) or disabling (false) the names of the brightest objects .
      */
     public void setNameEnable(boolean b) {
@@ -319,6 +301,7 @@ public final class SkyCanvasManager {
 
     /**
      * Returns the property of the names' enable.
+     *
      * @return the property of the names' enable
      */
     public SimpleBooleanProperty nameEnableProperty() {
@@ -327,6 +310,7 @@ public final class SkyCanvasManager {
 
     /**
      * Tells if the satellites are enabled or not.
+     *
      * @return true if the satellites are enabled, false otherwise
      */
     public boolean satelliteEnabled() {
@@ -335,6 +319,7 @@ public final class SkyCanvasManager {
 
     /**
      * Enables or disables the satellites.
+     *
      * @param b The condition of enabling (true) or disabling (false) the names of the brightest objects .
      */
     public void setSatelliteEnable(boolean b) {
@@ -343,6 +328,7 @@ public final class SkyCanvasManager {
 
     /**
      * Returns the property of the satellites' enable.
+     *
      * @return the property of the satellites' enable
      */
     public SimpleBooleanProperty satelliteEnableProperty() {
