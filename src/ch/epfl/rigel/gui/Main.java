@@ -264,6 +264,7 @@ public class Main extends Application {
      * @return the control unit of the timelapse
      */
     private HBox timelapseControl() throws IOException {
+        // Accelerators menu
         ChoiceBox<NamedTimeAccelerator> acceleratorsMenu = new ChoiceBox<>();
         acceleratorsMenu.setItems(OBSERVABLE_ACCELERATORS);
         acceleratorsMenu.setValue(STARTING_ACCELERATOR);
@@ -274,13 +275,15 @@ public class Main extends Application {
         acceleratorsMenu.disableProperty().bind(
                 when(timeAnimator.runningProperty()).then(true).otherwise(false));
 
-        Button resetButton = new Button(RESET_CHAR);  // Reset button
+        // Reset button
+        Button resetButton = new Button(RESET_CHAR);
         resetButton.setFont(fontAwesome());
 
-        Button playPauseButton = new Button(); // Play/Pause button
+        // Play/Pause button
+        Button playPauseButton = new Button();
         playPauseButton.setFont(fontAwesome());
 
-        // Controls the pressing of the play pause button
+        // Controls the pressing of the Play/Pause button
         playPauseButton.setOnMouseClicked(mouseEvent -> {
             if (timeAnimator.isRunning()) {
                 timeAnimator.stop();
@@ -305,8 +308,8 @@ public class Main extends Application {
         // The control unit of the timelapse
         HBox timelapse = new HBox(acceleratorsMenu, resetButton, playPauseButton);
         timelapse.setStyle("-fx-spacing: inherit;");
-        return timelapse;
 
+        return timelapse;
     }
 
     /**
@@ -425,7 +428,7 @@ public class Main extends Application {
 
     /**
      * Additional method.
-     * Returns the viewing options menu (bonus ).
+     * Returns the viewing options menu (bonus).
      *
      * @return the viewing options menu
      * @throws IOException in case of input/output error
@@ -446,8 +449,8 @@ public class Main extends Application {
         // The menu button of the drawing options
         Text optionsText = new Text(OPTIONS_CHAR);
         optionsText.setFont(fontAwesome());
-        return new MenuButton("Options", optionsText, asterismEnable, satelliteEnable);
 
+        return new MenuButton("Options", optionsText, asterismEnable, satelliteEnable);
     }
 
     /**
