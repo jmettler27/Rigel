@@ -222,7 +222,6 @@ public final class ObservedSky {
         double minDistance = Double.MAX_VALUE; // The distance between the closest object and the search point
         CelestialObject closestObject = null; // The closest object to the search point
 
-
         // Determines which of the celestial objects on the map is closest to the given point
         for (CelestialObject nearObject : closePositions.keySet()) {
             double distanceToObject = searchPoint.distanceTo(closePositions.get(nearObject));

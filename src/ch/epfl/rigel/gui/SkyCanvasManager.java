@@ -166,7 +166,6 @@ public final class SkyCanvasManager {
 
     /**
      * Returns the mouse cursor's azimuth property.
-     *
      * @return the mouse cursor's azimuth property
      */
     public ReadOnlyDoubleProperty mouseAzDegProperty() {
@@ -175,7 +174,6 @@ public final class SkyCanvasManager {
 
     /**
      * Returns the azimuth of the mouse cursor (in degrees)
-     *
      * @return the azimuth of the mouse cursor (in degrees)
      */
     public double getMouseAzDeg() {
@@ -184,7 +182,6 @@ public final class SkyCanvasManager {
 
     /**
      * Returns the mouse cursor's altitude property.
-     *
      * @return the mouse cursor's altitude property
      */
     public ReadOnlyDoubleProperty mouseAltDegProperty() {
@@ -193,7 +190,6 @@ public final class SkyCanvasManager {
 
     /**
      * Returns the altitude of the mouse cursor (in degrees).
-     *
      * @return the altitude of the mouse cursor (in degrees)
      */
     public double getMouseAltDeg() {
@@ -202,7 +198,6 @@ public final class SkyCanvasManager {
 
     /**
      * Returns the mouse position property.
-     *
      * @return The mouse position property
      */
     public ReadOnlyProperty<CartesianCoordinates> mousePositionProperty() {
@@ -211,7 +206,6 @@ public final class SkyCanvasManager {
 
     /**
      * Returns the position of the mouse on the canvas.
-     *
      * @return the position of the mouse on the canvas
      */
     public CartesianCoordinates getMousePosition() {
@@ -220,7 +214,6 @@ public final class SkyCanvasManager {
 
     /**
      * Returns the property of the celestial object under the mouse cursor.
-     *
      * @return the property of the celestial object under the mouse cursor
      */
     public ReadOnlyObjectProperty<CelestialObject> objectUnderMouseProperty() {
@@ -229,7 +222,6 @@ public final class SkyCanvasManager {
 
     /**
      * Returns the celestial object under the mouse cursor.
-     *
      * @return the celestial object under the mouse cursor
      */
     public CelestialObject getObjectUnderMouse() {
@@ -238,7 +230,6 @@ public final class SkyCanvasManager {
 
     /**
      * Returns the canvas on which the observed sky is drawn.
-     *
      * @return The canvas on which the observed sky is drawn
      */
     public Canvas canvas() {
@@ -247,7 +238,6 @@ public final class SkyCanvasManager {
 
     /**
      * Returns the observed sky.
-     *
      * @return the observed sky
      */
     public ObservedSky observedSky() {
@@ -256,7 +246,6 @@ public final class SkyCanvasManager {
 
     /**
      * Returns the property of the asterisms' enable.
-     *
      * @return the property of the asterisms' enable
      */
     public SimpleBooleanProperty asterismEnableProperty() {
@@ -265,7 +254,6 @@ public final class SkyCanvasManager {
 
     /**
      * Tells if the asterisms are enabled or not.
-     *
      * @return true if the asterisms are enabled, false otherwise
      */
     public boolean asterismEnabled() {
@@ -274,7 +262,6 @@ public final class SkyCanvasManager {
 
     /**
      * Enables or disables the asterisms.
-     *
      * @param b The condition of enabling (true) or disabling (false) the asterisms.
      */
     public void setAsterismEnable(boolean b) {
@@ -283,7 +270,6 @@ public final class SkyCanvasManager {
 
     /**
      * Tells if the names of the brightest objects are enabled or not.
-     *
      * @return true if the names of the brightest objects are enabled, false otherwise
      */
     public boolean nameEnabled() {
@@ -292,7 +278,6 @@ public final class SkyCanvasManager {
 
     /**
      * Enables or disables the names of the brightest objects.
-     *
      * @param b The condition of enabling (true) or disabling (false) the names of the brightest objects .
      */
     public void setNameEnable(boolean b) {
@@ -301,7 +286,6 @@ public final class SkyCanvasManager {
 
     /**
      * Returns the property of the names' enable.
-     *
      * @return the property of the names' enable
      */
     public SimpleBooleanProperty nameEnableProperty() {
@@ -310,7 +294,6 @@ public final class SkyCanvasManager {
 
     /**
      * Tells if the satellites are enabled or not.
-     *
      * @return true if the satellites are enabled, false otherwise
      */
     public boolean satelliteEnabled() {
@@ -319,7 +302,6 @@ public final class SkyCanvasManager {
 
     /**
      * Enables or disables the satellites.
-     *
      * @param b The condition of enabling (true) or disabling (false) the names of the brightest objects .
      */
     public void setSatelliteEnable(boolean b) {
@@ -328,7 +310,6 @@ public final class SkyCanvasManager {
 
     /**
      * Returns the property of the satellites' enable.
-     *
      * @return the property of the satellites' enable
      */
     public SimpleBooleanProperty satelliteEnableProperty() {
@@ -337,7 +318,6 @@ public final class SkyCanvasManager {
 
     /**
      * Sets the azimuth of the mouse cursor (in degrees)
-     *
      * @param azDeg The new azimuth of the mouse cursor (in degrees)
      */
     private void setMouseAzDeg(double azDeg) {
@@ -346,7 +326,6 @@ public final class SkyCanvasManager {
 
     /**
      * Sets the altitude of the mouse cursor (in degrees).
-     *
      * @param altDeg The new altitude of the mouse cursor (in degrees)
      */
     private void setMouseAltDeg(double altDeg) {
@@ -355,7 +334,6 @@ public final class SkyCanvasManager {
 
     /**
      * Sets the position of the mouse on the canvas.
-     *
      * @param cart The new position of the mouse on the canvas
      */
     private void setMousePosition(CartesianCoordinates cart) {
@@ -364,7 +342,6 @@ public final class SkyCanvasManager {
 
     /**
      * Sets the celestial object under the mouse cursor to the given celestial object.
-     *
      * @param object The new object under the cursor of the mouse
      */
     private void setObjectUnderMouse(CelestialObject object) {
