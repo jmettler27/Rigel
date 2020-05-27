@@ -67,27 +67,27 @@ public final class ObservedSky {
         // Conversion from equatorial to Cartesian coordinates
         EquatorialToCartesianConversion equToCart = new EquatorialToCartesianConversion(when, where, projection);
 
-        // Modifiable map which associates to each celestial object in the observed sky its Cartesian coordinates on the plan
+        // Associates to each celestial object in the observed sky its Cartesian coordinates on the plane
         Map<CelestialObject, CartesianCoordinates> allObjectsPositions = new HashMap<>();
 
-        // Derives the projected position of the Sun on the plane and puts them in the map
+        // Calculates the projected position of the Sun on the plane and puts them in the map
         sunPosition = equToCart.apply(sun.equatorialPos());
         allObjectsPositions.put(sun, sunPosition);
 
-        // Derives the projected position of the Moon on the plane and puts them in the map
+        // Calculates the projected position of the Moon on the plane and puts them in the map
         moonPosition = equToCart.apply(moon.equatorialPos());
         allObjectsPositions.put(moon, moonPosition);
 
-        // Derives the projected positions of the planets of the solar system on the plane and puts them in the map
-        double[] tempPlanetPositions = allPositionsOf(planets, equToCart, allObjectsPositions);
+        // Calculates the projected positions of the planets of the solar system on the plane and puts them in the map
+        double[] tempPlanetPositions = projectedPositions(planets, equToCart, allObjectsPositions);
         planetPositions = Arrays.copyOf(tempPlanetPositions, 2 * planets.size());
 
-        // Derives the projected positions of the stars of the catalogue on the plane and puts them in the map
-        double[] tempStarPositions = allPositionsOf(stars(), equToCart, allObjectsPositions);
+        // Calculates the projected positions of the stars of the catalogue on the plane and puts them in the map
+        double[] tempStarPositions = projectedPositions(stars(), equToCart, allObjectsPositions);
         starPositions = Arrays.copyOf(tempStarPositions, 2 * stars().size());
 
-        // Derives the projected positions of the satellites of the catalogue on the plane and puts them in the map
-        double[] tempSatellitePositions = allPositionsOf(satellites(), equToCart, allObjectsPositions);
+        // Calculates the projected positions of the satellites of the catalogue on the plane and puts them in the map
+        double[] tempSatellitePositions = projectedPositions(satellites(), equToCart, allObjectsPositions);
         satellitePositions = Arrays.copyOf(tempSatellitePositions, 2 * satellites().size());
 
         positions = Map.copyOf(allObjectsPositions);
@@ -206,7 +206,6 @@ public final class ObservedSky {
      * @return the closest celestial object to the given point
      */
     public Optional<CelestialObject> objectClosestTo(CartesianCoordinates searchPoint, double maxDistance) {
-
         // The positions on the plane of the celestial objects of the sky who are close to the given search point
         Map<CelestialObject, CartesianCoordinates> closePositions = new HashMap<>();
 
@@ -219,8 +218,10 @@ public final class ObservedSky {
                 closePositions.put(object, planePosition);
             }
         }
+
         double minDistance = Double.MAX_VALUE; // The distance between the closest object and the search point
         CelestialObject closestObject = null; // The closest object to the search point
+
 
         // Determines which of the celestial objects on the map is closest to the given point
         for (CelestialObject nearObject : closePositions.keySet()) {
@@ -250,8 +251,8 @@ public final class ObservedSky {
      * @param positions
      *            The map which associates to each Celestial object its position on the plane
      */
-    private <T extends CelestialObject> double[] allPositionsOf(List<T> list, EquatorialToCartesianConversion equToCart,
-                                                                Map<CelestialObject, CartesianCoordinates> positions) {
+    private <T extends CelestialObject> double[] projectedPositions(List<T> list, EquatorialToCartesianConversion equToCart,
+                                                                    Map<CelestialObject, CartesianCoordinates> positions) {
         int size = list.size();
         double[] multiplePositions = new double[2 * size];
 

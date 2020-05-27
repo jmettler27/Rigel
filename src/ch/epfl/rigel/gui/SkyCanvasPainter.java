@@ -72,9 +72,10 @@ public final class SkyCanvasPainter {
             double starCanvasDiameter = PlaneToCanvas.applyToDistance(s.discSize(), transform);
 
             // Draws and colors the star according to its color temperature
-            drawFilledCircle(starCanvasPos, starCanvasDiameter, BlackBodyColor.colorForTemperature(s.colorTemperature()));
+            Color starColor = BlackBodyColor.colorForTemperature(s.colorTemperature());
+            drawFilledCircle(starCanvasPos, starCanvasDiameter, starColor);
 
-            if(s.isBright()) drawAnnotation(s.name(), starCanvasPos, Color.DEEPSKYBLUE);
+            if(s.isBright()) drawAnnotation(s.name(), starCanvasPos, starColor);
 
             ++index;
         }
@@ -195,14 +196,12 @@ public final class SkyCanvasPainter {
      *            The observed sky
      * @param transform
      *            The affine transform
-     * @param satelliteEnabled
-     *            Enables the drawing of the satellites
      */
     void drawSatellites(ObservedSky sky, Transform transform, boolean satelliteEnabled) {
         // The positions of the observed satellites on the canvas
         double[] satelliteCanvasPositions = PlaneToCanvas.applyToAllPoints(sky.satellitePositions(), transform);
 
-        if(satelliteEnabled){
+        if(satelliteEnabled) {
             for(int i = 0; i < sky.satellites().size(); ++i){
                 CartesianCoordinates satelliteCanvasPos = CartesianCoordinates.of(
                         satelliteCanvasPositions[i * 2], satelliteCanvasPositions[i * 2 + 1]);
@@ -211,6 +210,7 @@ public final class SkyCanvasPainter {
                 drawFilledCircle(satelliteCanvasPos, 3, Color.GREEN);
             }
         }
+
     }
 
     /**
@@ -226,8 +226,7 @@ public final class SkyCanvasPainter {
         ctx.setFill(color);
 
         // Translates the coordinates of the center of the circle to the coordinates of its upper left bound
-        ctx.fillOval(center.x() - radius, center.y() - radius,
-                diameter, diameter);
+        ctx.fillOval(center.x() - radius, center.y() - radius, diameter, diameter);
     }
 
     /**
@@ -247,6 +246,7 @@ public final class SkyCanvasPainter {
         for (Asterism ast : sky.asterisms()) {
             ctx.beginPath(); // Resets the current path to empty
             List<Integer> asterismIndices = sky.asterismsIndices(ast);
+
             for (int i = 0; i < asterismIndices.size() - 1; ++i) {
                 // The index (in the catalogue) and position (on the canvas) of the star at the beginning of the segment
                 int index1 = asterismIndices.get(i);
@@ -285,7 +285,9 @@ public final class SkyCanvasPainter {
         ctx.setTextBaseline(VPos.TOP);
 
         for (CardinalPoint cardinalPoint : CardinalPoint.ALL) {
-            CartesianCoordinates canvasPos = PlaneToCanvas.applyToPoint(projection.apply(cardinalPoint.getPosition()), transform);
+            CartesianCoordinates canvasPos = PlaneToCanvas.applyToPoint(
+                    projection.apply(cardinalPoint.getPosition()), transform);
+
             ctx.fillText(cardinalPoint.getName(), canvasPos.x(), canvasPos.y());
         }
     }
@@ -304,30 +306,23 @@ public final class SkyCanvasPainter {
         double moonCanvasRadius = moonCanvasDiameter / 2.0;
         boolean isNorthHemisphere = observerLocation.latDeg() >= 0;
 
-        if(phase > 0.03){
-            if(phase < 0.34) {
+        if (phase > 0.03) {
+            if (phase < 0.34) {
                 double startAngle = (isNorthHemisphere) ? -35 : 142;
                 ctx.setFill(Color.WHITE);
-                ctx.fillArc(moonCanvasPosition.x() - moonCanvasRadius,
-                        moonCanvasPosition.y() - moonCanvasRadius,
-                        moonCanvasDiameter, moonCanvasDiameter,
-                        startAngle, 75.0, ArcType.CHORD);
-            }
-            else if (phase < 0.65) {
+                ctx.fillArc(moonCanvasPosition.x() - moonCanvasRadius, moonCanvasPosition.y() - moonCanvasRadius,
+                        moonCanvasDiameter, moonCanvasDiameter, startAngle, 75.0, ArcType.CHORD);
+            } else if (phase < 0.65) {
                 double startAngle = (isNorthHemisphere) ? -90 : 90;
-                ctx.fillArc(moonCanvasPosition.x() - moonCanvasRadius,
-                        moonCanvasPosition.y() - moonCanvasRadius,
-                        moonCanvasDiameter, moonCanvasDiameter,
-                        startAngle, 180.0, ArcType.ROUND);
+                ctx.fillArc(moonCanvasPosition.x() - moonCanvasRadius, moonCanvasPosition.y() - moonCanvasRadius,
+                        moonCanvasDiameter, moonCanvasDiameter, startAngle, 180.0, ArcType.ROUND);
 
             } else if (phase < 0.96) {
                 drawFilledCircle(moonCanvasPosition, moonCanvasDiameter, Color.WHITE);
                 double startAngle = (isNorthHemisphere) ? 142 : -35;
                 ctx.setFill(Color.BLACK);
-                ctx.fillArc(moonCanvasPosition.x() - moonCanvasRadius,
-                        moonCanvasPosition.y() - moonCanvasRadius,
-                        moonCanvasDiameter, moonCanvasDiameter,
-                        startAngle, 75.0, ArcType.CHORD);
+                ctx.fillArc(moonCanvasPosition.x() - moonCanvasRadius, moonCanvasPosition.y() - moonCanvasRadius,
+                        moonCanvasDiameter, moonCanvasDiameter, startAngle, 75.0, ArcType.CHORD);
 
             } else if (phase < 1) {
                 drawFilledCircle(moonCanvasPosition, moonCanvasDiameter, Color.WHITE);
@@ -340,14 +335,14 @@ public final class SkyCanvasPainter {
      * Draws an annotation next to the given coordinates on the canvas and using the given color.
      *
      * @param annotation The annotation
-     * @param canvasPos The position on the canvas
+     * @param canvasPosition The position on the canvas
      * @param color The color of the annotation
      */
-    private void drawAnnotation(String annotation, CartesianCoordinates canvasPos, Color color) {
+    private void drawAnnotation(String annotation, CartesianCoordinates canvasPosition, Color color) {
         ctx.setFill(color);
         ctx.setTextAlign(TextAlignment.CENTER);
         ctx.setTextBaseline(VPos.TOP);
-        ctx.fillText(annotation, canvasPos.x(), canvasPos.y());
+        ctx.fillText(annotation, canvasPosition.x(), canvasPosition.y());
     }
 
 }

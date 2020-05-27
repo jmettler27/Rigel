@@ -1,6 +1,5 @@
 package ch.epfl.rigel.gui;
 
-import ch.epfl.rigel.coordinates.CartesianCoordinates;
 import ch.epfl.rigel.coordinates.HorizontalCoordinates;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
@@ -62,7 +61,7 @@ public final class ViewingParametersBean {
     }
 
     /**
-     * Returns the center property's content, i.e. the Cartesian coordinates of the projection center.
+     * Returns the center property's content, i.e. the horizontal coordinates of the projection center.
      * @return the center property's content
      */
     public HorizontalCoordinates getCenter() {
@@ -72,10 +71,10 @@ public final class ViewingParametersBean {
     /**
      * Sets the center property's content to the given Cartesian coordinates.
      *
-     * @param coords
-     *            The new Cartesian coordinates of the center property
+     * @param hor
+     *            The new horizontal coordinates of the center property
      */
-    public void setCenter(HorizontalCoordinates coords) {
-        center.setValue(coords);
+    public void setCenter(HorizontalCoordinates hor) {
+        center.setValue(hor);
     }
 }

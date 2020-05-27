@@ -189,7 +189,7 @@ public class Main extends Application {
         // The horizontal control bar
         HBox controlBar = new HBox(observerLocationControl(), new Separator(Orientation.VERTICAL),
                 observationTimeControl(), new Separator(Orientation.VERTICAL),
-                timelapseControl(), new Separator(Orientation.VERTICAL), bonusButtons());
+                timelapseControl(), new Separator(Orientation.VERTICAL), bonusInterface());
 
         controlBar.setStyle("-fx-spacing: 4; -fx-padding: 4;");
         return controlBar;
@@ -219,10 +219,10 @@ public class Main extends Application {
         latField.setTextFormatter(latTextFormatter);
         latTextFormatter.valueProperty().bindBidirectional(observerLocationBean.latDegProperty());
 
-        HBox observerLocation = new HBox(lonLabel, lonField, latLabel, latField);
-        observerLocation.setStyle("-fx-spacing: inherit; -fx-alignment: baseline-left;");
+        HBox observerLocationControl = new HBox(lonLabel, lonField, latLabel, latField);
+        observerLocationControl.setStyle("-fx-spacing: inherit; -fx-alignment: baseline-left;");
 
-        return observerLocation;
+        return observerLocationControl;
     }
 
     /**
@@ -247,21 +247,31 @@ public class Main extends Application {
         hourTextFormatter.setValue(dateTimeBean.getTime());
         dateTimeBean.timeProperty().bindBidirectional(hourTextFormatter.valueProperty());
 
+
+        HBox observationTimeControl = new HBox(dateLabel, datePicker, hourLabel, hourField, zoneIdMenu());
+        observationTimeControl.setStyle("-fx-spacing: inherit; -fx-alignment: baseline-left;");
+
+        // Disables the graphical nodes related to the choice of the instant of observation when an animation is running
+        for (Node child : observationTimeControl.getChildren()) {
+            child.disableProperty().bind(
+                    when(timeAnimator.runningProperty()).then(true).otherwise(false));
+        }
+
+        return observationTimeControl;
+    }
+
+    /**
+     * Returns a dropdown menu of the time-zones of observation.
+     *
+     * @return a dropdown menu of the time-zones of observation
+     */
+    private ComboBox<ZoneId> zoneIdMenu() {
         // Updates the time-zone of observation according to the one selected by the user in the menu
         ComboBox<ZoneId> zoneIdMenu = new ComboBox<>(OBSERVABLE_ZONE_IDS); // Dropdown menu of the time-zones
         zoneIdMenu.setStyle("-fx-pref-width: 180;");
         zoneIdMenu.valueProperty().bindBidirectional(dateTimeBean.zoneProperty());
 
-        HBox observationInstant = new HBox(dateLabel, datePicker, hourLabel, hourField, zoneIdMenu);
-        observationInstant.setStyle("-fx-spacing: inherit; -fx-alignment: baseline-left;");
-
-        // Disables the graphical nodes related to the choice of the instant of observation when an animation is running
-        for (Node child : observationInstant.getChildren()) {
-            child.disableProperty().bind(
-                    when(timeAnimator.runningProperty()).then(true).otherwise(false));
-        }
-
-        return observationInstant;
+        return zoneIdMenu;
     }
 
     /**
@@ -270,22 +280,41 @@ public class Main extends Application {
      * @return the control unit of the timelapse
      */
     private HBox timelapseControl() throws IOException {
-        // Accelerators menu
-        ChoiceBox<NamedTimeAccelerator> acceleratorsMenu = new ChoiceBox<>();
-        acceleratorsMenu.setItems(OBSERVABLE_ACCELERATORS);
-        acceleratorsMenu.setValue(STARTING_ACCELERATOR);
-        timeAnimator.acceleratorProperty().bind(
-                Bindings.select(acceleratorsMenu.valueProperty(), "accelerator"));
+        // The control unit of the timelapse
+        HBox timelapseControl = new HBox(acceleratorsMenu(), resetButton(), playPauseButton());
+        timelapseControl.setStyle("-fx-spacing: inherit;");
 
-        // Disables the graphical nodes related to the timelapse parameters when an animation is running
-        acceleratorsMenu.disableProperty().bind(
-                when(timeAnimator.runningProperty()).then(true).otherwise(false));
+        return timelapseControl;
+    }
 
-        // Reset button
+    /**
+     * Returns a button that resets the accelerator animation.
+     *
+     * @return a button that resets the accelerator animation
+     * @throws IOException in case of input/output error
+     */
+    private Button resetButton() throws IOException {
         Button resetButton = new Button(RESET_CHAR);
         resetButton.setFont(fontAwesome());
 
-        // Play/Pause button
+        // Controls the pressing of the reset button
+        resetButton.setOnMouseClicked(mouseEvent -> {
+            if (timeAnimator.isRunning()) {
+                timeAnimator.stop();
+            }
+            dateTimeBean.setZonedDateTime(ZonedDateTime.now(ZoneOffset.systemDefault()));
+        });
+
+        return resetButton;
+    }
+
+    /**
+     * Returns a button that starts or pauses the accelerator animation.
+     *
+     * @return a button that starts or pauses the accelerator animation
+     * @throws IOException in case of input/output error
+     */
+    private Button playPauseButton() throws IOException {
         Button playPauseButton = new Button();
         playPauseButton.setFont(fontAwesome());
 
@@ -303,19 +332,27 @@ public class Main extends Application {
         playPauseButton.textProperty().bind(
                 when(timeAnimator.runningProperty()).then(PAUSE_CHAR).otherwise(PLAY_CHAR));
 
-        // Controls the pressing of the reset button
-        resetButton.setOnMouseClicked(mouseEvent -> {
-            if (timeAnimator.isRunning()) {
-                timeAnimator.stop();
-            }
-            dateTimeBean.setZonedDateTime(ZonedDateTime.now(ZoneOffset.systemDefault()));
-        });
+        return playPauseButton;
+    }
 
-        // The control unit of the timelapse
-        HBox timelapse = new HBox(acceleratorsMenu, resetButton, playPauseButton);
-        timelapse.setStyle("-fx-spacing: inherit;");
+    /**
+     * Returns a menu of the time accelerators.
+     *
+     * @return a menu of the time accelerators
+     */
+    private ChoiceBox<NamedTimeAccelerator> acceleratorsMenu() {
+        // Accelerators menu
+        ChoiceBox<NamedTimeAccelerator> acceleratorsMenu = new ChoiceBox<>();
+        acceleratorsMenu.setItems(OBSERVABLE_ACCELERATORS);
+        acceleratorsMenu.setValue(STARTING_ACCELERATOR);
+        timeAnimator.acceleratorProperty().bind(
+                Bindings.select(acceleratorsMenu.valueProperty(), "accelerator"));
 
-        return timelapse;
+        // Disables the graphical nodes related to the timelapse parameters when an animation is running
+        acceleratorsMenu.disableProperty().bind(
+                when(timeAnimator.runningProperty()).then(true).otherwise(false));
+
+        return acceleratorsMenu;
     }
 
     /**
@@ -400,59 +437,34 @@ public class Main extends Application {
 
     /**
      * Additional method.
+     * Returns the font "Font Awesome 5" of size 15.
      *
-     * @return the bonus buttons interface
+     * @return the font "Font Awesome 5" of size 15.
+     * @throws IOException in case of input/output error.
+     */
+    private Font fontAwesome() throws IOException {
+        try (InputStream fontStream = resourceStream(FONT_AWESOME_NAME)) {
+            return Font.loadFont(fontStream, 15);
+        }
+    }
+
+    /**
+     * Additional method (bonus).
+     * Returns the interface containing the bonuses.
+     *
+     * @return the interface containing the bonuses
      * @throws IOException in case of input/output error
      */
-    private HBox bonusButtons() throws IOException {
-        // Photo button
-        Button photoButton = new Button(CAMERA_CHAR);
-        photoButton.setFont(fontAwesome());
-        photoButton.setOnMousePressed(event -> {
-            String date = dateToString(dateTimeBean.getZonedDateTime());
-
-            String fileName = String.format("sky observed at position %.2f lon %.2f lat and date %s ",
-                    observerLocationBean.getLonDeg(), observerLocationBean.getLatDeg(), date + ".png");
-
-            WritableImage fxImage = canvasManager.canvas().snapshot(null, null);
-
-            BufferedImage swingImage = SwingFXUtils.fromFXImage(fxImage, null);
-            try {
-                ImageIO.write(swingImage, "png", new File(fileName));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-
-        ObservableList<Planet> observablePlanets = FXCollections.observableList(canvasManager.observedSky().planets());
-        ChoiceBox<Planet> objectsMenu = new ChoiceBox<>();
-        objectsMenu.setItems(observablePlanets);
-
-        objectsMenu.valueProperty().addListener(
-                (o, oV, nV) -> {
-                    EquatorialToHorizontalConversion equToHor = new EquatorialToHorizontalConversion(
-                            dateTimeBean.getZonedDateTime(), observerLocationBean.getCoordinates());
-                    HorizontalCoordinates hor = equToHor.apply(objectsMenu.getValue().equatorialPos());
-
-                    if (hor.altDeg() >= 0 && hor.altDeg() <= 90) {
-                        viewingParametersBean.setCenter(hor);
-                    } else {
-                        Alert alert = new Alert(Alert.AlertType.ERROR);
-                        alert.setTitle("Erreur");
-                        alert.setContentText("Objet impossible à observer !");
-                        alert.showAndWait();
-                    }
-                });
-
-        HBox bonusButtons = new HBox(optionsMenu(), objectsMenu);
+    private HBox bonusInterface() throws IOException {
+        HBox bonusButtons = new HBox(optionsMenu(), photoButton(), planetsMenu());
         bonusButtons.setStyle("-fx-spacing: inherit");
 
         return bonusButtons;
     }
 
     /**
-     * Additional method.
-     * Returns the viewing options menu (bonus).
+     * Additional method (bonus).
+     * Returns a viewing options menu.
      *
      * @return the viewing options menu
      * @throws IOException in case of input/output error
@@ -478,6 +490,65 @@ public class Main extends Application {
     }
 
     /**
+     * Additional method (bonus).
+     * Returns a button which takes a photography of the sky when pressed.
+     *
+     * @return the photo button
+     * @throws IOException in case of input/output error
+     */
+    private Button photoButton() throws IOException {
+        Button photoButton = new Button(CAMERA_CHAR);
+        photoButton.setFont(fontAwesome());
+
+        photoButton.setOnMousePressed(event -> {
+            String fileName = String.format("sky lon=%.2f lat=%.2f %s ",
+                    observerLocationBean.getLonDeg(), observerLocationBean.getLatDeg(),
+                    dateToString(dateTimeBean.getZonedDateTime()) + ".png");
+
+            WritableImage fxImage = canvasManager.canvas().snapshot(null, null);
+
+            BufferedImage swingImage = SwingFXUtils.fromFXImage(fxImage, null);
+            try {
+                ImageIO.write(swingImage, "png", new File(fileName));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+
+        return photoButton;
+    }
+
+    /**
+     * Additional method (bonus).
+     * Returns a choice box of the planets of the solar system.
+     *
+     * @return the choice box of the planets of the solar system
+     */
+    private ChoiceBox<Planet> planetsMenu() {
+        ObservableList<Planet> observablePlanets = FXCollections.observableList(canvasManager.observedSky().planets());
+        ChoiceBox<Planet> planetsMenu = new ChoiceBox<>();
+        planetsMenu.setItems(observablePlanets);
+
+        planetsMenu.valueProperty().addListener(
+                (o, oV, nV) -> {
+                    EquatorialToHorizontalConversion equToHor = new EquatorialToHorizontalConversion(
+                            dateTimeBean.getZonedDateTime(), observerLocationBean.getCoordinates());
+                    HorizontalCoordinates hor = equToHor.apply(planetsMenu.getValue().equatorialPos());
+
+                    if (hor.altDeg() >= 0 && hor.altDeg() <= 90) {
+                        viewingParametersBean.setCenter(hor);
+                    } else {
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setTitle("Erreur");
+                        alert.setContentText("Objet impossible à observer !");
+                        alert.showAndWait();
+                    }
+                });
+
+        return planetsMenu;
+    }
+
+    /**
      * Additional method.
      * Sets the icon of the given item to the given encoding character.
      *
@@ -492,27 +563,14 @@ public class Main extends Application {
     }
 
     /**
-     * Additional method.
-     * Returns the font "Font Awesome 5" of size 15.
+     * Additional method (bonus).
+     * Returns the String representation of the date of observation.
      *
-     * @return the font "Font Awesome 5" of size 15.
-     * @throws IOException in case of input/output error.
+     * @param when The date of observation
+     * @return the String representation of the date of observation
      */
-    private Font fontAwesome() throws IOException {
-        try (InputStream fontStream = resourceStream(FONT_AWESOME_NAME)) {
-            return Font.loadFont(fontStream, 15);
-        }
-    }
-
-    /**
-     * Additional method.
-     * Creates a String representing a date of observation.
-     *
-     * @param zdt The date of observation
-     * @return the corresponding String
-     */
-    private String dateToString(ZonedDateTime zdt) {
-        return zdt.getYear() + " " + zdt.getMonth() + " " + zdt.getDayOfMonth() +
-                " at " + zdt.getHour() + "h" + zdt.getMinute();
+    private String dateToString(ZonedDateTime when) {
+        return when.getYear() + "-" + when.getMonthValue() + "-" + when.getDayOfMonth() + " " + when.getHour() + "h"
+                + when.getMinute();
     }
 }
