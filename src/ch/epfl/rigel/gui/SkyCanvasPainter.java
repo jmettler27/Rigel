@@ -57,7 +57,7 @@ public final class SkyCanvasPainter {
      * @param asterismEnabled
      *           Enables the drawing of the asterisms
      */
-    void drawStars(ObservedSky sky, Transform transform, boolean asterismEnabled) {
+    void drawStars(ObservedSky sky, Transform transform, boolean asterismEnabled, boolean nameEnabled) {
         // The positions of the observed stars on the canvas
         double[] starCanvasPositions = PlaneToCanvas.applyToAllPoints(sky.starPositions(), transform);
 
@@ -75,7 +75,7 @@ public final class SkyCanvasPainter {
             Color starColor = BlackBodyColor.colorForTemperature(s.colorTemperature());
             drawFilledCircle(starCanvasPos, starCanvasDiameter, starColor);
 
-            if(s.isBright()) drawAnnotation(s.name(), starCanvasPos, starColor);
+            if(nameEnabled && s.isBright()) drawAnnotation(s.name(), starCanvasPos, starColor);
 
             ++index;
         }
@@ -89,7 +89,7 @@ public final class SkyCanvasPainter {
      * @param transform
      *            The affine transform
      */
-    void drawPlanets(ObservedSky sky, Transform transform) {
+    void drawPlanets(ObservedSky sky, Transform transform, boolean nameEnable) {
         // The positions of the observed planets of the solar system on the canvas
         double[] planetCanvasPositions = PlaneToCanvas.applyToAllPoints(sky.planetPositions(), transform);
 
@@ -103,7 +103,7 @@ public final class SkyCanvasPainter {
 
             drawFilledCircle(planetCanvasPos, planetCanvasDiameter, Color.LIGHTGRAY);
 
-            drawAnnotation(p.toString(), planetCanvasPos, Color.FORESTGREEN);
+            if(nameEnable) drawAnnotation(p.toString(), planetCanvasPos, Color.FORESTGREEN);
 
             ++index;
         }
@@ -119,7 +119,7 @@ public final class SkyCanvasPainter {
      * @param transform
      *            The affine transform
      */
-    void drawSun(ObservedSky sky, StereographicProjection projection, Transform transform) {
+    void drawSun(ObservedSky sky, StereographicProjection projection, Transform transform, boolean nameEnable) {
         // The position and projected diameter of the observed Sun on the plane
         CartesianCoordinates sunPlanePosition = sky.sunPosition();
         double sunPlaneDiameter = projection.applyToAngle(sky.sun().angularSize());
@@ -133,7 +133,7 @@ public final class SkyCanvasPainter {
         drawFilledCircle(sunCanvasPosition, sunCanvasDiameter + 2.0, Color.YELLOW);
         drawFilledCircle(sunCanvasPosition, sunCanvasDiameter, Color.WHITE);
 
-        drawAnnotation(sky.sun().toString(), sunCanvasPosition, Color.YELLOW);
+        if(nameEnable) drawAnnotation(sky.sun().toString(), sunCanvasPosition, Color.YELLOW);
     }
 
     /**
@@ -147,7 +147,7 @@ public final class SkyCanvasPainter {
      *            The affine transform
      */
     void drawMoon(ObservedSky sky, StereographicProjection projection, Transform transform,
-                  GeographicCoordinates observerLocation) {
+                  GeographicCoordinates observerLocation, boolean nameEnable) {
         // The position and projected diameter of the observed Moon on the plane
         CartesianCoordinates moonPlanePosition = sky.moonPosition();
         double moonPlaneDiameter = projection.applyToAngle(sky.moon().angularSize());
@@ -158,7 +158,7 @@ public final class SkyCanvasPainter {
 
         drawMoonPhase(sky.moon().phase(), moonCanvasPosition, moonCanvasDiameter, observerLocation);
 
-        if(sky.moon().isBright()) drawAnnotation(sky.moon().toString(), moonCanvasPosition, Color.WHITE);
+        if(nameEnable && sky.moon().isBright()) drawAnnotation(sky.moon().toString(), moonCanvasPosition, Color.WHITE);
     }
 
     /**
@@ -312,6 +312,7 @@ public final class SkyCanvasPainter {
                 ctx.setFill(Color.WHITE);
                 ctx.fillArc(moonCanvasPosition.x() - moonCanvasRadius, moonCanvasPosition.y() - moonCanvasRadius,
                         moonCanvasDiameter, moonCanvasDiameter, startAngle, 75.0, ArcType.CHORD);
+
             } else if (phase < 0.65) {
                 double startAngle = (isNorthHemisphere) ? -90 : 90;
                 ctx.fillArc(moonCanvasPosition.x() - moonCanvasRadius, moonCanvasPosition.y() - moonCanvasRadius,

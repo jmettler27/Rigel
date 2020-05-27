@@ -23,7 +23,6 @@ public enum SatelliteDatabaseLoader implements SatelliteCatalogue.Loader {
             COUN = 1,
             PURP = 5,
             LONDEG = 9,
-            NOR = 25,
             ORB = 7;
 
     /**
@@ -49,14 +48,11 @@ public enum SatelliteDatabaseLoader implements SatelliteCatalogue.Loader {
                     String country = columns[COUN];
                     String purpose = columns[PURP];
 
-                    // The satellite's NORAD identification number (0 by default)
-                    int noradId = 0; //columns[NOR].isEmpty() ? 0 : Integer.parseInt(columns[columns.length - 1]);
-
                     // The satellite's longitude (in degrees)
-                    double lon = Angle.normalizePositive(Angle.ofDeg(defaultCases(columns, LONDEG)));
-                    Satellite sat = new Satellite(name, country, purpose, noradId, lon);
+                    double lon = Angle.normalizePositive(Angle.ofDeg(defaultLonCases(columns)));
+
+                    Satellite sat = new Satellite(name, country, purpose, lon);
                     builder.addSatellite(sat);
-                    // System.out.println(sat.toString() + " " + sat.equatorialPos());
                 }
             }
         }
@@ -67,10 +63,10 @@ public enum SatelliteDatabaseLoader implements SatelliteCatalogue.Loader {
      * Returns the float value of the string at the given index of the given array.
      *
      * @param columns The array of strings
-     * @param index The index of the string
      * @return the float value of the string
      */
-    private static double defaultCases(String[] columns, int index) {
-        return columns[index].isEmpty() ? 0 : Double.parseDouble(columns[index]);
+    private static double defaultLonCases(String[] columns) {
+        return columns[SatelliteDatabaseLoader.LONDEG].isEmpty() ?
+                0 : Double.parseDouble(columns[SatelliteDatabaseLoader.LONDEG]);
     }
 }

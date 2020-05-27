@@ -7,7 +7,6 @@ import ch.epfl.rigel.astronomy.StarCatalogue;
 import ch.epfl.rigel.coordinates.*;
 import ch.epfl.rigel.math.Angle;
 import ch.epfl.rigel.math.ClosedInterval;
-import ch.epfl.rigel.math.RightOpenInterval;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.ObjectBinding;
 import javafx.beans.property.*;
@@ -43,8 +42,8 @@ public final class SkyCanvasManager {
 
     private final SimpleBooleanProperty
             asterismEnable = new SimpleBooleanProperty(),
-            nameEnable = new SimpleBooleanProperty(),
-            satelliteEnable = new SimpleBooleanProperty();
+            satelliteEnable = new SimpleBooleanProperty(),
+            nameEnable = new SimpleBooleanProperty();
 
     // The maximum distance (in the canvas coordinate system) for searching for the object closest to the mouse cursor
     private static final int MAXIMUM_SEARCH_DISTANCE = 10;
@@ -55,9 +54,6 @@ public final class SkyCanvasManager {
     // The valid interval for the field of view (in degrees)
     private static final ClosedInterval FOV_INTERVAL = ClosedInterval.of(30, 150);
     private static final ClosedInterval ALT_STEPS_INTERVAL = ClosedInterval.of(5, 90);
-
-    private static final RightOpenInterval AZ_STEPS_INTERVAL =
-            RightOpenInterval.of(HorizontalCoordinates.MINIMUM_AZ_DEG, HorizontalCoordinates.MAXIMUM_AZ_DEG);
 
     /**
      * Constructs a sky canvas manager.
@@ -105,6 +101,8 @@ public final class SkyCanvasManager {
         planeToCanvas.addListener(o -> draw(painter, observedSky.get()));
         observedSky.addListener(o -> draw(painter, observedSky.get()));
         asterismEnableProperty().addListener(o -> draw(painter, observedSky.get()));
+        satelliteEnableProperty().addListener(o -> draw(painter, observedSky.get()));
+        nameEnableProperty().addListener(o -> draw(painter, observedSky.get()));
 
         // Changes the field of view according to the mouse wheel and/or trackpad movements above the canvas
         canvas.setOnScroll(scrollEvent -> {
@@ -262,34 +260,18 @@ public final class SkyCanvasManager {
 
     /**
      * Enables or disables the asterisms.
-     * @param b The condition of enabling (true) or disabling (false) the asterisms.
+     * @param isEnabled The condition of enabling (true) or disabling (false) the asterisms.
      */
-    public void setAsterismEnable(boolean b) {
-        asterismEnable.set(b);
+    public void setAsterismEnable(boolean isEnabled) {
+        asterismEnable.set(isEnabled);
     }
 
     /**
-     * Tells if the names of the brightest objects are enabled or not.
-     * @return true if the names of the brightest objects are enabled, false otherwise
+     * Returns the property of the satellites' enable.
+     * @return the property of the satellites' enable
      */
-    public boolean nameEnabled() {
-        return nameEnable.get();
-    }
-
-    /**
-     * Enables or disables the names of the brightest objects.
-     * @param b The condition of enabling (true) or disabling (false) the names of the brightest objects .
-     */
-    public void setNameEnable(boolean b) {
-        nameEnable.set(b);
-    }
-
-    /**
-     * Returns the property of the names' enable.
-     * @return the property of the names' enable
-     */
-    public SimpleBooleanProperty nameEnableProperty() {
-        return nameEnable;
+    public SimpleBooleanProperty satelliteEnableProperty() {
+        return satelliteEnable;
     }
 
     /**
@@ -309,11 +291,27 @@ public final class SkyCanvasManager {
     }
 
     /**
-     * Returns the property of the satellites' enable.
-     * @return the property of the satellites' enable
+     * Returns the property of the names' enable.
+     * @return the property of the names' enable
      */
-    public SimpleBooleanProperty satelliteEnableProperty() {
-        return satelliteEnable;
+    public SimpleBooleanProperty nameEnableProperty() {
+        return nameEnable;
+    }
+
+    /**
+     * Tells if the names of the brightest objects are enabled or not.
+     * @return true if the names of the brightest objects are enabled, false otherwise
+     */
+    public boolean nameEnabled() {
+        return nameEnable.get();
+    }
+
+    /**
+     * Enables or disables the names of the brightest objects.
+     * @param isEnabled The condition of enabling (true) or disabling (false) the names of the brightest objects .
+     */
+    public void setNameEnable(boolean isEnabled) {
+        nameEnable.set(isEnabled);
     }
 
     /**
@@ -375,12 +373,12 @@ public final class SkyCanvasManager {
 
         switch (keyCode) {
             case LEFT:
-                double azDeg_left = AZ_STEPS_INTERVAL.reduce(centerAzDeg - AZ_DEG_KEYBOARD_STEP);
+                double azDeg_left = HorizontalCoordinates.AZ_INTERVAL_DEG.reduce(centerAzDeg - AZ_DEG_KEYBOARD_STEP);
                 movedCenter = HorizontalCoordinates.ofDeg(azDeg_left, centerAltDeg);
                 break;
 
             case RIGHT:
-                double azDeg_right = AZ_STEPS_INTERVAL.reduce(centerAzDeg + AZ_DEG_KEYBOARD_STEP);
+                double azDeg_right = HorizontalCoordinates.AZ_INTERVAL_DEG.reduce(centerAzDeg + AZ_DEG_KEYBOARD_STEP);
                 movedCenter = HorizontalCoordinates.ofDeg(azDeg_right, centerAltDeg);
                 break;
 
@@ -405,10 +403,10 @@ public final class SkyCanvasManager {
      */
     private void draw(SkyCanvasPainter painter, ObservedSky sky) {
         painter.clear();
-        painter.drawStars(sky, planeToCanvas.get(), asterismEnabled());
-        painter.drawPlanets(sky, planeToCanvas.get());
-        painter.drawSun(sky, projection.get(), planeToCanvas.get());
-        painter.drawMoon(sky, projection.get(), planeToCanvas.get(), observerLocation.getCoordinates());
+        painter.drawStars(sky, planeToCanvas.get(), asterismEnabled(), nameEnabled());
+        painter.drawPlanets(sky, planeToCanvas.get(), nameEnabled());
+        painter.drawSun(sky, projection.get(), planeToCanvas.get(), nameEnabled());
+        painter.drawMoon(sky, projection.get(), planeToCanvas.get(), observerLocation.getCoordinates(), nameEnabled());
         painter.drawSatellites(sky, planeToCanvas.get(), satelliteEnabled());
         painter.drawHorizon(projection.get(), planeToCanvas.get());
     }

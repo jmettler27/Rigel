@@ -6,7 +6,6 @@ import ch.epfl.rigel.coordinates.GeographicCoordinates;
 import ch.epfl.rigel.coordinates.HorizontalCoordinates;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
-import javafx.beans.binding.StringBinding;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
@@ -53,7 +52,6 @@ public class Main extends Application {
     private ObserverLocationBean observerLocationBean;
     private ViewingParametersBean viewingParametersBean;
     private SkyCanvasManager canvasManager;
-    private ZonedDateTime startDate;
 
     // The starting moment of observation, i.e. the current time, at the default time-zone of the computer
     private static final ZonedDateTime STARTING_OBSERVATION_TIME = ZonedDateTime.now(ZoneOffset.systemDefault());
@@ -92,6 +90,7 @@ public class Main extends Application {
     // The characters of the icons of the buttons and menus
     RESET_CHAR = "\uf0e2", PLAY_CHAR = "\uf04b", PAUSE_CHAR = "\uf04c",
             CAMERA_CHAR = "\uf083", OPTIONS_CHAR = "\uf013", ASTERISM_CHAR = "\uf005", SAT_CHAR = "\uf09e",
+            NAME_CHAR = "\uf075", MINIMALIST_CHAR = "\uf06e",
             INFO_CHAR = "\uf05a", UP_CHAR = "\uf062", DOWN_CHAR = "\uf063", RIGHT_CHAR = "\uf061", LEFT_CHAR = "\uf060",
             ZOOM_IN = "\uf00e", ZOOM_OUT = "\uf010";
 
@@ -127,10 +126,6 @@ public class Main extends Application {
             // The date/time bean
             dateTimeBean = new DateTimeBean();
             dateTimeBean.setZonedDateTime(STARTING_OBSERVATION_TIME);
-
-            // The instant of observation at the launch of the program
-            startDate = ZonedDateTime.of(STARTING_OBSERVATION_TIME.toLocalDate(), STARTING_OBSERVATION_TIME.toLocalTime(),
-                    STARTING_OBSERVATION_TIME.getOffset());
 
             // The current time animator
             timeAnimator = new TimeAnimator(dateTimeBean);
@@ -239,10 +234,11 @@ public class Main extends Application {
      * @return the observation time control unit
      */
     private HBox observationTimeControl() {
-        // Updates the date of observation according to the date selected by the user
+        // Updates the date of observation according to the date picked by the user
         Label dateLabel = new Label("Date :");
         DatePicker datePicker = new DatePicker(dateTimeBean.getDate());
         datePicker.setStyle("-fx-pref-width: 120;");
+
         dateTimeBean.dateProperty().bindBidirectional(datePicker.valueProperty());
 
         // Updates the hour of observation according to the hour entered by the user
@@ -253,6 +249,7 @@ public class Main extends Application {
         TextFormatter<LocalTime> hourTextFormatter = hourTextFormatter();
         hourField.setTextFormatter(hourTextFormatter);
         hourTextFormatter.setValue(dateTimeBean.getTime());
+
         dateTimeBean.timeProperty().bindBidirectional(hourTextFormatter.valueProperty());
 
 
@@ -410,7 +407,6 @@ public class Main extends Application {
                 timeAnimator.stop();
             } else {
                 timeAnimator.start();
-                startDate = dateTimeBean.getZonedDateTime();
             }
         });
 
@@ -511,119 +507,6 @@ public class Main extends Application {
 
     /**
      * Additional method (bonus).
-     * Returns a button which displays the keyboard and mouse controls used to observe sky, when pressed.
-     *
-     * @return a button which displays the keyboard and mouse controls used to observe sky, when pressed
-     * @throws IOException in case of input/output error
-     */
-    private Button controlsInfoButton() throws IOException {
-        Button controlsInfoButton = new Button(INFO_CHAR);
-        controlsInfoButton.setFont(fontAwesome());
-
-        Font infoFont = new Font(15); // The font for the information text of each control
-
-        // The UP control
-        Text up = new Text(UP_CHAR);
-        up.setFont(fontAwesome());
-        Text upInfo = new Text("Regarder vers le haut");
-        upInfo.setFont(infoFont);
-
-        // The DOWN control
-        Text down = new Text(DOWN_CHAR);
-        down.setFont(fontAwesome());
-        Text downInfo = new Text("Regarder vers le bas");
-        downInfo.setFont(infoFont);
-
-        // The RIGHT control
-        Text right = new Text(RIGHT_CHAR);
-        right.setFont(fontAwesome());
-        Text rightInfo = new Text("Regarder vers la droite");
-        rightInfo.setFont(infoFont);
-
-        // The LEFT control
-        Text left = new Text(LEFT_CHAR);
-        left.setFont(fontAwesome());
-        Text leftInfo = new Text("Regarder vers la gauche");
-        leftInfo.setFont(infoFont);
-
-        // The zoom-in control
-        Text zoomIn = new Text(ZOOM_IN);
-        zoomIn.setFont(fontAwesome());
-        Text zoomInInfo = new Text("Zoomer (sroll vers le bas / pavé tactile vers le haut)");
-        zoomInInfo.setFont(infoFont);
-
-        // The zoom-left control
-        Text zoomOut = new Text(ZOOM_OUT);
-        zoomOut.setFont(fontAwesome());
-        Text zoomOutInfo = new Text("Dézoomer (sroll vers le haut / pavé tactile vers le bas)");
-        zoomOutInfo.setFont(infoFont);
-
-
-        // When the button is pressed, shows the keyboard and mouse controls used to observe sky
-        controlsInfoButton.setOnMousePressed(mouseEvent -> {
-            GridPane root = new GridPane(); // Each row contains an information about the control
-
-            // Fills the grid
-            root.add(up, 1, 0);
-            root.add(upInfo, 2, 0);
-
-            root.add(down, 1, 1);
-            root.add(downInfo, 2, 1);
-
-            root.add(right, 1, 2);
-            root.add(rightInfo, 2, 2);
-
-            root.add(left, 1, 3);
-            root.add(leftInfo, 2, 3);
-
-            root.add(zoomIn, 1, 4);
-            root.add(zoomInInfo, 2, 4);
-
-            root.add(zoomOut, 1, 5);
-            root.add(zoomOutInfo, 2, 5);
-
-            root.setHgap(10); // Adds a horizontal gap between each column
-            root.setVgap(10); // Adds a vertical gap between each row
-
-            Stage stage = new Stage();
-            stage.setTitle("Contrôles");
-            stage.setScene(new Scene(root, 400, 175));
-            stage.show();
-        });
-
-        return controlsInfoButton;
-    }
-
-    /**
-     * Additional method (bonus).
-     * Returns the viewing options menu.
-     *
-     * @return the viewing options menu
-     * @throws IOException in case of input/output error
-     */
-    private MenuButton optionsMenu() throws IOException {
-        // Enables/disables the drawing of the asterisms
-        CheckMenuItem asterismEnable = new CheckMenuItem("Astérismes");
-        asterismEnable.selectedProperty().bindBidirectional(canvasManager.asterismEnableProperty());
-        setMenuIcon(asterismEnable, ASTERISM_CHAR); // Sets the icon of the menu item
-
-        // Enables/disables the drawing of the satellites
-        CheckMenuItem satelliteEnable = new CheckMenuItem("Satellites");
-        satelliteEnable.selectedProperty().bindBidirectional(canvasManager.satelliteEnableProperty());
-        setMenuIcon(satelliteEnable, SAT_CHAR); // Sets the icon of the menu item
-
-        asterismEnable.setSelected(true); // By default, the asterisms are drawn
-        satelliteEnable.setSelected(false); // By defaylt, the satellites are not drawn
-
-        // The viewing options menu
-        Text optionsText = new Text(OPTIONS_CHAR);
-        optionsText.setFont(fontAwesome());
-
-        return new MenuButton("Options", optionsText, asterismEnable, satelliteEnable);
-    }
-
-    /**
-     * Additional method (bonus).
      * Returns the photo button.
      *
      * @return the photo button
@@ -682,6 +565,147 @@ public class Main extends Application {
                 });
 
         return planetsMenu;
+    }
+
+    /**
+     * Additional method (bonus).
+     * Returns the viewing options menu.
+     *
+     * @return the viewing options menu
+     * @throws IOException in case of input/output error
+     */
+    private MenuButton optionsMenu() throws IOException {
+        // Enables/disables the drawing of the asterisms
+        CheckMenuItem asterismEnable = new CheckMenuItem("Astérismes");
+        asterismEnable.selectedProperty().bindBidirectional(canvasManager.asterismEnableProperty());
+        setMenuIcon(asterismEnable, ASTERISM_CHAR); // Sets the icon of the menu item
+
+        // Enables/disables the drawing of the satellites
+        CheckMenuItem satelliteEnable = new CheckMenuItem("Satellites");
+        satelliteEnable.selectedProperty().bindBidirectional(canvasManager.satelliteEnableProperty());
+        setMenuIcon(satelliteEnable, SAT_CHAR); // Sets the icon of the menu item
+
+        // Enables/disables the display of the names of the brightest objects
+        CheckMenuItem nameEnable = new CheckMenuItem("Noms des objets brillants");
+        nameEnable.selectedProperty().bindBidirectional(canvasManager.nameEnableProperty());
+        setMenuIcon(nameEnable, NAME_CHAR);
+
+        // Enables/disables the minimalist view
+        CheckMenuItem minimalistView = new CheckMenuItem("Vue minimaliste");
+        minimalistView.selectedProperty().addListener(
+                o -> {
+                    asterismEnable.setSelected(false);
+                    satelliteEnable.setSelected(false);
+                    nameEnable.setSelected(false);
+                }
+        );
+        setMenuIcon(minimalistView, MINIMALIST_CHAR);
+
+        asterismEnable.disableProperty().bind(
+                when(minimalistView.selectedProperty()).then(true).otherwise(false)
+        );
+
+        satelliteEnable.disableProperty().bind(
+                when(minimalistView.selectedProperty()).then(true).otherwise(false)
+        );
+
+        nameEnable.disableProperty().bind(
+                when(minimalistView.selectedProperty()).then(true).otherwise(false)
+        );
+
+        asterismEnable.setSelected(true); // By default, the asterisms are drawn
+        satelliteEnable.setSelected(false); // By default, the satellites are not drawn
+        nameEnable.setSelected(true);
+
+        // The viewing options menu
+        Text optionsText = new Text(OPTIONS_CHAR);
+        optionsText.setFont(fontAwesome());
+
+        return new MenuButton("Options", optionsText, asterismEnable, satelliteEnable, nameEnable, minimalistView);
+    }
+
+    /**
+     * Additional method (bonus).
+     * Returns a button which displays the keyboard and mouse controls used to observe sky, when pressed.
+     *
+     * @return a button which displays the keyboard and mouse controls used to observe sky, when pressed
+     * @throws IOException in case of input/output error
+     */
+    private Button controlsInfoButton() throws IOException {
+        Button controlsInfoButton = new Button(INFO_CHAR);
+        controlsInfoButton.setFont(fontAwesome());
+
+        Font infoFont = new Font(15); // The font for the information text of each control
+
+        // The UP control
+        Text up = new Text(UP_CHAR);
+        up.setFont(fontAwesome());
+        Text upInfo = new Text("Regarder vers le haut");
+        upInfo.setFont(infoFont);
+
+        // The DOWN control
+        Text down = new Text(DOWN_CHAR);
+        down.setFont(fontAwesome());
+        Text downInfo = new Text("Regarder vers le bas");
+        downInfo.setFont(infoFont);
+
+        // The RIGHT control
+        Text right = new Text(RIGHT_CHAR);
+        right.setFont(fontAwesome());
+        Text rightInfo = new Text("Regarder vers la droite");
+        rightInfo.setFont(infoFont);
+
+        // The LEFT control
+        Text left = new Text(LEFT_CHAR);
+        left.setFont(fontAwesome());
+        Text leftInfo = new Text("Regarder vers la gauche");
+        leftInfo.setFont(infoFont);
+
+        // The zoom-in control
+        Text zoomIn = new Text(ZOOM_IN);
+        zoomIn.setFont(fontAwesome());
+        Text zoomInInfo = new Text("Zoomer (sroll vers le bas / pavé tactile vers le haut)");
+        zoomInInfo.setFont(infoFont);
+
+        // The zoom-out control
+        Text zoomOut = new Text(ZOOM_OUT);
+        zoomOut.setFont(fontAwesome());
+        Text zoomOutInfo = new Text("Dézoomer (sroll vers le haut / pavé tactile vers le bas)");
+        zoomOutInfo.setFont(infoFont);
+
+        // When the button is pressed, shows the keyboard and mouse controls used to observe sky
+        controlsInfoButton.setOnMousePressed(mouseEvent -> {
+            GridPane root = new GridPane(); // Each row contains an information about the control
+
+            // Fills the grid
+            root.add(up, 1, 0);
+            root.add(upInfo, 2, 0);
+
+            root.add(down, 1, 1);
+            root.add(downInfo, 2, 1);
+
+            root.add(right, 1, 2);
+            root.add(rightInfo, 2, 2);
+
+            root.add(left, 1, 3);
+            root.add(leftInfo, 2, 3);
+
+            root.add(zoomIn, 1, 4);
+            root.add(zoomInInfo, 2, 4);
+
+            root.add(zoomOut, 1, 5);
+            root.add(zoomOutInfo, 2, 5);
+
+            root.setHgap(10); // Adds a horizontal gap between each column
+            root.setVgap(10); // Adds a vertical gap between each row
+
+            Stage stage = new Stage();
+            stage.setTitle("Contrôles");
+            stage.setScene(new Scene(root, 400, 175));
+            stage.show();
+        });
+
+        return controlsInfoButton;
     }
 
     /**

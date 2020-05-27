@@ -18,7 +18,7 @@ import ch.epfl.rigel.math.RightOpenInterval;
 public final class HorizontalCoordinates extends SphericalCoordinates {
 
     // The valid right open interval [0,360[ (in degrees) for the azimuth
-    private static final RightOpenInterval AZ_INTERVAL_DEG = RightOpenInterval.of(0, 360);
+    public static final RightOpenInterval AZ_INTERVAL_DEG = RightOpenInterval.of(0, 360);
 
     // The valid right open interval [0,2*PI[ (in radians) for the azimuth
     private static final RightOpenInterval AZ_INTERVAL_RAD = RightOpenInterval.of(0, Angle.TAU);
@@ -29,12 +29,6 @@ public final class HorizontalCoordinates extends SphericalCoordinates {
     // The valid closed interval [-PI/2,PI/2] (in radians) for the altitude
     private static final ClosedInterval ALT_INTERVAL_RAD = ClosedInterval.of(Angle.ofDeg(-90), Angle.ofDeg(90));
 
-    // The minimum and maximum valid horizontal coordinates
-    public static final double
-            MINIMUM_AZ_DEG = AZ_INTERVAL_DEG.low(),
-            MAXIMUM_AZ_DEG = AZ_INTERVAL_DEG.high(),
-            MINIMUM_ALT_DEG = ALT_INTERVAL_DEG.low(),
-            MAXIMUM_ALT_DEG = ALT_INTERVAL_DEG.high();
 
     /**
      * Constructs horizontal coordinates (in radians) with the given azimuth and altitude (in radians).

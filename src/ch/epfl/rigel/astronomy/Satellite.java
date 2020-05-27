@@ -14,7 +14,6 @@ import java.util.Objects;
 public final class Satellite extends CelestialObject {
 
     private final String country, purpose;
-    private final int noradID;
 
     /**
      * Constructs a satellite with the given name, country, purpose, NORAD identification number and longitude of
@@ -26,17 +25,13 @@ public final class Satellite extends CelestialObject {
      *            The satellite's country of origin
      * @param purpose
      *            The satellite's purpose
-     * @param noradID
-     *            The satellite's NORAD identification number
      * @param lonRad
      *            The satellite's longitude (in radians)
      */
-    public Satellite(String name, String country, String purpose, int noradID, double lonRad) {
+    public Satellite(String name, String country, String purpose, double lonRad) {
         super(name, EquatorialCoordinates.of(lonRad, 0), 0, 0);
         this.country = Objects.requireNonNull(country);
         this.purpose = Objects.requireNonNull(purpose);
-        Preconditions.checkArgument(noradID >= 0);
-        this.noradID = noradID;
     }
 
     /**
@@ -55,16 +50,9 @@ public final class Satellite extends CelestialObject {
         return purpose;
     }
 
-    /**
-     * Returns the NORAD identification number of the satellite.
-     * @return the NORAD identification number of the satellite
-     */
-    public int noradID() {
-        return noradID;
-    }
 
     @Override
     public String info() {
-        return String.format("%s (%s, %s)", name(),purpose, country);
+        return String.format("%s (%s, %s)", name(), purpose, country);
     }
 }

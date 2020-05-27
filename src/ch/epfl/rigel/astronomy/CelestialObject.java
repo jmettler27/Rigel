@@ -120,7 +120,7 @@ public abstract class CelestialObject {
     }
 
     /**
-     * Additional method.
+     * Additional method (bonus).
      * Tells if the celestial object is bright, i.e. if its magnitude is < 2.0.
      * @return true if the celestial object is bright, false otherwise
      */
