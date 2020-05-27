@@ -40,6 +40,7 @@ public final class SkyCanvasManager {
     private final ObjectBinding<ObservedSky> observedSky; // The observed sky binding
     private final ObjectProperty<CartesianCoordinates> mousePosition; // The cursor's canvas position property
 
+    // (Bonus) The properties enabling the viewing options
     private final SimpleBooleanProperty
             asterismEnable = new SimpleBooleanProperty(),
             satelliteEnable = new SimpleBooleanProperty(),
@@ -58,10 +59,14 @@ public final class SkyCanvasManager {
     /**
      * Constructs a sky canvas manager.
      *
-     * @param catalogue         The catalogue of the observed stars and asterisms
-     * @param dateTime          The instant of observation
-     * @param viewingParameters The parameters of observation
-     * @param observerLocation  The place of observation
+     * @param catalogue
+     *            The catalogue of the observed stars and asterisms
+     * @param dateTime
+     *            The instant of observation
+     * @param viewingParameters
+     *            The parameters of observation
+     * @param observerLocation
+     *            The place of observation
      */
     public SkyCanvasManager(StarCatalogue catalogue, SatelliteCatalogue satCatalogue, DateTimeBean dateTime,
                             ObserverLocationBean observerLocation, ViewingParametersBean viewingParameters) {
@@ -77,7 +82,8 @@ public final class SkyCanvasManager {
         mousePosition = new SimpleObjectProperty<>();
 
         projection = Bindings.createObjectBinding(
-                () -> new StereographicProjection(viewingParameters.getCenter()), viewingParameters.centerProperty()
+                () -> new StereographicProjection(viewingParameters.getCenter()),
+                viewingParameters.centerProperty()
         );
 
         planeToCanvas = Bindings.createObjectBinding(
@@ -95,8 +101,7 @@ public final class SkyCanvasManager {
                 dateTime.dateProperty(), dateTime.timeProperty(), dateTime.zoneProperty(),
                 observerLocation.coordinatesBinding(), projection);
 
-        // Inform about changes in the bindings and properties that have an impact on the drawing of the sky, and ask
-        // the painter to redraw it
+        // Redraws the painter when these properties are changed
         projection.addListener(o -> draw(painter, observedSky.get()));
         planeToCanvas.addListener(o -> draw(painter, observedSky.get()));
         observedSky.addListener(o -> draw(painter, observedSky.get()));
@@ -155,7 +160,7 @@ public final class SkyCanvasManager {
         // Detects the mouse clicks on the canvas
         canvas.setOnMousePressed(mouseEvent -> {
             if (mouseEvent.isPrimaryButtonDown()) {
-                canvas.requestFocus(); // Makes the mouse the focus of the keyboard events
+                canvas.requestFocus(); // Sets the mouse as the focus of the keyboard events
             }
         });
 
@@ -260,10 +265,11 @@ public final class SkyCanvasManager {
 
     /**
      * Enables or disables the asterisms.
-     * @param isEnabled The condition of enabling (true) or disabling (false) the asterisms.
+     * @param enable
+     *            The condition of enabling (true) or disabling (false) the asterisms
      */
-    public void setAsterismEnable(boolean isEnabled) {
-        asterismEnable.set(isEnabled);
+    public void setAsterismEnable(boolean enable) {
+        asterismEnable.set(enable);
     }
 
     /**
@@ -284,10 +290,11 @@ public final class SkyCanvasManager {
 
     /**
      * Enables or disables the satellites.
-     * @param b The condition of enabling (true) or disabling (false) the names of the brightest objects .
+     * @param enable
+     *            The condition of enabling (true) or disabling (false) the satellites
      */
-    public void setSatelliteEnable(boolean b) {
-        satelliteEnable.set(b);
+    public void setSatelliteEnable(boolean enable) {
+        satelliteEnable.set(enable);
     }
 
     /**
@@ -308,15 +315,17 @@ public final class SkyCanvasManager {
 
     /**
      * Enables or disables the names of the brightest objects.
-     * @param isEnabled The condition of enabling (true) or disabling (false) the names of the brightest objects .
+     * @param enable
+     *            The condition of enabling (true) or disabling (false) the names of the brightest objects.
      */
-    public void setNameEnable(boolean isEnabled) {
-        nameEnable.set(isEnabled);
+    public void setNameEnable(boolean enable) {
+        nameEnable.set(enable);
     }
 
     /**
      * Sets the azimuth of the mouse cursor (in degrees)
-     * @param azDeg The new azimuth of the mouse cursor (in degrees)
+     * @param azDeg
+     *            The new azimuth of the mouse cursor (in degrees)
      */
     private void setMouseAzDeg(double azDeg) {
         mouseAzDeg.set(azDeg);
@@ -324,7 +333,8 @@ public final class SkyCanvasManager {
 
     /**
      * Sets the altitude of the mouse cursor (in degrees).
-     * @param altDeg The new altitude of the mouse cursor (in degrees)
+     * @param altDeg
+     *            The new altitude of the mouse cursor (in degrees)
      */
     private void setMouseAltDeg(double altDeg) {
         mouseAltDeg.set(altDeg);
@@ -332,7 +342,8 @@ public final class SkyCanvasManager {
 
     /**
      * Sets the position of the mouse on the canvas.
-     * @param cart The new position of the mouse on the canvas
+     * @param cart
+     *            The new position of the mouse on the canvas
      */
     private void setMousePosition(CartesianCoordinates cart) {
         mousePosition.set(cart);
@@ -340,7 +351,8 @@ public final class SkyCanvasManager {
 
     /**
      * Sets the celestial object under the mouse cursor to the given celestial object.
-     * @param object The new object under the cursor of the mouse
+     * @param object
+     *            The new object under the cursor of the mouse
      */
     private void setObjectUnderMouse(CelestialObject object) {
         objectUnderMouse.set(object);
@@ -349,8 +361,10 @@ public final class SkyCanvasManager {
     /**
      * Returns the maximum of two numbers.
      *
-     * @param x The first number
-     * @param y The second number
+     * @param x
+     *            The first number
+     * @param y
+     *            The second number
      * @return The maximal number
      */
     private double scrollMax(double x, double y) {
@@ -362,7 +376,8 @@ public final class SkyCanvasManager {
      * Changes the direction of the observation (i.e. the position of the projection's center) using the four directional
      * keys (left, right, up, down).
      *
-     * @param keyCode The code of the directional key
+     * @param keyCode
+     *            The code of the directional key
      */
     private void changeDirection(KeyCode keyCode) {
         // The coordinates of the direction of observation
@@ -398,8 +413,10 @@ public final class SkyCanvasManager {
     /**
      * Draws the observed sky on the canvas, using a sky canvas painter.
      *
-     * @param painter The sky canvas painter
-     * @param sky     The observed sky
+     * @param painter
+     *            The sky canvas painter
+     * @param sky
+     *            The observed sky
      */
     private void draw(SkyCanvasPainter painter, ObservedSky sky) {
         painter.clear();

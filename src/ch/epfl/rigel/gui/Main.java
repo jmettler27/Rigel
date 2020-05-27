@@ -86,19 +86,21 @@ public class Main extends Application {
             AST_CATALOGUE_NAME = "/asterisms.txt",
             SAT_CATALOGUE_NAME = "/active_satellites.csv",
             FONT_AWESOME_NAME = "/Font Awesome 5 Free-Solid-900.otf",
+            RESET_CHAR = "\uf0e2", PLAY_CHAR = "\uf04b", PAUSE_CHAR = "\uf04c";
 
-    // The characters of the icons of the buttons and menus
-    RESET_CHAR = "\uf0e2", PLAY_CHAR = "\uf04b", PAUSE_CHAR = "\uf04c",
-            CAMERA_CHAR = "\uf083", OPTIONS_CHAR = "\uf013", ASTERISM_CHAR = "\uf005", SAT_CHAR = "\uf09e",
-            NAME_CHAR = "\uf075", MINIMALIST_CHAR = "\uf06e",
-            INFO_CHAR = "\uf05a", UP_CHAR = "\uf062", DOWN_CHAR = "\uf063", RIGHT_CHAR = "\uf061", LEFT_CHAR = "\uf060",
-            ZOOM_IN = "\uf00e", ZOOM_OUT = "\uf010";
+    // (Bonus) The Unicode characters (UTF-16 first range) of the icons of the bonus buttons and menus
+    private static final String CAMERA_CHAR = "\uf083", OPTIONS_CHAR = "\uf013", ASTERISM_CHAR = "\uf005",
+            SAT_CHAR = "\uf09e", NAME_CHAR = "\uf075", MINIMALIST_CHAR = "\uf06e", INFO_CHAR = "\uf05a",
+            UP_CHAR = "\uf062", DOWN_CHAR = "\uf063", RIGHT_CHAR = "\uf061", LEFT_CHAR = "\uf060", ZOOM_IN = "\uf00e",
+            ZOOM_OUT = "\uf010";
 
     /**
      * Launches the graphical interface.
      *
-     * @param args The command line argument passed to the application.
+     * @param args
+     *            The command line argument
      */
+
     public static void main(String[] args) {
         launch(args);
     }
@@ -160,14 +162,15 @@ public class Main extends Application {
             primaryStage.setScene(new Scene(root));
             primaryStage.show();
 
-            skyPane.requestFocus(); // Makes the canvas the receiver of the keyboard events
+            skyPane.requestFocus(); // Sets the canvas as the receiver of the keyboard events
         }
     }
 
     /**
      * Finds and returns a resource using its name.
      *
-     * @param resourceName The name of the resource
+     * @param resourceName
+     *            The name of the resource
      * @return The resource as an input stream
      */
     private InputStream resourceStream(String resourceName) {
@@ -176,7 +179,6 @@ public class Main extends Application {
 
     /**
      * Returns the control bar (the top part of the graphical interface).
-     *
      * @return the control bar
      */
     private HBox controlBar() throws IOException {
@@ -194,7 +196,6 @@ public class Main extends Application {
 
     /**
      * Returns the information bar (bottom part of the graphical interface).
-     *
      * @return the information bar
      */
     private BorderPane informationBar() {
@@ -210,7 +211,6 @@ public class Main extends Application {
 
     /**
      * Returns the observer location control unit (first sub-pane of the control bar)
-     *
      * @return the observer location control unit
      */
     private HBox observerLocationControl() {
@@ -230,7 +230,6 @@ public class Main extends Application {
 
     /**
      * Returns the observation time control unit (second sub-pane of the control bar).
-     *
      * @return the observation time control unit
      */
     private HBox observationTimeControl() {
@@ -252,7 +251,7 @@ public class Main extends Application {
 
         dateTimeBean.timeProperty().bindBidirectional(hourTextFormatter.valueProperty());
 
-
+        // The observation time control unit
         HBox observationTimeControl = new HBox(dateLabel, datePicker, hourLabel, hourField, zoneIdMenu());
         observationTimeControl.setStyle("-fx-spacing: inherit; -fx-alignment: baseline-left;");
 
@@ -267,7 +266,6 @@ public class Main extends Application {
 
     /**
      * Returns the timelapse control unit (third sub-pane of the control bar).
-     *
      * @return the timelapse control unit
      */
     private HBox timelapseControl() throws IOException {
@@ -280,7 +278,6 @@ public class Main extends Application {
 
     /**
      * Returns the text displaying the field of view (in degrees) (left part of the information bar).
-     *
      * @return the text displaying the field of view (in degrees)
      */
     private Text fovText() {
@@ -294,7 +291,6 @@ public class Main extends Application {
 
     /**
      * Returns the text displaying the object closest to the mouse cursor (central part of the information bar).
-     *
      * @return the text displaying the object closest to the mouse cursor
      */
     private Text closestObjectText() {
@@ -315,7 +311,6 @@ public class Main extends Application {
 
     /**
      * Returns the text displaying the updated horizontal position of the mouse cursor (right part of the information bar).
-     *
      * @return the text displaying the updated horizontal position of the mouse cursor
      */
     private Text mousePositionText() {
@@ -332,7 +327,8 @@ public class Main extends Application {
     /**
      * Returns a field containing a coordinate value.
      *
-     * @param isTrue true if the coordinate is the longitude, false if the coordinate is the latitude
+     * @param isTrue
+     *            true if the coordinate is the longitude, false if the coordinate is the latitude
      * @return a field containing a coordinate value
      */
     private TextField coordinateField(boolean isTrue) {
@@ -353,7 +349,6 @@ public class Main extends Application {
 
     /**
      * Returns the dropdown menu of the time-zones of observation.
-     *
      * @return the dropdown menu of the time-zones of observation
      */
     private ComboBox<ZoneId> zoneIdMenu() {
@@ -368,7 +363,6 @@ public class Main extends Application {
 
     /**
      * Returns a button that resets the accelerator animation.
-     *
      * @return a button that resets the accelerator animation
      * @throws IOException in case of input/output error
      */
@@ -376,7 +370,7 @@ public class Main extends Application {
         Button resetButton = new Button(RESET_CHAR);
         resetButton.setFont(fontAwesome());
 
-        // Controls the pressing of the reset button
+        // When pressed, resets the observation time
         resetButton.setOnMouseClicked(mouseEvent -> {
             if (timeAnimator.isRunning()) {
                 timeAnimator.stop();
@@ -389,7 +383,6 @@ public class Main extends Application {
 
     /**
      * Returns a button that starts or pauses the accelerator animation.
-     *
      * @return a button that starts or pauses the accelerator animation
      * @throws IOException in case of input/output error
      */
@@ -415,7 +408,6 @@ public class Main extends Application {
 
     /**
      * Returns a menu of the time accelerators.
-     *
      * @return a menu of the time accelerators
      */
     private ChoiceBox<NamedTimeAccelerator> acceleratorsMenu() {
@@ -440,7 +432,8 @@ public class Main extends Application {
      * Formats the geographic coordinate entered in its corresponding text field such that the latter only accepts
      * values with two decimal places and within the valid intervals.
      *
-     * @param isTrue Selects the coordinate (longitude or longitude) using true or false, respectively
+     * @param isTrue
+     *            Selects the coordinate (longitude or longitude) using true or false, respectively
      * @return the text formatter of a geographic coordinate
      */
     private TextFormatter<Number> coordinatesTextFormatter(boolean isTrue) {
@@ -479,9 +472,7 @@ public class Main extends Application {
     }
 
     /**
-     * Additional method.
      * Returns the font "Font Awesome 5" of size 15.
-     *
      * @return the font "Font Awesome 5" of size 15.
      * @throws IOException in case of input/output error.
      */
@@ -492,9 +483,7 @@ public class Main extends Application {
     }
 
     /**
-     * Additional method (bonus).
-     * Returns the interface containing the bonus buttons and menus.
-     *
+     * (Bonus) Returns the graphical interface containing the bonus buttons and menus.
      * @return the interface containing the bonus buttons and menus
      * @throws IOException in case of input/output error
      */
@@ -506,9 +495,7 @@ public class Main extends Application {
     }
 
     /**
-     * Additional method (bonus).
-     * Returns the photo button.
-     *
+     * (Bonus) Returns the photo button.
      * @return the photo button
      * @throws IOException in case of input/output error
      */
@@ -536,9 +523,7 @@ public class Main extends Application {
     }
 
     /**
-     * Additional method (bonus).
-     * Returns a choice box of the planets of the solar system.
-     *
+     * (Bonus) Returns the choice box of the planets of the solar system.
      * @return the choice box of the planets of the solar system
      */
     private ChoiceBox<Planet> planetsMenu() {
@@ -568,9 +553,7 @@ public class Main extends Application {
     }
 
     /**
-     * Additional method (bonus).
-     * Returns the viewing options menu.
-     *
+     * (Bonus) Returns the viewing options menu.
      * @return the viewing options menu
      * @throws IOException in case of input/output error
      */
@@ -601,6 +584,7 @@ public class Main extends Application {
         );
         setMenuIcon(minimalistView, MINIMALIST_CHAR);
 
+        // Prevents the user to enable the viewing options when the minimalist view is enabled
         asterismEnable.disableProperty().bind(
                 when(minimalistView.selectedProperty()).then(true).otherwise(false)
         );
@@ -615,7 +599,7 @@ public class Main extends Application {
 
         asterismEnable.setSelected(true); // By default, the asterisms are drawn
         satelliteEnable.setSelected(false); // By default, the satellites are not drawn
-        nameEnable.setSelected(true);
+        nameEnable.setSelected(true); // By default, the names of the bright objects are drawn
 
         // The viewing options menu
         Text optionsText = new Text(OPTIONS_CHAR);
@@ -625,10 +609,8 @@ public class Main extends Application {
     }
 
     /**
-     * Additional method (bonus).
-     * Returns a button which displays the keyboard and mouse controls used to observe sky, when pressed.
-     *
-     * @return a button which displays the keyboard and mouse controls used to observe sky, when pressed
+     * (Bonus) Returns the button displaying the information about the controls.
+     * @return the button displaying the information about the controls
      * @throws IOException in case of input/output error
      */
     private Button controlsInfoButton() throws IOException {
@@ -709,12 +691,14 @@ public class Main extends Application {
     }
 
     /**
-     * Additional method (bonus).
-     * Sets the icon of the given menu item.
+     * (Bonus) Sets the icon of the given menu item.
      *
-     * @param menuItem  The menu item
-     * @param character The character encoding the icon of the item
+     * @param menuItem
+     *            The menu item
+     * @param character
+     *            The character encoding the icon of the item
      * @throws IOException in case of input/output item
+     *
      */
     private void setMenuIcon(CheckMenuItem menuItem, String character) throws IOException {
         Text menuItemText = new Text(character);
@@ -723,10 +707,10 @@ public class Main extends Application {
     }
 
     /**
-     * Additional method (bonus).
-     * Returns the String representation of the observation time.
+     * (Bonus) Returns the String representation of the observation time.
      *
-     * @param when The observation time
+     * @param when
+     *            The observation time
      * @return the String representation of the observation time
      */
     private String dateToString(ZonedDateTime when) {

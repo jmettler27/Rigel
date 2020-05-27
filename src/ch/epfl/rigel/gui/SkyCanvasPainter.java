@@ -158,7 +158,7 @@ public final class SkyCanvasPainter {
 
         drawMoonPhase(sky.moon().phase(), moonCanvasPosition, moonCanvasDiameter, observerLocation);
 
-        if(nameEnable && sky.moon().isBright()) drawAnnotation(sky.moon().toString(), moonCanvasPosition, Color.WHITE);
+        if(nameEnable) drawAnnotation(sky.moon().toString(), moonCanvasPosition, Color.WHITE);
     }
 
     /**

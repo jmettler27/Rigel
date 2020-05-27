@@ -51,6 +51,9 @@ public final class Satellite extends CelestialObject {
     }
 
 
+    /**
+     * @see CelestialObject#info()
+     */
     @Override
     public String info() {
         return String.format("%s (%s, %s)", name(), purpose, country);
