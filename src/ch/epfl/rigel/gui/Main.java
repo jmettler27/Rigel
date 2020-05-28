@@ -19,6 +19,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -585,7 +586,7 @@ public class Main extends Application {
         );
         setMenuIcon(minimalistView, MINIMALIST_CHAR);
 
-        // Prevents the user to enable the viewing options when the minimalist view is enabled
+        // Prevents the user from enabling the viewing options when the minimalist view is enabled
         asterismEnable.disableProperty().bind(
                 when(minimalistView.selectedProperty()).then(true).otherwise(false)
         );
@@ -656,37 +657,36 @@ public class Main extends Application {
         Text zoomOutInfo = new Text("Dézoomer (sroll vers le haut / pavé tactile vers le bas)");
         zoomOutInfo.setFont(infoFont);
 
+        GridPane root = new GridPane(); // Each row contains an information about the control
+
+        // Fills the grid
+        root.add(up, 1, 0);
+        root.add(upInfo, 2, 0);
+
+        root.add(down, 1, 1);
+        root.add(downInfo, 2, 1);
+
+        root.add(right, 1, 2);
+        root.add(rightInfo, 2, 2);
+
+        root.add(left, 1, 3);
+        root.add(leftInfo, 2, 3);
+
+        root.add(zoomIn, 1, 4);
+        root.add(zoomInInfo, 2, 4);
+
+        root.add(zoomOut, 1, 5);
+        root.add(zoomOutInfo, 2, 5);
+
+        root.setHgap(10); // Adds a horizontal gap between each column
+        root.setVgap(10); // Adds a vertical gap between each row
+
+        Stage stage = new Stage();
+        stage.setTitle("Contrôles");
+        stage.setScene(new Scene(root, 400, 175));
+
         // When the button is pressed, shows the keyboard and mouse controls used to observe sky
-        controlsInfoButton.setOnMousePressed(mouseEvent -> {
-            GridPane root = new GridPane(); // Each row contains an information about the control
-
-            // Fills the grid
-            root.add(up, 1, 0);
-            root.add(upInfo, 2, 0);
-
-            root.add(down, 1, 1);
-            root.add(downInfo, 2, 1);
-
-            root.add(right, 1, 2);
-            root.add(rightInfo, 2, 2);
-
-            root.add(left, 1, 3);
-            root.add(leftInfo, 2, 3);
-
-            root.add(zoomIn, 1, 4);
-            root.add(zoomInInfo, 2, 4);
-
-            root.add(zoomOut, 1, 5);
-            root.add(zoomOutInfo, 2, 5);
-
-            root.setHgap(10); // Adds a horizontal gap between each column
-            root.setVgap(10); // Adds a vertical gap between each row
-
-            Stage stage = new Stage();
-            stage.setTitle("Contrôles");
-            stage.setScene(new Scene(root, 400, 175));
-            stage.show();
-        });
+        controlsInfoButton.setOnMousePressed(mouseEvent -> stage.show());
 
         return controlsInfoButton;
     }
