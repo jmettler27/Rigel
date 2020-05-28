@@ -84,7 +84,7 @@ public final class TimeAnimator extends AnimationTimer {
      * @return the time accelerator property's content
      */
     public TimeAccelerator getAccelerator() {
-        return accelerator.getValue();
+        return accelerator.get();
     }
 
     /**
@@ -94,7 +94,7 @@ public final class TimeAnimator extends AnimationTimer {
      *            The new time accelerator of the time accelerator's property
      */
     public void setAccelerator(TimeAccelerator newAccelerator) {
-        accelerator.setValue(newAccelerator);
+        accelerator.set(newAccelerator);
     }
 
     /**
@@ -110,6 +110,6 @@ public final class TimeAnimator extends AnimationTimer {
      * @return the running property's content
      */
     public boolean isRunning() {
-        return running.getValue();
+        return running.get();
     }
 }

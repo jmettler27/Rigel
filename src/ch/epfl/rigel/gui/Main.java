@@ -182,7 +182,6 @@ public class Main extends Application {
      * @return the control bar
      */
     private HBox controlBar() throws IOException {
-        // The control bar
         HBox controlBar = new HBox(
                 observerLocationControl(), new Separator(Orientation.VERTICAL),
                 observationTimeControl(), new Separator(Orientation.VERTICAL),
@@ -319,7 +318,7 @@ public class Main extends Application {
 
         mousePositionText.textProperty().bind(
                 Bindings.format(Locale.ROOT, "Azimuth : %.2f°, hauteur : %.2f°",
-                        canvasManager.mouseAzDegProperty(), canvasManager.mouseAltDegProperty()));
+                        canvasManager.mouseAzDeg(), canvasManager.mouseAltDeg()));
 
         return mousePositionText;
     }
@@ -328,23 +327,24 @@ public class Main extends Application {
      * Returns a field containing a coordinate value.
      *
      * @param isTrue
-     *            true if the coordinate is the longitude, false if the coordinate is the latitude
+     *            if the coordinate is the longitude, is true, and if the coordinate is the latitude, is false
      * @return a field containing a coordinate value
      */
     private TextField coordinateField(boolean isTrue) {
-        TextField textField = new TextField();
-        textField.setStyle("-fx-pref-width: 60; -fx-alignment: baseline-right;");
+        TextField coordinateField = new TextField();
+        coordinateField.setStyle("-fx-pref-width: 60; -fx-alignment: baseline-right;");
 
         TextFormatter<Number> textFormatter = coordinatesTextFormatter(isTrue);
-        textField.setTextFormatter(textFormatter);
+        coordinateField.setTextFormatter(textFormatter);
 
+        // Binds the
         if (isTrue) {
             textFormatter.valueProperty().bindBidirectional(observerLocationBean.lonDegProperty());
         } else {
             textFormatter.valueProperty().bindBidirectional(observerLocationBean.latDegProperty());
         }
 
-        return textField;
+        return coordinateField;
     }
 
     /**
@@ -370,13 +370,14 @@ public class Main extends Application {
         Button resetButton = new Button(RESET_CHAR);
         resetButton.setFont(fontAwesome());
 
-        // When pressed, resets the observation time
-        resetButton.setOnMouseClicked(mouseEvent -> {
-            if (timeAnimator.isRunning()) {
-                timeAnimator.stop();
-            }
-            dateTimeBean.setZonedDateTime(ZonedDateTime.now(ZoneOffset.systemDefault()));
-        });
+        // When pressed, resets the observation time to the current time
+        resetButton.setOnMousePressed(
+                mouseEvent -> dateTimeBean.setZonedDateTime(ZonedDateTime.now()));
+
+        // Disables the reset button when an animation is running
+        resetButton.disableProperty().bind(
+                when(timeAnimator.runningProperty()).then(true).otherwise(false)
+        );
 
         return resetButton;
     }
@@ -419,7 +420,7 @@ public class Main extends Application {
         timeAnimator.acceleratorProperty().bind(
                 Bindings.select(acceleratorsMenu.valueProperty(), "accelerator"));
 
-        // Disables the graphical nodes related to the timelapse parameters when an animation is running
+        // Disables the accelerators menu when an animation is running
         acceleratorsMenu.disableProperty().bind(
                 when(timeAnimator.runningProperty()).then(true).otherwise(false));
 
@@ -442,12 +443,12 @@ public class Main extends Application {
         UnaryOperator<TextFormatter.Change> filter = (change -> {
             try {
                 String newText = change.getControlNewText();
-                double newDeg = stringConverter.fromString(newText).doubleValue();
+                double newCoordinateDeg = stringConverter.fromString(newText).doubleValue();
 
                 if (isTrue) {
-                    return GeographicCoordinates.isValidLonDeg(newDeg) ? change : null;
+                    return GeographicCoordinates.isValidLonDeg(newCoordinateDeg) ? change : null;
                 } else {
-                    return GeographicCoordinates.isValidLatDeg(newDeg) ? change : null;
+                    return GeographicCoordinates.isValidLatDeg(newCoordinateDeg) ? change : null;
                 }
 
             } catch (Exception e) {

@@ -8,11 +8,11 @@ import ch.epfl.rigel.coordinates.*;
 import ch.epfl.rigel.math.Angle;
 import ch.epfl.rigel.math.ClosedInterval;
 import javafx.beans.binding.Bindings;
+import javafx.beans.binding.DoubleBinding;
 import javafx.beans.binding.ObjectBinding;
 import javafx.beans.property.*;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.input.KeyCode;
-import javafx.scene.transform.NonInvertibleTransformException;
 import javafx.scene.transform.Transform;
 
 import java.util.Optional;
@@ -27,18 +27,19 @@ import static java.lang.Math.*;
  */
 public final class SkyCanvasManager {
 
-    public final ObjectProperty<CelestialObject> objectUnderMouse;
-    public final DoubleProperty mouseAzDeg; // The azimuth (in degrees) of the position of the mouse's cursor
-    public final DoubleProperty mouseAltDeg; // The altitude (in degrees) of the position of the mouse's cursor
+    public final DoubleBinding mouseAzDeg, mouseAltDeg;
+    public final ObjectBinding<CelestialObject> objectUnderMouse;
 
     private final ViewingParametersBean viewingParameters;
     private final Canvas canvas;
     private final ObserverLocationBean observerLocation;
 
+    private final ObjectProperty<CartesianCoordinates> mousePosition; // The cursor canvas position property
+
     private final ObjectBinding<StereographicProjection> projection; // The stereographic projection binding
     private final ObjectBinding<Transform> planeToCanvas; // The plane to canvas affine transform binding
     private final ObjectBinding<ObservedSky> observedSky; // The observed sky binding
-    private final ObjectProperty<CartesianCoordinates> mousePosition; // The cursor's canvas position property
+    private final ObjectBinding<HorizontalCoordinates> mouseHorizontalPosition;
 
     // (Bonus) The properties enabling the viewing options
     private final SimpleBooleanProperty
@@ -73,12 +74,9 @@ public final class SkyCanvasManager {
         this.observerLocation = observerLocation;
         this.viewingParameters = viewingParameters;
 
-        canvas = new Canvas(800, 600);
-        SkyCanvasPainter painter = new SkyCanvasPainter(canvas);
+        canvas = new Canvas(800, 600); // The canvas on which the sky is drawn
+        SkyCanvasPainter painter = new SkyCanvasPainter(canvas); // The painter which draws the sky on the canvas
 
-        objectUnderMouse = new SimpleObjectProperty<>();
-        mouseAzDeg = new SimpleDoubleProperty();
-        mouseAltDeg = new SimpleDoubleProperty();
         mousePosition = new SimpleObjectProperty<>();
 
         projection = Bindings.createObjectBinding(
@@ -101,15 +99,56 @@ public final class SkyCanvasManager {
                 dateTime.dateProperty(), dateTime.timeProperty(), dateTime.zoneProperty(),
                 observerLocation.coordinatesBinding(), projection);
 
-        // Redraws the painter when these properties are changed
-        projection.addListener(o -> draw(painter, observedSky.get()));
-        planeToCanvas.addListener(o -> draw(painter, observedSky.get()));
-        observedSky.addListener(o -> draw(painter, observedSky.get()));
-        asterismEnableProperty().addListener(o -> draw(painter, observedSky.get()));
-        satelliteEnableProperty().addListener(o -> draw(painter, observedSky.get()));
-        nameEnableProperty().addListener(o -> draw(painter, observedSky.get()));
 
-        // Changes the field of view according to the mouse wheel and/or trackpad movements above the canvas
+        // The horizontal position of the mouse cursor
+        mouseHorizontalPosition = Bindings.createObjectBinding(() -> {
+            try {
+                return projection.get().inverseApply(
+                        PlaneToCanvas.inverseAtPoint(mousePosition.get(), planeToCanvas.get()));
+            } catch (Exception e) {
+                return HorizontalCoordinates.of(0, 0);
+            }
+        }, mousePosition, projection, planeToCanvas);
+
+        // The azimuth (in degrees) of the mouse cursor
+        mouseAzDeg = Bindings.createDoubleBinding(() -> {
+                    try {
+                        return mouseHorizontalPosition.get().azDeg();
+                    } catch (Exception e) {
+                        return 0.0;
+                    }
+                },
+                mouseHorizontalPosition);
+
+        // The altitude (in degrees) of the mouse cursor
+        mouseAltDeg = Bindings.createDoubleBinding(() -> {
+                    try {
+                        return mouseHorizontalPosition.get().altDeg();
+                    } catch (Exception e) {
+                        return 0.0;
+                    }
+                },
+                mouseHorizontalPosition);
+
+        // The celestial object closest to the mouse cursor
+        objectUnderMouse = Bindings.createObjectBinding(() -> {
+            try {
+                CartesianCoordinates mousePlanePosition = PlaneToCanvas.inverseAtPoint(
+                        getMousePosition(), planeToCanvas.get());
+                double maxPlaneDistance = PlaneToCanvas.inverseAtDistance(MAXIMUM_SEARCH_DISTANCE, planeToCanvas.get());
+
+                Optional<CelestialObject> objectUnderMouse = observedSky.get().objectClosestTo(
+                        mousePlanePosition, maxPlaneDistance);
+
+                return objectUnderMouse.orElse(null);
+
+            } catch (Exception e) {
+                return null;
+            }
+        }, observedSky, mousePosition, planeToCanvas);
+
+
+        // Changes the field of view according to the user's mouse wheel and/or trackpad movements above the canvas
         canvas.setOnScroll(scrollEvent -> {
             double fovDeg = viewingParameters.getFieldOfViewDeg();
             double scrolledFovDeg = fovDeg + scrollMax(scrollEvent.getDeltaX(), scrollEvent.getDeltaY());
@@ -117,45 +156,18 @@ public final class SkyCanvasManager {
             viewingParameters.setFieldOfViewDeg(FOV_INTERVAL.clip(scrolledFovDeg));
         });
 
+
         // Changes the direction of observation according to the cursor keys
         canvas.setOnKeyPressed(keyEvent -> {
             keyEvent.consume();
             changeDirection(keyEvent.getCode());
-
-            try {
-                CartesianCoordinates mousePlanePosition = PlaneToCanvas.inverseAtPoint(getMousePosition(),
-                        planeToCanvas.get());
-                double maxPlaneDistance = PlaneToCanvas.inverseAtDistance(MAXIMUM_SEARCH_DISTANCE, planeToCanvas.get());
-
-                Optional<CelestialObject> objectUnderMouse = observedSky.get().objectClosestTo(mousePlanePosition,
-                        maxPlaneDistance);
-                setObjectUnderMouse(objectUnderMouse.orElse(null));
-
-            } catch (NonInvertibleTransformException e) {
-                e.printStackTrace();
-            }
         });
 
-        // Informs about the movements of the mouse cursor above the canvas
-        canvas.setOnMouseMoved(mouseEvent -> {
-            setMousePosition(CartesianCoordinates.of(mouseEvent.getX(), mouseEvent.getY()));
-            try {
-                CartesianCoordinates mousePlanePosition = PlaneToCanvas.inverseAtPoint(getMousePosition(),
-                        planeToCanvas.get());
-                double maxPlaneDistance = PlaneToCanvas.inverseAtDistance(MAXIMUM_SEARCH_DISTANCE, planeToCanvas.get());
 
-                Optional<CelestialObject> objectUnderMouse = observedSky.get().objectClosestTo(mousePlanePosition,
-                        maxPlaneDistance);
-                setObjectUnderMouse(objectUnderMouse.orElse(null));
+        // Follows the movements of the mouse cursor above the canvas and exports its horizontal coordinates
+        canvas.setOnMouseMoved(mouseEvent ->
+                setMousePosition(CartesianCoordinates.of(mouseEvent.getX(), mouseEvent.getY())));
 
-                HorizontalCoordinates hor = projection.get().inverseApply(mousePlanePosition);
-                setMouseAzDeg(hor.azDeg());
-                setMouseAltDeg(hor.altDeg());
-
-            } catch (NonInvertibleTransformException e) {
-                e.printStackTrace();
-            }
-        });
 
         // Detects the mouse clicks on the canvas
         canvas.setOnMousePressed(mouseEvent -> {
@@ -164,6 +176,14 @@ public final class SkyCanvasManager {
             }
         });
 
+        // Redraws the painter when these properties are changed
+        projection.addListener(o -> draw(painter, observedSky.get()));
+        planeToCanvas.addListener(o -> draw(painter, observedSky.get()));
+        observedSky.addListener(o -> draw(painter, observedSky.get()));
+        asterismEnableProperty().addListener(o -> draw(painter, observedSky.get()));
+        satelliteEnableProperty().addListener(o -> draw(painter, observedSky.get()));
+        nameEnableProperty().addListener(o -> draw(painter, observedSky.get()));
+
         draw(painter, observedSky.get());
     }
 
@@ -171,7 +191,7 @@ public final class SkyCanvasManager {
      * Returns the mouse cursor's azimuth property.
      * @return the mouse cursor's azimuth property
      */
-    public ReadOnlyDoubleProperty mouseAzDegProperty() {
+    public DoubleBinding mouseAzDeg() {
         return mouseAzDeg;
     }
 
@@ -187,7 +207,7 @@ public final class SkyCanvasManager {
      * Returns the mouse cursor's altitude property.
      * @return the mouse cursor's altitude property
      */
-    public ReadOnlyDoubleProperty mouseAltDegProperty() {
+    public DoubleBinding mouseAltDeg() {
         return mouseAltDeg;
     }
 
@@ -219,7 +239,7 @@ public final class SkyCanvasManager {
      * Returns the property of the celestial object under the mouse cursor.
      * @return the property of the celestial object under the mouse cursor
      */
-    public ReadOnlyObjectProperty<CelestialObject> objectUnderMouseProperty() {
+    public ObjectBinding<CelestialObject> objectUnderMouseProperty() {
         return objectUnderMouse;
     }
 
@@ -323,24 +343,6 @@ public final class SkyCanvasManager {
     }
 
     /**
-     * Sets the azimuth of the mouse cursor (in degrees)
-     * @param azDeg
-     *            The new azimuth of the mouse cursor (in degrees)
-     */
-    private void setMouseAzDeg(double azDeg) {
-        mouseAzDeg.set(azDeg);
-    }
-
-    /**
-     * Sets the altitude of the mouse cursor (in degrees).
-     * @param altDeg
-     *            The new altitude of the mouse cursor (in degrees)
-     */
-    private void setMouseAltDeg(double altDeg) {
-        mouseAltDeg.set(altDeg);
-    }
-
-    /**
      * Sets the position of the mouse on the canvas.
      * @param cart
      *            The new position of the mouse on the canvas
@@ -349,14 +351,8 @@ public final class SkyCanvasManager {
         mousePosition.set(cart);
     }
 
-    /**
-     * Sets the celestial object under the mouse cursor to the given celestial object.
-     * @param object
-     *            The new object under the cursor of the mouse
-     */
-    private void setObjectUnderMouse(CelestialObject object) {
-        objectUnderMouse.set(object);
-    }
+
+
 
     /**
      * Returns the maximum of two numbers.

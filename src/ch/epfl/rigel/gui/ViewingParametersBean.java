@@ -7,7 +7,7 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 
 /**
- * A viewing parameters bean.
+ * A viewing parameters bean, which determines the portion of the sky visible in the image.
  *
  * @author Mathias Bouilloud (309979)
  * @author Julien Mettler (309999)

@@ -7,6 +7,7 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.transform.NonInvertibleTransformException;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -21,7 +22,7 @@ public final class UseSkyCanvasManager extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) throws IOException {
+    public void start(Stage primaryStage) throws IOException, NonInvertibleTransformException {
         try (InputStream hs = resourceStream("/hygdata_v3.csv");
              InputStream as = resourceStream("/asterisms.txt");
              InputStream sat = resourceStream("/active_satellites.csv")) {
