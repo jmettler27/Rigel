@@ -38,17 +38,15 @@ public interface TimeAccelerator {
      * Returns a discrete accelerator as a function of the frequency and the step of the simulated time.
      *
      * @param frequency
-     *            The stepping frequency (in Hertz) of the simulated time
+     *            The stepping frequency of the simulated time
      * @param S
      *            The discrete step (in seconds) of the simulated time
      * @return the discrete accelerator
      */
     static TimeAccelerator discrete(int frequency, Duration S) {
         return (T0, deltaNano) -> {
-            double deltaSecond = deltaNano * 1e-9; // The number of seconds elapsed since the beginning of the animation
-            long temp = (long) (frequency * deltaSecond);
-
-            return T0.plus(S.multipliedBy(temp));
+            long accelerationFactor = (long) (frequency * 1e-9 * deltaNano);
+            return T0.plusNanos(accelerationFactor * S.toNanos());
         };
     }
 }

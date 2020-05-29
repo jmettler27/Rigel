@@ -54,7 +54,7 @@ public final class UseSkyCanvasManager extends Application {
             canvasManager.objectUnderMouseProperty().addListener(
                     (p, o, n) -> {if (n != null) System.out.println(n);});
 
-            Canvas sky = canvasManager.canvas();
+            Canvas sky = canvasManager.getCanvas();
             BorderPane root = new BorderPane(sky);
 
             sky.widthProperty().bind(root.widthProperty());

@@ -31,7 +31,7 @@ public final class SkyCanvasPainter {
      * @param canvas
      *            The canvas on which the observed sky is drawn
      */
-    SkyCanvasPainter(Canvas canvas) {
+    public SkyCanvasPainter(Canvas canvas) {
         this.canvas = canvas;
         this.ctx = canvas.getGraphicsContext2D();
     }
@@ -39,7 +39,7 @@ public final class SkyCanvasPainter {
     /**
      * Clears the canvas.
      */
-    void clear() {
+    public void clear() {
         ctx.clearRect(0,0, canvas.getWidth(), canvas.getHeight());
 
         // Fills the entire canvas with black
@@ -59,7 +59,7 @@ public final class SkyCanvasPainter {
      * @param nameEnabled
      *           Enables the drawing of the names of the brightest stars
      */
-    void drawStars(ObservedSky sky, Transform transform, boolean asterismEnabled, boolean nameEnabled) {
+    public void drawStars(ObservedSky sky, Transform transform, boolean asterismEnabled, boolean nameEnabled) {
         // The positions of the observed stars on the canvas
         double[] starCanvasPositions = PlaneToCanvas.applyToAllPoints(sky.starPositions(), transform);
 
@@ -91,7 +91,7 @@ public final class SkyCanvasPainter {
      * @param transform
      *            The affine transform
      */
-    void drawPlanets(ObservedSky sky, Transform transform, boolean nameEnabled) {
+    public void drawPlanets(ObservedSky sky, Transform transform, boolean nameEnabled) {
         // The positions of the observed planets of the solar system on the canvas
         double[] planetCanvasPositions = PlaneToCanvas.applyToAllPoints(sky.planetPositions(), transform);
 
@@ -121,7 +121,7 @@ public final class SkyCanvasPainter {
      * @param transform
      *            The affine transform
      */
-    void drawSun(ObservedSky sky, StereographicProjection projection, Transform transform, boolean nameEnable) {
+    public void drawSun(ObservedSky sky, StereographicProjection projection, Transform transform, boolean nameEnable) {
         // The position and projected diameter of the observed Sun on the plane
         CartesianCoordinates sunPlanePosition = sky.sunPosition();
         double sunPlaneDiameter = projection.applyToAngle(sky.sun().angularSize());
@@ -148,7 +148,7 @@ public final class SkyCanvasPainter {
      * @param transform
      *            The affine transform
      */
-    void drawMoon(ObservedSky sky, StereographicProjection projection, Transform transform,
+    public void drawMoon(ObservedSky sky, StereographicProjection projection, Transform transform,
                   GeographicCoordinates observerLocation, boolean nameEnable) {
         // The position and projected diameter of the observed Moon on the plane
         CartesianCoordinates moonPlanePosition = sky.moonPosition();
@@ -172,7 +172,7 @@ public final class SkyCanvasPainter {
      * @param transform
      *            The affine transform
      */
-    void drawHorizon(StereographicProjection projection, Transform transform) {
+    public void drawHorizon(StereographicProjection projection, Transform transform) {
         // The parallel of latitude 0 degree. Note : the arbitrarily chosen azimuth does not matter in the calculations
         HorizontalCoordinates parallel = HorizontalCoordinates.of(0, 0);
 
@@ -199,7 +199,7 @@ public final class SkyCanvasPainter {
      * @param transform
      *            The affine transform
      */
-    void drawSatellites(ObservedSky sky, Transform transform, boolean satelliteEnabled) {
+    public void drawSatellites(ObservedSky sky, Transform transform, boolean satelliteEnabled) {
         // The positions of the observed satellites on the canvas
         double[] satelliteCanvasPositions = PlaneToCanvas.applyToAllPoints(sky.satellitePositions(), transform);
 

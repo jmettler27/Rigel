@@ -146,7 +146,7 @@ public class Main extends Application {
             canvasManager = new SkyCanvasManager(catalogue, satCatalogue, dateTimeBean, observerLocationBean,
                     viewingParametersBean);
 
-            Canvas canvas = canvasManager.canvas();
+            Canvas canvas = canvasManager.getCanvas();
             Pane skyPane = new Pane(canvas);  // The view of the sky (the center part of the graphical interface)
 
             // The dimensions of the canvas are bounded to those of the sky pane
@@ -509,7 +509,7 @@ public class Main extends Application {
                     observerLocationBean.getLonDeg(), observerLocationBean.getLatDeg(),
                     dateToString(dateTimeBean.getZonedDateTime()) + ".png");
 
-            WritableImage fxImage = canvasManager.canvas().snapshot(null, null);
+            WritableImage fxImage = canvasManager.getCanvas().snapshot(null, null);
 
             BufferedImage swingImage = SwingFXUtils.fromFXImage(fxImage, null);
             try {
@@ -527,7 +527,7 @@ public class Main extends Application {
      * @return the choice box of the planets of the solar system
      */
     private ChoiceBox<Planet> planetsMenu() {
-        ObservableList<Planet> observablePlanets = FXCollections.observableList(canvasManager.observedSky().planets());
+        ObservableList<Planet> observablePlanets = FXCollections.observableList(canvasManager.getObservedSky().planets());
 
         ChoiceBox<Planet> planetsMenu = new ChoiceBox<>();
         planetsMenu.setItems(observablePlanets);
@@ -548,6 +548,11 @@ public class Main extends Application {
                         observationAlert.showAndWait();
                     }
                 });
+
+        // Disables the planets menu when an animation is running
+        planetsMenu.disableProperty().bind(
+                when(timeAnimator.runningProperty()).then(true).otherwise(false)
+        );
 
         return planetsMenu;
     }

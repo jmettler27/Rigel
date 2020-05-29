@@ -22,6 +22,7 @@ public final class TimeAnimator extends AnimationTimer {
 
     private boolean firstHandle = true; // The animation is handled for the first time after the timer starts (the animation begins)
     private long elapsedNanos; // The number of nanoseconds elapsed since the beginning of an animation
+    private ZonedDateTime startDate;
 
     /**
      * Constructs a time animator through its date/time bean.
@@ -40,15 +41,14 @@ public final class TimeAnimator extends AnimationTimer {
      */
     @Override
     public void handle(long nanos) {
-        if (firstHandle) {
-            elapsedNanos = nanos;
-            firstHandle = false;
-        }
+        if (isRunning()) {
+            if (firstHandle) {
+                elapsedNanos = nanos;
+                firstHandle = false;
+            }
 
-       if (isRunning()) {
-            ZonedDateTime simulatedTime = getAccelerator().adjust(bean.getZonedDateTime(), nanos - elapsedNanos);
+            ZonedDateTime simulatedTime = getAccelerator().adjust(startDate, nanos - elapsedNanos);
             bean.setZonedDateTime(simulatedTime);
-            elapsedNanos = nanos;
         }
     }
 
@@ -59,6 +59,7 @@ public final class TimeAnimator extends AnimationTimer {
     public void start() {
         super.start();
         running.setValue(true);
+        startDate = bean.getZonedDateTime();
     }
 
     /**
