@@ -22,7 +22,7 @@ import java.util.List;
  */
 public final class SkyCanvasPainter {
 
-    private final Canvas canvas;
+    private final Canvas canvas; // The canvas on which the sky is drawn
     private final GraphicsContext ctx; // The graphics context associated to the canvas
 
     /**
@@ -56,6 +56,8 @@ public final class SkyCanvasPainter {
      *            The affine transform
      * @param asterismEnabled
      *           Enables the drawing of the asterisms
+     * @param nameEnabled
+     *           Enables the drawing of the names of the brightest stars
      */
     void drawStars(ObservedSky sky, Transform transform, boolean asterismEnabled, boolean nameEnabled) {
         // The positions of the observed stars on the canvas
@@ -89,7 +91,7 @@ public final class SkyCanvasPainter {
      * @param transform
      *            The affine transform
      */
-    void drawPlanets(ObservedSky sky, Transform transform, boolean nameEnable) {
+    void drawPlanets(ObservedSky sky, Transform transform, boolean nameEnabled) {
         // The positions of the observed planets of the solar system on the canvas
         double[] planetCanvasPositions = PlaneToCanvas.applyToAllPoints(sky.planetPositions(), transform);
 
@@ -103,7 +105,7 @@ public final class SkyCanvasPainter {
 
             drawFilledCircle(planetCanvasPos, planetCanvasDiameter, Color.LIGHTGRAY);
 
-            if(nameEnable) drawAnnotation(p.toString(), planetCanvasPos, Color.FORESTGREEN);
+            if(nameEnabled) drawAnnotation(p.toString(), planetCanvasPos, Color.FORESTGREEN);
 
             ++index;
         }
@@ -284,11 +286,11 @@ public final class SkyCanvasPainter {
         ctx.setTextAlign(TextAlignment.CENTER);
         ctx.setTextBaseline(VPos.TOP);
 
-        for (CardinalPoint cardinalPoint : CardinalPoint.ALL) {
+        for (int i = 0; i < 7; ++i) {
+            HorizontalCoordinates cardinalPoint = HorizontalCoordinates.ofDeg(45 * i, -0.5);
             CartesianCoordinates canvasPos = PlaneToCanvas.applyToPoint(
-                    projection.apply(cardinalPoint.getPosition()), transform);
-
-            ctx.fillText(cardinalPoint.getName(), canvasPos.x(), canvasPos.y());
+                    projection.apply(cardinalPoint), transform);
+            ctx.fillText(cardinalPoint.azOctantName("N", "E", "S", "O"), canvasPos.x(), canvasPos.y());
         }
     }
 

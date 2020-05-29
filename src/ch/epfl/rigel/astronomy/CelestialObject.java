@@ -60,10 +60,11 @@ public abstract class CelestialObject {
         this.angularSize = angularSize;
 
         this.magnitude = magnitude;
-        this.isBright = magnitude < 2.0;
+        this.isBright = magnitude < 1.0;
 
         // The magnitude is clipped to [-2, 5]
         double clippedMagnitude = MAGNITUDE_INTERVAL.clip(magnitude);
+
         // The size factor (between 10% and 95% of the diameter of an object whose angular size is 0.5 degrees)
         double sizeFactor = (99.0 - 17.0 * clippedMagnitude) / 140.0;
 

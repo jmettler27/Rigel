@@ -19,7 +19,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -319,7 +318,7 @@ public class Main extends Application {
 
         mousePositionText.textProperty().bind(
                 Bindings.format(Locale.ROOT, "Azimuth : %.2f°, hauteur : %.2f°",
-                        canvasManager.mouseAzDeg(), canvasManager.mouseAltDeg()));
+                        canvasManager.mouseAzDegBinding(), canvasManager.mouseAltDegBinding()));
 
         return mousePositionText;
     }
@@ -413,7 +412,6 @@ public class Main extends Application {
      * @return a menu of the time accelerators
      */
     private ChoiceBox<NamedTimeAccelerator> acceleratorsMenu() {
-        // Accelerators menu
         ChoiceBox<NamedTimeAccelerator> acceleratorsMenu = new ChoiceBox<>();
         acceleratorsMenu.setItems(OBSERVABLE_ACCELERATORS);
         acceleratorsMenu.setValue(STARTING_ACCELERATOR);
