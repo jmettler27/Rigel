@@ -158,7 +158,6 @@ public final class SkyCanvasPainter {
         CartesianCoordinates moonCanvasPosition = PlaneToCanvas.applyToPoint(moonPlanePosition, transform);
         double moonCanvasDiameter = PlaneToCanvas.applyToDistance(moonPlaneDiameter, transform);
 
-        //drawFilledCircle(moonCanvasPosition, moonCanvasDiameter, Color.WHITE);
         drawMoonPhase(sky.moon().phase(), moonCanvasPosition, moonCanvasDiameter, observerLocation);
 
         if(nameEnable) drawAnnotation(sky.moon().toString(), moonCanvasPosition, Color.WHITE);
