@@ -1,6 +1,5 @@
 package ch.epfl.rigel.astronomy;
 
-import ch.epfl.rigel.Preconditions;
 import ch.epfl.rigel.coordinates.EquatorialCoordinates;
 
 import java.util.Objects;

@@ -5,7 +5,6 @@
       <element id="archive" name="projet-cs108.zip">
         <element id="directory" name="MonProjet">
           <element id="dir-copy" path="$PROJECT_DIR$/src" />
-          <element id="dir-copy" path="$PROJECT_DIR$/resources" />
         </element>
       </element>
     </root>

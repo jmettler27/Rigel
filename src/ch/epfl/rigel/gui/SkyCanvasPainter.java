@@ -158,6 +158,7 @@ public final class SkyCanvasPainter {
         CartesianCoordinates moonCanvasPosition = PlaneToCanvas.applyToPoint(moonPlanePosition, transform);
         double moonCanvasDiameter = PlaneToCanvas.applyToDistance(moonPlaneDiameter, transform);
 
+        //drawFilledCircle(moonCanvasPosition, moonCanvasDiameter, Color.WHITE);
         drawMoonPhase(sky.moon().phase(), moonCanvasPosition, moonCanvasDiameter, observerLocation);
 
         if(nameEnable) drawAnnotation(sky.moon().toString(), moonCanvasPosition, Color.WHITE);
@@ -308,31 +309,30 @@ public final class SkyCanvasPainter {
         double moonCanvasRadius = moonCanvasDiameter / 2.0;
         boolean isNorthHemisphere = observerLocation.latDeg() >= 0;
 
+        // The Moon is visible
         if (phase > 0.03) {
-            if (phase < 0.34) {
-                double startAngle = (isNorthHemisphere) ? -35 : 142;
+
+            // First Crescent
+            if (phase <= 0.34) {
+                double offset = isNorthHemisphere ? -3 : 3;
+                drawFilledCircle(moonCanvasPosition, moonCanvasDiameter, Color.WHITE);
+                drawFilledCircle(CartesianCoordinates.of(moonCanvasPosition.x() + offset, moonCanvasPosition.y()),
+                        moonCanvasDiameter, Color.BLACK);
+            }
+            // First Quarter
+            else if (phase <= 0.65) {
+                double startAngle = (isNorthHemisphere) ? -90 : 90;
                 ctx.setFill(Color.WHITE);
                 ctx.fillArc(moonCanvasPosition.x() - moonCanvasRadius, moonCanvasPosition.y() - moonCanvasRadius,
-                        moonCanvasDiameter, moonCanvasDiameter, startAngle, 75.0, ArcType.CHORD);
+                        moonCanvasDiameter * 2, moonCanvasDiameter * 2, startAngle, 180.0, ArcType.ROUND);
 
-            } else if (phase < 0.65) {
-                double startAngle = (isNorthHemisphere) ? -90 : 90;
-                ctx.fillArc(moonCanvasPosition.x() - moonCanvasRadius, moonCanvasPosition.y() - moonCanvasRadius,
-                        moonCanvasDiameter, moonCanvasDiameter, startAngle, 180.0, ArcType.ROUND);
-
-            } else if (phase < 0.96) {
-                drawFilledCircle(moonCanvasPosition, moonCanvasDiameter, Color.WHITE);
-                double startAngle = (isNorthHemisphere) ? 142 : -35;
-                ctx.setFill(Color.BLACK);
-                ctx.fillArc(moonCanvasPosition.x() - moonCanvasRadius, moonCanvasPosition.y() - moonCanvasRadius,
-                        moonCanvasDiameter, moonCanvasDiameter, startAngle, 75.0, ArcType.CHORD);
-
-            } else if (phase < 1) {
+            }
+            // Full Moon
+            else if (phase <= 1) {
                 drawFilledCircle(moonCanvasPosition, moonCanvasDiameter, Color.WHITE);
             }
         }
     }
-
     /**
      * Additional method.
      * Draws an annotation next to the given coordinates on the canvas and using the given color.

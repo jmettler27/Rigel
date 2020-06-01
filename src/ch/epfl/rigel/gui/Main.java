@@ -8,13 +8,11 @@ import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
-import javafx.scene.image.WritableImage;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -25,9 +23,6 @@ import javafx.stage.Stage;
 import javafx.util.converter.LocalTimeStringConverter;
 import javafx.util.converter.NumberStringConverter;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.*;
@@ -89,7 +84,7 @@ public class Main extends Application {
             RESET_CHAR = "\uf0e2", PLAY_CHAR = "\uf04b", PAUSE_CHAR = "\uf04c";
 
     // (Bonus) The Unicode characters (UTF-16 first range) of the icons of the bonus buttons and menus
-    private static final String CAMERA_CHAR = "\uf083", OPTIONS_CHAR = "\uf013", ASTERISM_CHAR = "\uf005",
+    private static final String OPTIONS_CHAR = "\uf013", ASTERISM_CHAR = "\uf005",
             SAT_CHAR = "\uf09e", NAME_CHAR = "\uf075", MINIMALIST_CHAR = "\uf06e", INFO_CHAR = "\uf05a",
             UP_CHAR = "\uf062", DOWN_CHAR = "\uf063", RIGHT_CHAR = "\uf061", LEFT_CHAR = "\uf060", ZOOM_IN = "\uf00e",
             ZOOM_OUT = "\uf010";
@@ -488,39 +483,12 @@ public class Main extends Application {
      * @throws IOException in case of input/output error
      */
     private HBox bonusInterface() throws IOException {
-        HBox bonusInterface = new HBox(photoButton(), planetsMenu(), optionsMenu(), controlsInfoButton());
+        HBox bonusInterface = new HBox(planetsMenu(), optionsMenu(), controlsInfoButton());
         bonusInterface.setStyle("-fx-spacing: inherit");
 
         return bonusInterface;
     }
 
-    /**
-     * (Bonus) Returns the photo button.
-     * @return the photo button
-     * @throws IOException in case of input/output error
-     */
-    private Button photoButton() throws IOException {
-        Button photoButton = new Button(CAMERA_CHAR);
-        photoButton.setFont(fontAwesome());
-
-        // When pressed, takes a photography of the observed sky
-        photoButton.setOnMousePressed(event -> {
-            String fileName = String.format("sky lon=%.2f lat=%.2f %s ",
-                    observerLocationBean.getLonDeg(), observerLocationBean.getLatDeg(),
-                    dateToString(dateTimeBean.getZonedDateTime()) + ".png");
-
-            WritableImage fxImage = canvasManager.getCanvas().snapshot(null, null);
-
-            BufferedImage swingImage = SwingFXUtils.fromFXImage(fxImage, null);
-            try {
-                ImageIO.write(swingImage, "png", new File(fileName));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-
-        return photoButton;
-    }
 
     /**
      * (Bonus) Returns the choice box of the planets of the solar system.
@@ -651,13 +619,13 @@ public class Main extends Application {
         // The zoom-in control
         Text zoomIn = new Text(ZOOM_IN);
         zoomIn.setFont(fontAwesome());
-        Text zoomInInfo = new Text("Zoomer (sroll vers le bas / pavé tactile vers le haut)");
+        Text zoomInInfo = new Text("Zoomer (scroll vers le bas / pavé tactile vers le haut)");
         zoomInInfo.setFont(infoFont);
 
         // The zoom-out control
         Text zoomOut = new Text(ZOOM_OUT);
         zoomOut.setFont(fontAwesome());
-        Text zoomOutInfo = new Text("Dézoomer (sroll vers le haut / pavé tactile vers le bas)");
+        Text zoomOutInfo = new Text("Dézoomer (scroll vers le haut / pavé tactile vers le bas)");
         zoomOutInfo.setFont(infoFont);
 
         GridPane root = new GridPane(); // Each row contains an information about the control
@@ -708,17 +676,5 @@ public class Main extends Application {
         Text menuItemText = new Text(character);
         menuItemText.setFont(fontAwesome());
         menuItem.setGraphic(menuItemText);
-    }
-
-    /**
-     * (Bonus) Returns the String representation of the observation time.
-     *
-     * @param when
-     *            The observation time
-     * @return the String representation of the observation time
-     */
-    private String dateToString(ZonedDateTime when) {
-        return when.getYear() + "-" + when.getMonthValue() + "-" + when.getDayOfMonth() + " "
-                + when.getHour() + "h" + when.getMinute() + "m" + when.getSecond() + "s";
     }
 }
