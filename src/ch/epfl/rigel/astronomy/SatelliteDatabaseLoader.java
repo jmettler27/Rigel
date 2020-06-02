@@ -19,11 +19,11 @@ public enum SatelliteDatabaseLoader implements SatelliteCatalogue.Loader {
     INSTANCE();
 
     private static final int
-            NAME = 0,
-            COUN = 1,
-            PURP = 5,
-            LONDEG = 9,
-            ORB = 7;
+            NAME = 0, // The index of the satellite's name
+            COUN = 1, // The index of the satellite's country of origin
+            PURP = 5, // The index of the satellite's purpose
+            LONDEG = 9, // The index of the satellite's geosynchronous longitude (in degrees)
+            ORB = 7; // The index of the satellite's type of orbit
 
     /**
      * @see SatelliteDatabaseLoader#load(InputStream, SatelliteCatalogue.Builder)
@@ -43,16 +43,16 @@ public enum SatelliteDatabaseLoader implements SatelliteCatalogue.Loader {
             while ((line = reader.readLine()) != null) {
                 String[] columns = line.split(","); // The 26 informations on the current satellite
 
+                // Reads the information of satellites with geostationary orbit
                 if (columns[ORB].equals("GEO") && !columns[18].contains("EOL")) {
                     String name = columns[NAME];
                     String country = columns[COUN];
                     String purpose = columns[PURP];
 
                     // The satellite's longitude (in degrees)
-                    double lon = Angle.normalizePositive(Angle.ofDeg(defaultLonCases(columns)));
+                    double lonRad = Angle.normalizePositive(Angle.ofDeg(defaultLonCases(columns)));
 
-                    Satellite sat = new Satellite(name, country, purpose, lon);
-                    builder.addSatellite(sat);
+                    builder.addSatellite(new Satellite(name, country, purpose, lonRad));
                 }
             }
         }

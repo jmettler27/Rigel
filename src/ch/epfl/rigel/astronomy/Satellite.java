@@ -32,24 +32,7 @@ public final class Satellite extends CelestialObject {
         this.country = Objects.requireNonNull(country);
         this.purpose = Objects.requireNonNull(purpose);
     }
-
-    /**
-     * Returns the country of origin of the satellite.
-     * @return the country of origin of the satellite
-     */
-    public String country() {
-        return country;
-    }
-
-    /**
-     * Returns the purpose of the satellite.
-     * @return the purpose of the satellite
-     */
-    public String purpose() {
-        return purpose;
-    }
-
-
+    
     /**
      * @see CelestialObject#info()
      */

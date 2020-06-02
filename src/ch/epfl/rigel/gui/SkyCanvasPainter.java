@@ -212,7 +212,6 @@ public final class SkyCanvasPainter {
                 drawFilledCircle(satelliteCanvasPos, 3, Color.GREEN);
             }
         }
-
     }
 
     /**
@@ -288,8 +287,7 @@ public final class SkyCanvasPainter {
 
         for (int i = 0; i < 7; ++i) {
             HorizontalCoordinates cardinalPoint = HorizontalCoordinates.ofDeg(45 * i, -0.5);
-            CartesianCoordinates canvasPos = PlaneToCanvas.applyToPoint(
-                    projection.apply(cardinalPoint), transform);
+            CartesianCoordinates canvasPos = PlaneToCanvas.applyToPoint(projection.apply(cardinalPoint), transform);
             ctx.fillText(cardinalPoint.azOctantName("N", "E", "S", "O"), canvasPos.x(), canvasPos.y());
         }
     }
@@ -298,10 +296,14 @@ public final class SkyCanvasPainter {
      * Additional method.
      * Draws the Moon's disc according to its phase.
      *
-     * @param phase The Moon's phase (unitless)
-     * @param moonCanvasPosition The position of the Moon on the canvas
-     * @param moonCanvasDiameter The diameter of the Moon on the canvas
-     * @param observerLocation The coordinates of the observer on Earth
+     * @param phase
+     *            The Moon's phase (unitless)
+     * @param moonCanvasPosition
+     *            The position of the Moon on the canvas
+     * @param moonCanvasDiameter
+     *            The diameter of the Moon on the canvas
+     * @param observerLocation
+     *            The coordinates of the observer on Earth
      */
     private void drawMoonPhase(float phase, CartesianCoordinates moonCanvasPosition, double moonCanvasDiameter,
                                GeographicCoordinates observerLocation) {
@@ -318,6 +320,7 @@ public final class SkyCanvasPainter {
                 drawFilledCircle(CartesianCoordinates.of(moonCanvasPosition.x() + offset, moonCanvasPosition.y()),
                         moonCanvasDiameter, Color.BLACK);
             }
+
             // First Quarter
             else if (phase <= 0.65) {
                 double startAngle = (isNorthHemisphere) ? -90 : 90;
@@ -326,6 +329,7 @@ public final class SkyCanvasPainter {
                         moonCanvasDiameter * 2, moonCanvasDiameter * 2, startAngle, 180.0, ArcType.ROUND);
 
             }
+
             // Full Moon
             else if (phase <= 1) {
                 drawFilledCircle(moonCanvasPosition, moonCanvasDiameter, Color.WHITE);
@@ -336,9 +340,12 @@ public final class SkyCanvasPainter {
      * Additional method.
      * Draws an annotation next to the given coordinates on the canvas and using the given color.
      *
-     * @param annotation The annotation
-     * @param canvasPosition The position on the canvas
-     * @param color The color of the annotation
+     * @param annotation
+     *            The annotation
+     * @param canvasPosition
+     *            The position on the canvas
+     * @param color
+     *            The color of the annotation
      */
     private void drawAnnotation(String annotation, CartesianCoordinates canvasPosition, Color color) {
         ctx.setFill(color);

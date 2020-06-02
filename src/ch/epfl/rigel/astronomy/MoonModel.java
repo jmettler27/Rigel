@@ -115,9 +115,8 @@ public enum MoonModel implements CelestialObjectModel<Moon> {
         double phase = (1.0 - cos(trueOrbitalLon - sunLon)) / 2.0;
 
         // Calculation of the distance between the Earth and the Moon
-        double numeratorDistance = ECCENTRICITY_TEMP;
         double denominatorDistance = 1.0 + ECCENTRICITY * cos(correctedAnomaly + correctedCenterEqu);
-        double earthMoonDistance = numeratorDistance / denominatorDistance;
+        double earthMoonDistance = ECCENTRICITY_TEMP / denominatorDistance;
 
         // The Moon's angular size (in radians)
         double angularSize = ANGULAR_SIZE_ORBIT / earthMoonDistance;
