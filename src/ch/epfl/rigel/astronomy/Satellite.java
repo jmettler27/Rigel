@@ -25,14 +25,14 @@ public final class Satellite extends CelestialObject {
      * @param purpose
      *            The satellite's purpose
      * @param lonRad
-     *            The satellite's longitude (in radians)
+     *            The satellite's longitude of geosynchronous orbit (in radians)
      */
     public Satellite(String name, String country, String purpose, double lonRad) {
         super(name, EquatorialCoordinates.of(lonRad, 0), 0, 0);
         this.country = Objects.requireNonNull(country);
         this.purpose = Objects.requireNonNull(purpose);
     }
-    
+
     /**
      * @see CelestialObject#info()
      */

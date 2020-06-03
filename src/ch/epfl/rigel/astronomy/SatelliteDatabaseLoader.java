@@ -22,8 +22,8 @@ public enum SatelliteDatabaseLoader implements SatelliteCatalogue.Loader {
             NAME = 0, // The index of the satellite's name
             COUN = 1, // The index of the satellite's country of origin
             PURP = 5, // The index of the satellite's purpose
-            LONDEG = 9, // The index of the satellite's geosynchronous longitude (in degrees)
-            ORB = 7; // The index of the satellite's type of orbit
+            LONDEG = 9, // The index of the satellite's longitude of geosynchronous orbit (in degrees)
+            ORB = 7; // The index of the satellite's class of orbit
 
     /**
      * @see SatelliteDatabaseLoader#load(InputStream, SatelliteCatalogue.Builder)
@@ -45,12 +45,16 @@ public enum SatelliteDatabaseLoader implements SatelliteCatalogue.Loader {
 
                 // Reads the information of satellites with geostationary orbit
                 if (columns[ORB].equals("GEO") && !columns[18].contains("EOL")) {
-                    String name = columns[NAME];
-                    String country = columns[COUN];
-                    String purpose = columns[PURP];
 
-                    // The satellite's longitude (in degrees)
-                    double lonRad = Angle.normalizePositive(Angle.ofDeg(defaultLonCases(columns)));
+                    String name = columns[NAME]; // The satellite's name
+                    String country = columns[COUN]; // The satellite's country of origin
+                    String purpose = columns[PURP]; // The satellite's purpose
+
+                    // The satellite's longitude of geosynchronous orbit in deg
+                    double lonDeg = defaultLonDeg(columns);
+
+                    // The satellite's longitude of geosynchronous orbit in radians
+                    double lonRad = Angle.normalizePositive(Angle.ofDeg(lonDeg));
 
                     builder.addSatellite(new Satellite(name, country, purpose, lonRad));
                 }
@@ -60,12 +64,13 @@ public enum SatelliteDatabaseLoader implements SatelliteCatalogue.Loader {
 
     /**
      * Additional method.
-     * Returns the float value of the string at the given index of the given array.
+     * Returns the double value of the string at the given index of the given array.
      *
-     * @param columns The array of strings
-     * @return the float value of the string
+     * @param columns
+     *            The array of strings
+     * @return the double value of the string
      */
-    private static double defaultLonCases(String[] columns) {
+    private static double defaultLonDeg(String[] columns) {
         return columns[SatelliteDatabaseLoader.LONDEG].isEmpty() ?
                 0 : Double.parseDouble(columns[SatelliteDatabaseLoader.LONDEG]);
     }
