@@ -25,6 +25,9 @@ public final class SkyCanvasPainter {
     private final Canvas canvas; // The canvas on which the sky is drawn
     private final GraphicsContext ctx; // The graphics context associated to the canvas
 
+    // The color of the Sun
+    public static final Color SUN_COLOR = Color.YELLOW.deriveColor(0, 1, 1, 0.25);
+
     /**
      * Constructs a painter of the observed sky.
      *
@@ -40,8 +43,6 @@ public final class SkyCanvasPainter {
      * Clears the canvas.
      */
     public void clear() {
-        ctx.clearRect(0,0, canvas.getWidth(), canvas.getHeight());
-
         // Fills the entire canvas with black
         ctx.setFill(Color.BLACK);
         ctx.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
@@ -131,7 +132,7 @@ public final class SkyCanvasPainter {
         double sunCanvasDiameter = PlaneToCanvas.applyToDistance(sunPlaneDiameter, transform);
 
         // Draws the three concentric discs composing the image of the Sun, from the largest to the smallest
-        drawFilledCircle(sunCanvasPosition, sunCanvasDiameter * 2.2, Color.YELLOW.deriveColor(1, 1, 1, 0.25));
+        drawFilledCircle(sunCanvasPosition, sunCanvasDiameter * 2.2, SUN_COLOR);
         drawFilledCircle(sunCanvasPosition, sunCanvasDiameter + 2.0, Color.YELLOW);
         drawFilledCircle(sunCanvasPosition, sunCanvasDiameter, Color.WHITE);
 

@@ -35,8 +35,17 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
 
     private final String frenchName;
 
-    private final double tropicalYear, lonJ2010, lonPerigee, eccentricity, axis, inclination, lonAscending,
-            angularSize1AU, magnitude1AU, cosInclination, sinInclination, eccentricityTemp;
+    private final double tropicalYear;
+    private final double lonJ2010;
+    private final double lonPerigee;
+    private final double eccentricity;
+    private final double axis;
+    private final double lonAscending;
+    private final double angularSize1AU;
+    private final double magnitude1AU;
+    private final double cosInclination;
+    private final double sinInclination;
+    private final double eccentricityTemp;
 
     private final double eccentricityDoubled;
 
@@ -45,7 +54,7 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
     private static final double ANGULAR_VELOCITY = Angle.TAU / 365.242191;
 
     // The eight planets of the solar system, following elliptical orbits around the Sun
-    public static final List<PlanetModel> ALL = List.copyOf(List.of(values()));
+    public static final List<PlanetModel> ALL = List.of(values());
 
     /**
      * Constructs the model of a planet through planetary constants.
@@ -80,7 +89,7 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
         this.lonPerigee = Angle.ofDeg(lonPerigeeDeg);
         this.eccentricity = eccentricity;
         this.axis = axis;
-        this.inclination = Angle.ofDeg(inclinationDeg);
+        double inclination = Angle.ofDeg(inclinationDeg);
         this.lonAscending = Angle.ofDeg(lonAscendingDeg);
         this.angularSize1AU = Angle.ofArcsec(angularSize1AUArc);
         this.magnitude1AU = magnitude1AU;

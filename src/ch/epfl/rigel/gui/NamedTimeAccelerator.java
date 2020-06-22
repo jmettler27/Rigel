@@ -20,7 +20,7 @@ public enum NamedTimeAccelerator {
     DAY("jour", TimeAccelerator.discrete(60, Duration.ofHours(24))),
     SIDEREAL_DAY("jour sidéral", TimeAccelerator.discrete(60, Duration.ofSeconds(SiderealTime.SECONDS_PER_SIDEREAL_DAY)));
 
-    public static final List<NamedTimeAccelerator> ALL = List.copyOf(List.of(values()));
+    public static final List<NamedTimeAccelerator> ALL = List.of(values());
 
     private final String name;
     private final TimeAccelerator accelerator;

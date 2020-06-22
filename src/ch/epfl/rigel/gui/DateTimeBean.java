@@ -16,19 +16,9 @@ import java.time.ZonedDateTime;
  */
 public final class DateTimeBean {
 
-    private final ObjectProperty<LocalDate> dateProperty; // The date property
-    private final ObjectProperty<LocalTime> timeProperty; // The time property
-    private final ObjectProperty<ZoneId> zoneProperty; // The time-zone property
-
-    /**
-     * Default constructor.
-     * Constructs a date/time bean such that the values of its properties are initially null.
-     */
-    public DateTimeBean() {
-        dateProperty = new SimpleObjectProperty<>(null);
-        timeProperty = new SimpleObjectProperty<>(null);
-        zoneProperty = new SimpleObjectProperty<>(null);
-    }
+    private final ObjectProperty<LocalDate> dateProperty = new SimpleObjectProperty<>(); // The date property
+    private final ObjectProperty<LocalTime> timeProperty = new SimpleObjectProperty<>(); // The time property
+    private final ObjectProperty<ZoneId> zoneProperty = new SimpleObjectProperty<>(); // The time-zone property
 
     /**
      * Returns the date property.

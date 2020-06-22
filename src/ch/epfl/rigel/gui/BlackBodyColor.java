@@ -17,7 +17,13 @@ import java.util.Map;
 public final class BlackBodyColor {
 
     private static final String COLOR_FILE_NAME = "/bbr_color.txt";
-    private static final Map<Integer, String> TEMPERATURE_COLOR_MAP = temperatureColorMap();
+    private static final int
+            NUMBER_SIGN_INDEX = 0, // Index for the # character
+            TEMPERATURE_INDEX_END = 6, // Index for the last digit of the temperature
+            TWO_DEG_INDEX = 10, // Index for the text "2deg"
+            COLOR_INDEX_BEGIN = 80, COLOR_INDEX_END = 87; // Indices for the first and last characters of the color (hexadecimal)
+
+    private static final Map<Integer, Color> TEMPERATURE_COLOR_MAP = temperatureColorMap();
 
     /**
      * Default constructor.
@@ -37,7 +43,7 @@ public final class BlackBodyColor {
         int closestTemperature = (int) Math.round(temperature / 100.0) * 100;
         Preconditions.checkArgument(TEMPERATURE_COLOR_MAP.containsKey(closestTemperature));
 
-        return Color.web(TEMPERATURE_COLOR_MAP.get(closestTemperature));
+        return TEMPERATURE_COLOR_MAP.get(closestTemperature);
     }
 
     /**
@@ -47,10 +53,10 @@ public final class BlackBodyColor {
      *
      * @return the map
      */
-    private static Map<Integer, String> temperatureColorMap() {
+    private static Map<Integer, Color> temperatureColorMap() {
         // Key : The color temperature (in degrees Kelvin)
         // Value : The color (in hexadecimal notation)
-        Map<Integer, String> map = new HashMap<>();
+        Map<Integer, Color> map = new HashMap<>();
 
         // The buffered reader of the given input stream (i.e. the color temperatures' text file)
         try (BufferedReader reader =
@@ -63,18 +69,18 @@ public final class BlackBodyColor {
             while ((line = reader.readLine()) != null) {
 
                 // Ignores the comment lines (beginning with the # character) and those containing the text "2deg"
-                if (line.charAt(0) != '#' && line.charAt(10) != ' ') {
+                if (line.charAt(NUMBER_SIGN_INDEX) != '#' && line.charAt(TWO_DEG_INDEX) != ' ') {
 
                     // Selects the substring corresponding to the temperature according to the latter's value
                     // (i.e. whether there is a space at position 1 before the value or not)
                     String temperatureString = (line.charAt(1) == ' ') ?
-                            line.substring(2, 6) : // The temperature is between 1_000K and 9_000K
-                            line.substring(1, 6);  // The temperature is between 10_000K and 40_000K
+                            line.substring(2, TEMPERATURE_INDEX_END) : // The temperature is between 1_000K and 9_000K
+                            line.substring(1, TEMPERATURE_INDEX_END);  // The temperature is between 10_000K and 40_000K
 
                     int temperature = Integer.parseInt(temperatureString); // The temperature (in degrees Kelvin)
-                    String colorString = line.substring(80, 87); // The color (in hexadecimal notation)
+                    String colorString = line.substring(COLOR_INDEX_BEGIN, COLOR_INDEX_END); // The color (in hexadecimal notation)
 
-                    map.put(temperature, colorString);
+                    map.put(temperature, Color.web(colorString));
                 }
             }
         } catch (IOException e) {

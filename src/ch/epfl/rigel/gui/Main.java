@@ -40,7 +40,7 @@ import static javafx.beans.binding.Bindings.when;
  * @author Mathias Bouilloud (309979)
  * @author Julien Mettler (309999)
  */
-public class Main extends Application {
+public final class Main extends Application {
 
     private TimeAnimator timeAnimator;
     private DateTimeBean dateTimeBean;
@@ -157,7 +157,7 @@ public class Main extends Application {
             primaryStage.setScene(new Scene(root));
             primaryStage.show();
 
-            skyPane.requestFocus(); // Sets the canvas as the receiver of the keyboard events
+            canvas.requestFocus(); // Sets the canvas as the receiver of the keyboard events
         }
     }
 

@@ -102,7 +102,6 @@ public final class SkyCanvasManager {
                 observerLocation.coordinatesBinding(), projection);
 
         // Redraws the painter when these properties are changed
-        projection.addListener(o -> draw(painter, getObservedSky()));
         planeToCanvas.addListener(o -> draw(painter, getObservedSky()));
         observedSky.addListener(o -> draw(painter, getObservedSky()));
         asterismEnableProperty().addListener(o -> draw(painter, getObservedSky()));

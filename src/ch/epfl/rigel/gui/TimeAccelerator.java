@@ -44,9 +44,9 @@ public interface TimeAccelerator {
      * @return the discrete accelerator
      */
     static TimeAccelerator discrete(int frequency, Duration S) {
-        return (T0, deltaNano) -> {
+        return (t0, deltaNano) -> {
             long accelerationFactor = (long) (frequency * 1e-9 * deltaNano);
-            return T0.plusNanos(accelerationFactor * S.toNanos());
+            return t0.plusNanos(accelerationFactor * S.toNanos());
         };
     }
 }
